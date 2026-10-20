@@ -2,10 +2,18 @@ import { api, authToken } from './client'
 
 const data = (response) => response.data?.data ?? response.data
 
+export const normalizeCategories = (payload) => {
+  if (Array.isArray(payload)) return payload
+  if (Array.isArray(payload?.data)) return payload.data
+  if (Array.isArray(payload?.categories)) return payload.categories
+  if (Array.isArray(payload?.data?.categories)) return payload.data.categories
+  return []
+}
+
 export const catalogService = {
   products: (params = {}) => api.get('/frontend/products', { params }).then((r) => r.data),
   product: (slug) => api.get(`/frontend/products/${encodeURIComponent(slug)}`).then(data),
-  categories: () => api.get('/frontend/categories').then(data),
+  categories: () => api.get('/frontend/categories').then((response) => normalizeCategories(response.data)),
   reviews: (slug) => api.get(`/frontend/products/${encodeURIComponent(slug)}/reviews`).then(data),
 }
 
