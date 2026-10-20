@@ -1,0 +1,7 @@
+@extends('layouts.admin.app')
+@section('title', 'Mail Center')
+@section('content')
+<div class="content container-fluid"><div class="d-flex justify-content-between align-items-center mb-3"><h2 class="h1 mb-0">Mail Center</h2><a class="btn btn-outline-primary" href="{{ route('admin.mail.settings') }}">SMTP Settings</a></div>
+<div class="row g-3 mb-4">@foreach([['Sent today',$sentToday,'success'],['Failed today',$failedToday,'danger'],['Queued',$queued,'warning'],['Campaigns',$campaigns,'info'],['Subscribers',$subscribers,'primary'],['Unsubscribed',$unsubscribed,'secondary']] as $metric)<div class="col-sm-6 col-xl-2"><div class="card h-100"><div class="card-body"><small class="text-muted">{{ $metric[0] }}</small><div class="fs-2 fw-bold text-{{ $metric[2] }}">{{ number_format($metric[1]) }}</div></div></div></div>@endforeach</div>
+<div class="card"><div class="card-header"><h4 class="mb-0">Recent failures</h4></div><div class="table-responsive"><table class="table mb-0"><thead><tr><th>Recipient</th><th>Subject</th><th>Attempts</th><th>Reason</th><th>Time</th></tr></thead><tbody>@forelse($failures as $failure)<tr><td>{{ $failure->recipient }}</td><td>{{ $failure->subject }}</td><td>{{ $failure->attempts }}</td><td>{{ \Illuminate\Support\Str::limit($failure->failure_reason, 80) }}</td><td>{{ $failure->failed_at }}</td></tr>@empty<tr><td colspan="5" class="text-center py-4">No recent failures.</td></tr>@endforelse</tbody></table></div></div></div>
+@endsection

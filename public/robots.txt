@@ -1,0 +1,10 @@
+User-agent: *
+Disallow: /login/admin/
+Disallow: /api/
+Disallow: /admin/
+Disallow: /vendor/
+Disallow: /customer/
+Disallow: /checkout/
+Disallow: /cart
+Disallow: /wishlist
+Sitemap: https://www.fastxhorizon.com/sitemap.xml

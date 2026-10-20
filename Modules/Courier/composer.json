@@ -1,0 +1,24 @@
+{
+    "name": "6valley/courier",
+    "description": "Provider-agnostic courier integration module (portable addon).",
+    "authors": [],
+    "extra": {
+        "laravel": {
+            "providers": [],
+            "aliases": {}
+        }
+    },
+    "autoload": {
+        "psr-4": {
+            "Modules\\Courier\\": "",
+            "Modules\\Courier\\App\\": "app/",
+            "Modules\\Courier\\Database\\Factories\\": "database/factories/",
+            "Modules\\Courier\\Database\\Seeders\\": "database/seeders/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Modules\\Courier\\Tests\\": "tests/"
+        }
+    }
+}

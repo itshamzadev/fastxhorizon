@@ -1,11 +1,11 @@
 /node_modules
-/frontend/node_modules/
 # public/build (compiled Vite assets) is committed so git-pull deploys
 # serve the storefront/builder without running npm on the server.
 /public/hot
 /public/storage
 /public/themes
 /public/build
+#/storage/*.key
 /storage/app/*
 /storage/framework/cache/*
 /vendor
@@ -30,6 +30,9 @@ temp-data-folder/
 .claude/settings.local.json
 .claude/memory/
 Modules/Auction/AUDIT_REPORT.md
+
+# Playwright
+node_modules/
 /test-results/
 /playwright-report/
 /blob-report/
@@ -56,8 +59,8 @@ docs
 /database/*.sqlite
 /database/*.sqlite3
 *.pem
-*.p8
 *.p12
+*.p8
 *.pfx
 *.key
 *service-account*.json
@@ -66,14 +69,15 @@ docs
 /storage/app/public/uploads/
 /storage/oauth-private.key
 /storage/oauth-public.key
+public/assets/back-end/Apple-AuthKey (copy).txt
+/frontend/node_modules/
+/storage/debugbar/
+/bootstrap/cache/*.php
+/storage/framework/testing/
 /storage/logs/*
 /storage/framework/cache/*
 /storage/framework/sessions/*
 /storage/framework/views/*
-/storage/debugbar/
-/bootstrap/cache/*.php
-/storage/framework/testing/
-public/assets/back-end/Apple-AuthKey (copy).txt
 
 # Local release-review artifacts and historical branding backups
 /artifacts/

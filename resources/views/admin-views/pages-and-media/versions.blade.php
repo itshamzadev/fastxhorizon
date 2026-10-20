@@ -1,0 +1,5 @@
+@extends('layouts.admin.app')
+@section('title', 'Policy Version History')
+@section('content')
+<div class="content container-fluid"><div class="mb-4"><h2 class="h1 mb-1">{{ $page?->title }} — Version History</h2><p class="text-muted mb-0">Published snapshots are retained for audit visibility.</p></div><div class="card"><div class="table-responsive"><table class="table table-hover mb-0"><thead><tr><th>Version</th><th>Status</th><th>Published At</th><th>Published By</th><th>Saved</th></tr></thead><tbody>@forelse($versions as $version)<tr><td>v{{ $version->version }}</td><td><span class="badge {{ $version->policy_status === 'published' ? 'badge-soft-success' : 'badge-soft-warning' }}">{{ ucfirst($version->policy_status) }}</span></td><td>{{ $version->published_at?->timezone('Asia/Karachi')->format('d M Y, g:i A') ?? '—' }} PKT</td><td>{{ $version->published_by ?: 'System' }}</td><td>{{ $version->created_at?->format('d M Y, g:i A') }}</td></tr>@empty<tr><td colspan="5" class="text-center py-5">No previous versions yet.</td></tr>@endforelse</tbody></table></div><div class="p-3">{{ $versions->links() }}</div></div></div>
+@endsection

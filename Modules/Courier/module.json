@@ -1,0 +1,11 @@
+{
+    "name": "Courier",
+    "alias": "courier",
+    "description": "Provider-agnostic courier/logistics integration. Isolated addon: no hard dependency from core; enable/disable/remove without breaking the host app.",
+    "keywords": ["courier", "logistics", "shipping", "delivery"],
+    "priority": 0,
+    "providers": [
+        "Modules\\Courier\\app\\Providers\\CourierServiceProvider"
+    ],
+    "files": []
+}
