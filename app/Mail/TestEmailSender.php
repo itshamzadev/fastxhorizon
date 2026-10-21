@@ -4,11 +4,12 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use App\Mail\Concerns\UsesFastXHorizonMailIdentity;
 use Illuminate\Queue\SerializesModels;
 
 class TestEmailSender extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, UsesFastXHorizonMailIdentity;
 
     /**
      * Create a new message instance.
@@ -27,6 +28,6 @@ class TestEmailSender extends Mailable
      */
     public function build()
     {
-        return $this->subject(translate('Test_Email_Sender'))->view('email-templates.mail-tester');
+        return $this->subject(translate('Test_Email_Sender'))->view('email-templates.mail-tester')->applyFastXHorizonIdentity('info', 'info');
     }
 }

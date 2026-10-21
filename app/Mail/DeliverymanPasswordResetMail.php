@@ -4,11 +4,12 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use App\Mail\Concerns\UsesFastXHorizonMailIdentity;
 use Illuminate\Queue\SerializesModels;
 
 class DeliverymanPasswordResetMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, UsesFastXHorizonMailIdentity;
 
     /**
      * Create a new message instance.
@@ -31,6 +32,6 @@ class DeliverymanPasswordResetMail extends Mailable
     public function build()
     {
         $otp = $this->otp;
-        return $this->subject(translate('Deliveryman_Password_Reset_Mail'))->view('email-templates.delivery-man-password-reset', ['otp' => $otp]);
+        return $this->subject(translate('Deliveryman_Password_Reset_Mail'))->view('email-templates.delivery-man-password-reset', ['otp' => $otp])->applyFastXHorizonIdentity('noreply', 'support');
     }
 }

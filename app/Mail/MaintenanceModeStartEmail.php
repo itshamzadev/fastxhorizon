@@ -4,6 +4,7 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use App\Mail\Concerns\UsesFastXHorizonMailIdentity;
 use Illuminate\Mail\Mailables\Attachment;
 use Illuminate\Mail\Mailables\Content;
 use Illuminate\Mail\Mailables\Envelope;
@@ -11,7 +12,7 @@ use Illuminate\Queue\SerializesModels;
 
 class MaintenanceModeStartEmail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, UsesFastXHorizonMailIdentity;
 
     protected $data;
 
@@ -28,9 +29,7 @@ class MaintenanceModeStartEmail extends Mailable
      */
     public function envelope(): Envelope
     {
-        return new Envelope(
-            subject: $this->data['subject'],
-        );
+        return $this->fastXHorizonEnvelope($this->data['subject'], 'info', 'support');
     }
 
     /**

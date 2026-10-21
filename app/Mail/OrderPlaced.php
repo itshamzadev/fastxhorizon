@@ -4,11 +4,12 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use App\Mail\Concerns\UsesFastXHorizonMailIdentity;
 use Illuminate\Queue\SerializesModels;
 
 class OrderPlaced extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, UsesFastXHorizonMailIdentity;
 
     /**
      * Create a new message instance.
@@ -31,6 +32,6 @@ class OrderPlaced extends Mailable
     public function build()
     {
         $o_id = $this->o_id;
-        return $this->subject(translate('Order_Placed'))->view('email-templates.order-placed-v2',['id'=>$o_id]);
+        return $this->subject(translate('Order_Placed'))->view('email-templates.order-placed-v2',['id'=>$o_id])->applyFastXHorizonIdentity('orders', 'support');
     }
 }

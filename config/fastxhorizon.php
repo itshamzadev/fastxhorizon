@@ -17,6 +17,31 @@ return [
         'canonical_role_name' => 'Master Admin',
     ],
 
+    'mail_addresses' => [
+        'info' => 'info@fastxhorizon.com',
+        'support' => 'support@fastxhorizon.com',
+        'contact' => 'contact@fastxhorizon.com',
+        'orders' => 'orders@fastxhorizon.com',
+        'sellers' => 'sellers@fastxhorizon.com',
+        'resellers' => 'resellers@fastxhorizon.com',
+        'affiliates' => 'affiliates@fastxhorizon.com',
+        'returns' => 'returns@fastxhorizon.com',
+        'billing' => 'billing@fastxhorizon.com',
+        'news' => 'news@fastxhorizon.com',
+        'noreply' => 'noreply@fastxhorizon.com',
+        'security' => 'security@fastxhorizon.com',
+        'careers' => 'careers@fastxhorizon.com',
+    ],
+
+    'mail_identity_by_user_type' => [
+        'customer' => 'noreply',
+        'seller' => 'sellers',
+        'vendor' => 'sellers',
+        'delivery_man' => 'noreply',
+        'promoter' => 'affiliates',
+        'admin' => 'info',
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Production-safe presentation sync allowlist
@@ -64,20 +89,25 @@ return [
 
     'currency_code' => 'PKR',
 
+    'canonical_logo_source' => 'fastxhorizon.png',
+
+    'canonical_logo_variants' => [
+        'company/fastxhorizon-web.png' => 900,
+        'company/fastxhorizon-invoice.png' => 1000,
+        'company/fastxhorizon-mobile.png' => 450,
+        'company/fastxhorizon-footer.png' => 700,
+    ],
+
     'branding_assets' => [
-        'company/fastxhorizon-web.webp' => 'fastxhorizon-web.webp',
-        'company/fastxhorizon-invoice.png' => 'fastxhorizon-invoice.png',
-        'company/fastxhorizon-mobile.webp' => 'fastxhorizon-mobile.webp',
-        'company/fastxhorizon-footer.webp' => 'fastxhorizon-footer.webp',
         'company/fastxhorizon-favicon.png' => 'fastxhorizon-favicon.png',
         'company/fastxhorizon-loader.webp' => 'fastxhorizon-loader.webp',
     ],
 
     'branding_setting_values' => [
-        'company_web_logo' => ['image_name' => 'fastxhorizon-web.webp', 'storage' => 'public'],
+        'company_web_logo' => ['image_name' => 'fastxhorizon-web.png', 'storage' => 'public'],
         'company_web_logo_png' => ['image_name' => 'fastxhorizon-invoice.png', 'storage' => 'public'],
-        'company_mobile_logo' => ['image_name' => 'fastxhorizon-mobile.webp', 'storage' => 'public'],
-        'company_footer_logo' => ['image_name' => 'fastxhorizon-footer.webp', 'storage' => 'public'],
+        'company_mobile_logo' => ['image_name' => 'fastxhorizon-mobile.png', 'storage' => 'public'],
+        'company_footer_logo' => ['image_name' => 'fastxhorizon-footer.png', 'storage' => 'public'],
         'company_fav_icon' => ['image_name' => 'fastxhorizon-favicon.png', 'storage' => 'public'],
         'loader_gif' => ['image_name' => 'fastxhorizon-loader.webp', 'storage' => 'public'],
     ],

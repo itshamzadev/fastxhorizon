@@ -29,10 +29,43 @@ withdrawal, support-ticket, and centralized company fields such as
 
 ## SMTP and sender identity
 
-The current 6Valley SMTP/SendGrid settings are reused. Configure provider,
-host, port, encryption, username, password, sender, and reply-to in the
-existing SMTP screen. Credentials are stored server-side by the existing
-settings architecture and are never written to delivery logs.
+The existing Laravel SMTP configuration is reused. Production authenticates
+with the Google Workspace mailbox `info@fastxhorizon.com`; approved aliases
+are configured centrally in `config/fastxhorizon.php`. Credentials remain
+server-side and are never written to logs or source control.
+
+Approved identities are `info`, `support`, `contact`, `orders`, `sellers`,
+`resellers`, `affiliates`, `returns`, `billing`, `news`, `noreply`,
+`security`, and `careers`. Transactional template mail selects an identity
+from the user/mail type; orders use `orders`, seller notifications use
+`sellers`, marketing campaigns use `news`, and account/system messages use
+`noreply`. Reply-To values use a response alias where appropriate.
+
+Safe identity checks can be rendered without sending:
+
+```text
+php artisan fastxhorizon:mail-test test@example.com --from=orders --render-only
+php artisan fastxhorizon:mail-test test@example.com --from=orders
+```
+
+The command validates only approved identities and never prints SMTP
+credentials.
+
+## Canonical logo and email footer
+
+`fastxhorizon.png` in the project root is the canonical logo source. The
+branding sync command derives the web, invoice, mobile, and footer PNG
+variants from it while retaining the separate favicon and loader assets.
+Mail templates resolve the active logo through the centralized
+`company_web_logo` setting.
+
+The preferred formal footer is:
+
+```text
+FASTXHORIZON (PRIVATE) LIMITED
+E-Commerce Marketplace
+fastxhorizon.com | info@fastxhorizon.com
+```
 
 ## Campaigns and consent
 

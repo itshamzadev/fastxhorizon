@@ -4,11 +4,12 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use App\Mail\Concerns\UsesFastXHorizonMailIdentity;
 use Illuminate\Queue\SerializesModels;
 
 class AddFundToWallet extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, UsesFastXHorizonMailIdentity;
 
     /**
      * Create a new message instance.
@@ -30,6 +31,6 @@ class AddFundToWallet extends Mailable
      */
     public function build()
     {
-        return $this->subject(translate('Add_Fund_To_Wallet'))->view('email-templates.add-fund')->with(['data'=>$this->data]);
+        return $this->subject(translate('Add_Fund_To_Wallet'))->view('email-templates.add-fund')->with(['data'=>$this->data])->applyFastXHorizonIdentity('billing', 'support');
     }
 }

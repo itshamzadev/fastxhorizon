@@ -4,11 +4,12 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use App\Mail\Concerns\UsesFastXHorizonMailIdentity;
 use Illuminate\Queue\SerializesModels;
 
 class OrderReceivedNotifySeller extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, UsesFastXHorizonMailIdentity;
 
     /**
      * Create a new message instance.
@@ -30,6 +31,6 @@ class OrderReceivedNotifySeller extends Mailable
     public function build()
     {
         $o_id = $this->o_id;
-        return $this->subject(translate('Order_Received_Notify_Seller'))->view('email-templates.order-received-notify-seller', ['id' => $o_id]);
+        return $this->subject(translate('Order_Received_Notify_Seller'))->view('email-templates.order-received-notify-seller', ['id' => $o_id])->applyFastXHorizonIdentity('sellers', 'sellers');
     }
 }

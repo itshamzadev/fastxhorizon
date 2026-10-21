@@ -4,11 +4,12 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use App\Mail\Concerns\UsesFastXHorizonMailIdentity;
 use Illuminate\Queue\SerializesModels;
 
 class DigitalProductOtpVerificationMail extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, UsesFastXHorizonMailIdentity;
 
     /**
      * Create a new message instance.
@@ -31,6 +32,6 @@ class DigitalProductOtpVerificationMail extends Mailable
     public function build()
     {
         $token = $this->token;
-        return $this->subject(translate('digital_Product_OTP_Verification'))->view('email-templates.digital-product-otp-verificationMail', ['token' => $token]);
+        return $this->subject(translate('digital_Product_OTP_Verification'))->view('email-templates.digital-product-otp-verificationMail', ['token' => $token])->applyFastXHorizonIdentity('noreply', 'support');
     }
 }

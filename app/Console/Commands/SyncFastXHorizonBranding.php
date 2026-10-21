@@ -56,6 +56,21 @@ class SyncFastXHorizonBranding extends Command
         }
 
         if (!$this->option('skip-assets')) {
+            $canonicalLogo = base_path($configuration['canonical_logo_source']);
+            if (!is_file($canonicalLogo)) {
+                $this->error('Missing canonical FastXHorizon logo source: ' . $configuration['canonical_logo_source']);
+                return self::FAILURE;
+            }
+            $this->line(($apply ? 'Using ' : 'Would use ') . 'canonical logo source: ' . $configuration['canonical_logo_source']);
+
+            foreach ($configuration['canonical_logo_variants'] as $target => $width) {
+                $this->line(($apply ? 'Generating ' : 'Would generate ') . $target . ' from ' . $configuration['canonical_logo_source'] . ' at width ' . $width . 'px');
+                if ($apply && !$this->writeLogoVariant($canonicalLogo, $target, (int) $width)) {
+                    $this->error('Unable to generate canonical logo variant: ' . $target);
+                    return self::FAILURE;
+                }
+            }
+
             foreach ($configuration['branding_assets'] as $target => $sourceName) {
                 $source = public_path('assets/fastxhorizon-branding/' . $sourceName);
                 if (!is_file($source)) {
@@ -118,6 +133,35 @@ class SyncFastXHorizonBranding extends Command
         return self::SUCCESS;
     }
 
+    private function writeLogoVariant(string $sourcePath, string $target, int $width): bool
+    {
+        if (!function_exists('imagecreatefrompng') || !function_exists('imagescale') || !function_exists('imagepng')) {
+            $this->error('PHP GD with PNG support is required to generate canonical logo variants.');
+            return false;
+        }
+
+        $source = @imagecreatefrompng($sourcePath);
+        if (!$source) {
+            return false;
+        }
+
+        $sourceWidth = imagesx($source);
+        $sourceHeight = imagesy($source);
+        $height = max(1, (int) round($sourceHeight * ($width / $sourceWidth)));
+        $variant = imagescale($source, $width, $height, IMG_BICUBIC);
+        imagedestroy($source);
+        if (!$variant) {
+            return false;
+        }
+
+        ob_start();
+        imagepng($variant, null, 6);
+        $contents = ob_get_clean();
+        imagedestroy($variant);
+
+        return is_string($contents) && Storage::disk('public')->put($target, $contents);
+    }
+
     /**
      * Keep the command/config contract explicit. A stale config cache must
      * fail with an actionable message instead of an Undefined array key.
@@ -136,6 +180,8 @@ class SyncFastXHorizonBranding extends Command
             'presentation_assets',
             'business_page_visuals',
             'leadership_profiles',
+            'canonical_logo_source',
+            'canonical_logo_variants',
         ];
 
         $missingKeys = array_values(array_filter(
@@ -149,6 +195,10 @@ class SyncFastXHorizonBranding extends Command
 
         if (!is_array($configuration['branding_assets']) || $configuration['branding_assets'] === []) {
             return 'Invalid FastXHorizon sync configuration: branding_assets must be a non-empty map.';
+        }
+
+        if (!is_array($configuration['canonical_logo_variants']) || $configuration['canonical_logo_variants'] === []) {
+            return 'Invalid FastXHorizon sync configuration: canonical_logo_variants must be a non-empty map.';
         }
 
         if (!is_array($configuration['branding_setting_values']) || $configuration['branding_setting_values'] === []) {

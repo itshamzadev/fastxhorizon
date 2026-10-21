@@ -36,7 +36,8 @@ class MailCenterService
             'recipient' => $recipient, 'subject' => $subject, 'type' => $type, 'status' => 'processing', 'attempts' => 1, 'queued_at' => now(),
         ]);
         try {
-            Mail::to($recipient)->send(new MailCenterMessage($html, $subject));
+            $identity = $type === 'marketing' ? 'news' : 'noreply';
+            Mail::to($recipient)->send(new MailCenterMessage($html, $subject, null, $identity));
             $log->update(['status' => 'sent', 'sent_at' => now()]);
         } catch (\Throwable $e) {
             report($e);

@@ -20,6 +20,8 @@ class ContactService
     {
         Mail::send('email-templates.customer-message', $data, function ($message) use ($contact, $request, $companyName) {
             $message->to($contact['email'], $companyName)
+                ->from(config('fastxhorizon.mail_addresses.contact'), 'FastXHorizon')
+                ->replyTo($request['email'])
                 ->subject($request['subject']);
         });
 

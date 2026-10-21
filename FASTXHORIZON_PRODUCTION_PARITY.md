@@ -21,9 +21,15 @@ php artisan fastxhorizon:sync-branding --apply
 
 Use `--skip-assets` only when the production storage deployment is handled separately.
 
-The command upserts presentation/company settings and copies the six FastXHorizon branding assets through Laravel's `public` storage disk. It also synchronizes only the existing `about-us` visual fields and the two explicitly named rows in `company_leadership_profiles`. It does not read or copy arbitrary database rows.
+The command upserts presentation/company settings and derives the web, invoice,
+mobile, and footer PNG logo variants from the canonical root
+`fastxhorizon.png` through Laravel's `public` storage disk. It also copies only
+the separate favicon and loader assets, synchronizes only the existing
+`about-us` visual fields, and updates the two explicitly named rows in
+`company_leadership_profiles`. It does not read or copy arbitrary database
+rows.
 
-The allowlist includes company identity, public contact details, reserved-company registration fields, business mode, currency presentation, homepage section presentation settings, the six branding references, the three existing About Us theme images, and these two leadership profiles:
+The allowlist includes company identity, public contact details, reserved-company registration fields, business mode, currency presentation, homepage section presentation settings, the canonical logo-derived references plus favicon/loader, the three existing About Us theme images, and these two leadership profiles:
 
 | Record | Blade source | Photo value |
 |---|---|---|

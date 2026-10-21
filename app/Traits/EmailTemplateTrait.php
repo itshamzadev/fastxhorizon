@@ -66,6 +66,8 @@ trait EmailTemplateTrait
                 orderId: $data['orderId'] ?? null
             );
             $data['send-mail'] = true;
+            $data['user_type'] = $userType;
+            $data['mail_identity'] = config('fastxhorizon.mail_identity_by_user_type.' . $userType, 'noreply');
             if ($template['status'] == 1) {
                 try {
                     Mail::to($sendMailTo)->send(new SendMail($data, $template, $socialMedia));

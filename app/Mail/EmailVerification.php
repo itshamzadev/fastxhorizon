@@ -4,11 +4,12 @@ namespace App\Mail;
 
 use Illuminate\Bus\Queueable;
 use Illuminate\Mail\Mailable;
+use App\Mail\Concerns\UsesFastXHorizonMailIdentity;
 use Illuminate\Queue\SerializesModels;
 
 class EmailVerification extends Mailable
 {
-    use Queueable, SerializesModels;
+    use Queueable, SerializesModels, UsesFastXHorizonMailIdentity;
 
     /**
      * Create a new message instance.
@@ -29,6 +30,6 @@ class EmailVerification extends Mailable
      */
     public function build()
     {
-        return $this->subject(translate('Email_Verification'))->view('email-templates.email-verification', ['token' => $this->token]);
+        return $this->subject(translate('Email_Verification'))->view('email-templates.email-verification', ['token' => $this->token])->applyFastXHorizonIdentity('noreply', 'support');
     }
 }
