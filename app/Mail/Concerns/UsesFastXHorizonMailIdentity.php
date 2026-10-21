@@ -14,7 +14,12 @@ trait UsesFastXHorizonMailIdentity
             throw new \RuntimeException('Invalid FastXHorizon mail identity: ' . $key);
         }
 
-        return new Address($address, 'FastXHorizon');
+        $displayName = config('fastxhorizon.mail_identity_display_names.' . $key);
+        if (!is_string($displayName) || $displayName === '') {
+            throw new \RuntimeException('Missing FastXHorizon mail identity display name: ' . $key);
+        }
+
+        return new Address($address, $displayName);
     }
 
     protected function fastXHorizonEnvelope(string $subject, string $from = 'noreply', ?string $replyTo = 'support'): Envelope

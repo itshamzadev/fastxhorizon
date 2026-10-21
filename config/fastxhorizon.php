@@ -33,6 +33,26 @@ return [
         'careers' => 'careers@fastxhorizon.com',
     ],
 
+    'mail_identity_display_names' => [
+        'info' => 'FastXHorizon - Info',
+        'support' => 'FastXHorizon - Support',
+        'contact' => 'FastXHorizon - Contact',
+        'orders' => 'FastXHorizon - Orders',
+        'sellers' => 'FastXHorizon - Sellers',
+        'resellers' => 'FastXHorizon - Resellers',
+        'affiliates' => 'FastXHorizon - Affiliates',
+        'partners' => 'FastXHorizon - Partners',
+        'returns' => 'FastXHorizon - Returns',
+        'billing' => 'FastXHorizon - Billing',
+        'news' => 'FastXHorizon - News',
+        'noreply' => 'FastXHorizon - No Reply',
+        'security' => 'FastXHorizon - Security',
+        'privacy' => 'FastXHorizon - Privacy',
+        'legal' => 'FastXHorizon - Legal',
+        'careers' => 'FastXHorizon - Careers',
+        'press' => 'FastXHorizon - Press',
+    ],
+
     'mail_identity_by_user_type' => [
         'customer' => 'noreply',
         'seller' => 'sellers',

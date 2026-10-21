@@ -20,18 +20,20 @@ class FastXHorizonMailTest extends Command
         $recipient = (string) $this->argument('recipient');
         $identity = (string) $this->option('from');
         $addresses = config('fastxhorizon.mail_addresses');
+        $displayNames = config('fastxhorizon.mail_identity_display_names');
 
         if (!filter_var($recipient, FILTER_VALIDATE_EMAIL)) {
             $this->error('The recipient must be a valid email address.');
             return self::FAILURE;
         }
 
-        if (!is_array($addresses) || !array_key_exists($identity, $addresses)) {
+        if (!is_array($addresses) || !array_key_exists($identity, $addresses)
+            || !is_array($displayNames) || !array_key_exists($identity, $displayNames)) {
             $this->error('Unknown mail identity. Use one of: ' . implode(', ', array_keys((array) $addresses)));
             return self::FAILURE;
         }
 
-        $this->line('Identity: ' . $identity . ' (' . $addresses[$identity] . ')');
+        $this->line('From: ' . $displayNames[$identity] . ' <' . $addresses[$identity] . '>');
         $this->line('Recipient: ' . $recipient);
 
         $message = new MailCenterMessage(

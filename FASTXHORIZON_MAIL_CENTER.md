@@ -36,10 +36,14 @@ server-side and are never written to logs or source control.
 
 Approved identities are `info`, `support`, `contact`, `orders`, `sellers`,
 `resellers`, `affiliates`, `returns`, `billing`, `news`, `noreply`,
-`security`, and `careers`. Transactional template mail selects an identity
-from the user/mail type; orders use `orders`, seller notifications use
-`sellers`, marketing campaigns use `news`, and account/system messages use
-`noreply`. Reply-To values use a response alias where appropriate.
+`security`, and `careers`. Their display names follow the Gmail “Send mail
+as” convention, for example `FastXHorizon - Orders`,
+`FastXHorizon - Support`, and `FastXHorizon - News`; the exact mapping is
+centralized in `config/fastxhorizon.php`. Transactional template mail selects
+an identity from the user/mail type; orders use `orders`, seller
+notifications use `sellers`, marketing campaigns use `news`, and
+account/system messages use `noreply`. Reply-To values use a response alias
+where appropriate.
 
 Safe identity checks can be rendered without sending:
 
