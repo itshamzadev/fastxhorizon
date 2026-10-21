@@ -3,8 +3,11 @@
 namespace App\Console\Commands;
 
 use App\Models\BusinessSetting;
+use App\Models\BusinessPage;
+use App\Models\CompanyLeadershipProfile;
 use App\Models\Currency;
 use Illuminate\Console\Command;
+use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\Facades\Storage;
 
 class SyncFastXHorizonBranding extends Command
@@ -57,6 +60,43 @@ class SyncFastXHorizonBranding extends Command
                 if ($apply && !Storage::disk('public')->put($target, file_get_contents($source))) {
                     $this->error('Unable to write branding asset: ' . $target);
                     return self::FAILURE;
+                }
+            }
+
+            foreach ($configuration['presentation_assets'] as $relativePath) {
+                $source = base_path($relativePath);
+                if (!is_file($source)) {
+                    $this->error('Missing source-controlled presentation asset: ' . $relativePath);
+                    return self::FAILURE;
+                }
+                $this->line(($apply ? 'Verified ' : 'Would verify ') . $relativePath . ' (source-controlled; preserved at the Blade URL)');
+            }
+        }
+
+        if (Schema::hasTable('business_pages')) {
+            foreach ($configuration['business_page_visuals'] as $slug => $visuals) {
+                $page = BusinessPage::query()->where('slug', $slug)->first();
+                if (!$page) {
+                    $this->warn('Presentation page not found; no record created: ' . $slug);
+                    continue;
+                }
+
+                $this->line(($apply ? 'Syncing ' : 'Would sync ') . 'business page visuals: ' . $slug);
+                if ($apply) {
+                    $page->fill($visuals);
+                    $page->save();
+                }
+            }
+        }
+
+        if (Schema::hasTable('company_leadership_profiles')) {
+            foreach ($configuration['leadership_profiles'] as $profile) {
+                $this->line(($apply ? 'Syncing ' : 'Would sync ') . 'leadership profile: ' . $profile['name'] . ' -> ' . $profile['photo']);
+                if ($apply) {
+                    CompanyLeadershipProfile::updateOrCreate(
+                        ['name' => $profile['name']],
+                        $profile
+                    );
                 }
             }
         }
