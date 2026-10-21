@@ -11,6 +11,12 @@ return [
         'redis_required' => filter_var(env('FASTXHORIZON_READINESS_REDIS_REQUIRED', false), FILTER_VALIDATE_BOOL),
     ],
 
+    'admin_sync' => [
+        'target_email' => 'admin@fastxhorizon.com',
+        'canonical_role_id' => 1,
+        'canonical_role_name' => 'Master Admin',
+    ],
+
     /*
     |--------------------------------------------------------------------------
     | Production-safe presentation sync allowlist

@@ -64,3 +64,14 @@ php artisan tinker --execute="echo App\\Models\\Product::count().PHP_EOL; echo A
 ```
 
 These counts are observation-only and must not be replaced with localhost counts.
+
+## Admin role parity
+
+The existing application uses `admins.admin_role_id = 1` as the canonical Master Admin path. `App\\Utils\\Helpers::module_permission_check()` and the `module:` middleware both recognize this role, while the v2 sidebar uses the same checks. The target production admin is assigned through the separate, dry-run-first command:
+
+```bash
+php artisan fastxhorizon:sync-admin
+php artisan fastxhorizon:sync-admin --apply
+```
+
+This command only ensures role ID 1 is the active `Master Admin` role and assigns the existing configured admin email. It never creates an admin account, changes a password, copies localhost admins, or imports permissions from arbitrary rows. Role ID 1 is the framework's existing super-admin mechanism; `module_access` remains `NULL` so the application can apply its built-in full-access behavior. Safepay remains disabled.
