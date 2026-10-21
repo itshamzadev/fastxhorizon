@@ -87,6 +87,17 @@ and npm run build.
   current release commit. Roll back to the prior release, rebuild caches, and
   restart workers. Never automatically roll database migrations backward.
 
+## Runtime activation configuration
+
+`config/system-addons.php` is a legacy runtime activation store. The existing
+activation flow reads this file and may rewrite its activation response after
+checking an addon, so production values must remain production-specific and
+must not be reconciled from Git. Do not overwrite it with a local checkout,
+copy production license identifiers into source control, or use
+`git reset --hard` as a deployment shortcut. Reconcile application code with a
+reviewed pull while preserving the production `config/system-addons.php` file;
+keep its legitimate licensing checks and activation state intact.
+
 ## Launch defaults
 
 - COD: verified and available.

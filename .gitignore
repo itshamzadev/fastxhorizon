@@ -82,3 +82,4 @@ public/assets/back-end/Apple-AuthKey (copy).txt
 # Local release-review artifacts and historical branding backups
 /artifacts/
 /branding-backup/
+/.well-known/acme-challenge/
