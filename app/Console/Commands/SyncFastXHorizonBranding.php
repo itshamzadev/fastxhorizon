@@ -23,6 +23,13 @@ class SyncFastXHorizonBranding extends Command
         $configuration = config('fastxhorizon');
         $apply = (bool) $this->option('apply');
 
+        $configurationError = $this->validateConfiguration($configuration);
+        if ($configurationError !== null) {
+            $this->error($configurationError);
+            $this->line('If the source config contains the key, run: php artisan optimize:clear');
+            return self::FAILURE;
+        }
+
         $this->info($apply ? 'Applying FastXHorizon presentation sync.' : 'Dry run only; no database or files will be changed.');
         $this->warn('Catalog, sellers, customers, reviews, orders, wallets, coupons, inventory and payment records are never part of this command.');
 
@@ -109,5 +116,73 @@ class SyncFastXHorizonBranding extends Command
         }
 
         return self::SUCCESS;
+    }
+
+    /**
+     * Keep the command/config contract explicit. A stale config cache must
+     * fail with an actionable message instead of an Undefined array key.
+     */
+    private function validateConfiguration(mixed $configuration): ?string
+    {
+        if (!is_array($configuration)) {
+            return 'Invalid FastXHorizon sync configuration: config(fastxhorizon) must be an array.';
+        }
+
+        $requiredKeys = [
+            'settings',
+            'currency_code',
+            'branding_assets',
+            'branding_setting_values',
+            'presentation_assets',
+            'business_page_visuals',
+            'leadership_profiles',
+        ];
+
+        $missingKeys = array_values(array_filter(
+            $requiredKeys,
+            static fn (string $key): bool => !array_key_exists($key, $configuration)
+        ));
+
+        if ($missingKeys !== []) {
+            return 'Invalid FastXHorizon sync configuration: missing required key(s): ' . implode(', ', $missingKeys) . '.';
+        }
+
+        if (!is_array($configuration['branding_assets']) || $configuration['branding_assets'] === []) {
+            return 'Invalid FastXHorizon sync configuration: branding_assets must be a non-empty map.';
+        }
+
+        if (!is_array($configuration['branding_setting_values']) || $configuration['branding_setting_values'] === []) {
+            return 'Invalid FastXHorizon sync configuration: branding_setting_values must be a non-empty map.';
+        }
+
+        if (!is_array($configuration['presentation_assets'])) {
+            return 'Invalid FastXHorizon sync configuration: presentation_assets must be an array of source paths.';
+        }
+
+        if (!is_array($configuration['business_page_visuals'])) {
+            return 'Invalid FastXHorizon sync configuration: business_page_visuals must be a map.';
+        }
+
+        if (!is_array($configuration['leadership_profiles'])) {
+            return 'Invalid FastXHorizon sync configuration: leadership_profiles must be an array.';
+        }
+
+        $profileFields = ['name', 'role', 'photo', 'bio', 'portfolio_url', 'display_order', 'is_active'];
+        foreach ($configuration['leadership_profiles'] as $index => $profile) {
+            if (!is_array($profile)) {
+                return "Invalid FastXHorizon sync configuration: leadership_profiles[$index] must be an array.";
+            }
+
+            $missingProfileFields = array_values(array_filter(
+                $profileFields,
+                static fn (string $field): bool => !array_key_exists($field, $profile)
+            ));
+
+            if ($missingProfileFields !== []) {
+                return "Invalid FastXHorizon sync configuration: leadership_profiles[$index] is missing: " . implode(', ', $missingProfileFields) . '.';
+            }
+        }
+
+        return null;
     }
 }
