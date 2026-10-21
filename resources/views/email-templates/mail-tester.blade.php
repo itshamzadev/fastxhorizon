@@ -61,12 +61,7 @@
         <p>{{ translate('this_is_a_test_email_to_confirm_that_mail_configuration_is_working_correctly.') }} {{ translate('if_you_received_this_message,_it_means_everything_is_set_up_properly.') }}</p>
         <p>{{ translate('thank_you') }}</p>
     </div>
-    <div class="footer">
-        <p>{{ translate('best_regards') }},</p>
-        <p>{{ $companyName }}</p>
-        <p><strong>{{ translate('phone') }}:</strong> {{ $companyPhone }}</p>
-        @if($companyEmail)<p><strong>{{ translate('Email') }}:</strong> {{ $companyEmail }}</p>@endif
-    </div>
+    @include('email-templates.partials.fastxhorizon-footer')
 </div>
 </body>
 </html>

@@ -39,5 +39,6 @@
         </div>
     </div>
 </div>
+@include('email-templates.partials.fastxhorizon-footer')
 </body>
 </html>

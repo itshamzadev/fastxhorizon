@@ -60,12 +60,7 @@ $companyLogo = getWebConfig(name: 'company_web_logo');
         <p>{{ translate('we_are_currently_undergoing_maintenance.') }} {{ translate('please_check_back_later.')}}</p>
         <p>{{translate('please_contact_us_for_any_queries,_we_are_always_happy_to_help')}}. </p>
     </div>
-    <div class="footer">
-        <p>{{ translate('best_regards') }},</p>
-        <p>{{ $companyName }}</p>
-        <p><strong>{{ translate('phone') }}:</strong> {{ $companyPhone }}</p>
-        @if($companyEmail)<p><strong>{{ translate('Email') }}:</strong> {{ $companyEmail }}</p>@endif
-    </div>
+    @include('email-templates.partials.fastxhorizon-footer')
 </div>
 </body>
 </html>

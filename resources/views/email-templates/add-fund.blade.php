@@ -156,5 +156,7 @@
     </table>
 </div>
 
+<style>body > div:last-of-type{display:none!important;}</style>
+@include('email-templates.partials.fastxhorizon-footer')
 </body>
 </html>

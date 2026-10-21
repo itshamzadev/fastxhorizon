@@ -298,5 +298,7 @@ if ($order->is_guest) {
     </table>
 </div>
 
+<style>.credit-section{display:none!important;}</style>
+@include('email-templates.partials.fastxhorizon-footer')
 </body>
 </html>

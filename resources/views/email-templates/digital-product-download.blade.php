@@ -315,5 +315,7 @@ $direction = Session::get('direction');
     </tbody>
 </table>
 
+<style>.mail-img-2,.privacy,.social,.copyright{display:none!important;}</style>
+@include('email-templates.partials.fastxhorizon-footer')
 </body>
 </html>

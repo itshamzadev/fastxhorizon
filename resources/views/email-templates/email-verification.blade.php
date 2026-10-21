@@ -34,6 +34,7 @@ $companyLogo = getWebConfig(name: 'company_web_logo');
         </div>
     </div>
 </div>
+@include('email-templates.partials.fastxhorizon-footer')
 </body>
 </html>
 

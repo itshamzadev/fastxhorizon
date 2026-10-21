@@ -44,7 +44,13 @@ class FastXHorizonMailTest extends Command
         );
 
         if ($this->option('render-only')) {
-            $message->build();
+            $rendered = $message->build()->render();
+            if (!str_contains($rendered, 'FASTXHORIZON (PRIVATE) LIMITED')
+                || !str_contains($rendered, 'fastxhorizon.com')
+                || !str_contains($rendered, 'info@fastxhorizon.com')) {
+                $this->error('Rendered mail is missing the FastXHorizon footer.');
+                return self::FAILURE;
+            }
             $this->info('Message rendered successfully; nothing was sent.');
             return self::SUCCESS;
         }
