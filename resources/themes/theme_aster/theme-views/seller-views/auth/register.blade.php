@@ -4,13 +4,6 @@
 
 @push('css_or_js')
     <link rel="stylesheet" href="{{ theme_asset(path: 'assets/plugins/daterangepicker/daterangepicker.css') }}">
-    <style>
-        .create-an-account { border-radius: 24px; box-shadow: 0 18px 55px rgba(31, 55, 80, .12); }
-        .create-an-account .bg-white { border-radius: 16px !important; }
-        .create-an-account .form-control, .create-an-account .form-select { min-height: 48px; border-radius: 12px; }
-        .create-an-account .btn-primary, .create-an-account .btn--primary { min-height: 48px; border-radius: 12px; font-weight: 700; }
-        .create-an-account label { font-weight: 600; }
-    </style>
 @endpush
 
 @section('content')
