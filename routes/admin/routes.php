@@ -1268,6 +1268,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin', '
     Route::group(['prefix' => 'reseller', 'as' => 'reseller.', 'middleware' => ['module:reseller_management']], function () {
         Route::get('/', [PartnerProgramController::class, 'dashboard'])->defaults('program', 'reseller')->name('dashboard');
         Route::get('applications', [PartnerProgramController::class, 'applications'])->defaults('program', 'reseller')->name('applications');
+        Route::get('applications/{application}', [PartnerProgramController::class, 'applicationDetail'])->defaults('program', 'reseller')->name('applications.show');
+        Route::get('applications/{application}/documents/{document}', [PartnerProgramController::class, 'downloadDocument'])->defaults('program', 'reseller')->name('applications.documents');
         Route::post('applications/{application}/approve', [PartnerProgramController::class, 'approve'])->defaults('program', 'reseller')->name('applications.approve');
         Route::post('applications/{application}/reject', [PartnerProgramController::class, 'reject'])->defaults('program', 'reseller')->name('applications.reject');
         Route::get('profiles', [PartnerProgramController::class, 'profiles'])->defaults('program', 'reseller')->name('profiles');
@@ -1281,6 +1283,8 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin', '
     Route::group(['prefix' => 'affiliate', 'as' => 'affiliate.', 'middleware' => ['module:affiliate_management']], function () {
         Route::get('/', [PartnerProgramController::class, 'dashboard'])->defaults('program', 'affiliate')->name('dashboard');
         Route::get('applications', [PartnerProgramController::class, 'applications'])->defaults('program', 'affiliate')->name('applications');
+        Route::get('applications/{application}', [PartnerProgramController::class, 'applicationDetail'])->defaults('program', 'affiliate')->name('applications.show');
+        Route::get('applications/{application}/documents/{document}', [PartnerProgramController::class, 'downloadDocument'])->defaults('program', 'affiliate')->name('applications.documents');
         Route::post('applications/{application}/approve', [PartnerProgramController::class, 'approve'])->defaults('program', 'affiliate')->name('applications.approve');
         Route::post('applications/{application}/reject', [PartnerProgramController::class, 'reject'])->defaults('program', 'affiliate')->name('applications.reject');
         Route::get('profiles', [PartnerProgramController::class, 'profiles'])->defaults('program', 'affiliate')->name('profiles');

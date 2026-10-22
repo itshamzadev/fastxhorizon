@@ -13,6 +13,7 @@ use App\Models\PartnerAttribution;
 use App\Models\BusinessSetting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Storage;
 use App\Notifications\PartnerProgramNotification;
 use App\Services\PartnerProgramService;
 use Illuminate\Http\Request;
@@ -22,7 +23,24 @@ class PartnerProgramController extends Controller
     public function applications(string $program)
     {
         abort_unless(in_array($program, ['reseller', 'affiliate'], true), 404);
-        return view('admin-views.partner.applications', ['program' => $program, 'applications' => PartnerApplication::with('user')->where('program', $program)->latest()->paginate(25)]);
+        $query = PartnerApplication::with('user')->where('program', $program);
+        if (request('status')) $query->where('status', request('status'));
+        if (request('q')) $query->where(function ($q) { $q->where('display_name', 'like', '%' . request('q') . '%')->orWhere('reference', 'like', '%' . request('q') . '%')->orWhereHas('user', fn ($user) => $user->where('email', 'like', '%' . request('q') . '%')); });
+        return view('admin-views.partner.applications', ['program' => $program, 'applications' => $query->latest()->paginate(25)->withQueryString()]);
+    }
+
+    public function applicationDetail(string $program, PartnerApplication $application)
+    {
+        abort_unless($application->program === $program, 404);
+        $application->load(['user', 'reviewer', 'documents']);
+        return view('admin-views.partner.application-detail', compact('program', 'application'));
+    }
+
+    public function downloadDocument(string $program, PartnerApplication $application, \App\Models\PartnerApplicationDocument $document)
+    {
+        abort_unless($application->program === $program && $document->partner_application_id === $application->id, 404);
+        abort_unless(Storage::disk($document->disk)->exists($document->path), 404);
+        return Storage::disk($document->disk)->download($document->path, $document->original_name);
     }
 
     public function dashboard(string $program)
@@ -34,7 +52,7 @@ class PartnerProgramController extends Controller
             'applications_enabled' => (bool) $settings->setting($program, 'applications_enabled', false),
             'commission_type' => $settings->setting($program, 'commission_type', 'percentage'),
             'commission_amount' => $settings->setting($program, 'commission_amount', 0),
-            'pending_applications' => PartnerApplication::where(['program' => $program, 'status' => 'pending'])->count(),
+            'pending_applications' => PartnerApplication::where('program', $program)->whereIn('status', ['pending', 'submitted', 'under_review', 'needs_information'])->count(),
             'approved_profiles' => PartnerProfile::where(['program' => $program, 'status' => 'approved'])->count(),
             'rejected_applications' => PartnerApplication::where(['program' => $program, 'status' => 'rejected'])->count(),
             'pending_payouts' => PartnerPayoutRequest::where(['program' => $program, 'status' => 'pending'])->count(),
@@ -59,7 +77,7 @@ class PartnerProgramController extends Controller
     {
         abort_unless($application->program === $program, 404);
         $profile = $service->approveApplication($application, (int) auth('admin')->id());
-        $application->user?->notify(new PartnerProgramNotification($program, 'approved', $profile->code));
+        $application->user?->notify(new PartnerProgramNotification($program, 'approved', $profile->code, $application->reference));
         PartnerAuditEvent::create(['admin_id' => auth('admin')->id(), 'program' => $program, 'action' => 'application_approved', 'metadata' => ['application_id' => $application->id]]);
         return back()->with('success', ucfirst($program) . ' application approved.');
     }
@@ -67,8 +85,14 @@ class PartnerProgramController extends Controller
     public function reject(Request $request, string $program, PartnerApplication $application)
     {
         abort_unless($application->program === $program, 404);
-        $application->update(['status' => 'rejected', 'admin_notes' => $request->input('admin_notes'), 'reviewed_by' => auth('admin')->id(), 'reviewed_at' => now()]);
-        $application->user?->notify(new PartnerProgramNotification($program, 'rejected'));
+        $validated = $request->validate(['rejection_reason' => ['required', 'string', 'max:2000'], 'admin_notes' => ['nullable', 'string', 'max:2000']]);
+        DB::transaction(function () use ($application, $validated) {
+            $locked = PartnerApplication::whereKey($application->id)->lockForUpdate()->firstOrFail();
+            if ($locked->status === 'approved') throw new \DomainException('An approved application cannot be rejected.');
+            $locked->update(['status' => 'rejected', 'rejection_reason' => $validated['rejection_reason'], 'admin_notes' => $validated['admin_notes'] ?? null, 'reviewed_by' => auth('admin')->id(), 'reviewed_at' => now(), 'rejected_at' => now()]);
+        });
+        $application->refresh();
+        $application->user?->notify(new PartnerProgramNotification($program, 'rejected', '', $application->reference, $application->rejection_reason));
         PartnerAuditEvent::create(['admin_id' => auth('admin')->id(), 'program' => $program, 'action' => 'application_rejected', 'metadata' => ['application_id' => $application->id]]);
         return back()->with('success', ucfirst($program) . ' application rejected.');
     }
@@ -103,7 +127,7 @@ class PartnerProgramController extends Controller
         $defaults = config("fastxhorizon.partner_programs.{$program}", []);
         $settings = BusinessSetting::whereIn('type', collect($defaults)->keys()->map(fn ($key) => $program . '_' . $key))->pluck('value', 'type');
         $summary = [
-            'pending_applications' => PartnerApplication::where('program', $program)->where('status', 'pending')->count(),
+            'pending_applications' => PartnerApplication::where('program', $program)->whereIn('status', ['pending', 'submitted', 'under_review', 'needs_information'])->count(),
             'approved_profiles' => PartnerProfile::where('program', $program)->where('status', 'approved')->count(),
             'pending_payouts' => PartnerPayoutRequest::where('program', $program)->where('status', 'pending')->count(),
         ];

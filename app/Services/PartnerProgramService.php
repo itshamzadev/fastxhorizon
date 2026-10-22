@@ -33,14 +33,18 @@ class PartnerProgramService
             if ($existing && in_array($existing->status, ['pending', 'approved'], true)) {
                 throw new \DomainException('You already have an active application for this program.');
             }
-            $pending = PartnerApplication::where(['user_id' => $user->id, 'program' => $program, 'status' => 'pending'])->lockForUpdate()->first();
-            if ($pending) return $pending;
+            $pending = PartnerApplication::where('user_id', $user->id)->where('program', $program)->whereIn('status', ['pending', 'submitted', 'under_review', 'needs_information'])->lockForUpdate()->first();
+            if ($pending) throw new \DomainException('You already have an active application for this program.');
             return PartnerApplication::create([
                 'user_id' => $user->id, 'program' => $program,
+                'reference' => $this->uniqueApplicationReference($program),
                 'display_name' => $data['display_name'], 'phone' => $data['phone'] ?? $user->phone,
                 'city' => $data['city'] ?? null, 'province' => $data['province'] ?? null,
+                'country' => $data['country'] ?? null, 'national_id' => $data['national_id'] ?? null,
                 'address' => $data['address'] ?? null, 'sales_channel' => $data['sales_channel'] ?? null,
-                'reason' => $data['reason'] ?? null, 'status' => 'pending', 'submitted_at' => now(),
+                'reason' => $data['reason'] ?? null, 'business_data' => $data['business_data'] ?? null,
+                'sales_data' => $data['sales_data'] ?? null, 'status' => 'submitted', 'submitted_at' => now(),
+                'terms_accepted_at' => now(), 'terms_version' => $data['terms_version'] ?? '2026-10-22',
             ]);
         });
     }
@@ -55,7 +59,7 @@ class PartnerProgramService
                 ['user_id' => $application->user_id, 'program' => $application->program],
                 ['uuid' => (string) Str::uuid(), 'code' => $code, 'display_name' => $application->display_name, 'phone' => $application->phone, 'city' => $application->city, 'province' => $application->province, 'address' => $application->address, 'status' => 'approved', 'approved_at' => now(), 'suspended_at' => null]
             );
-            $application->update(['status' => 'approved', 'reviewed_by' => $adminId, 'reviewed_at' => now()]);
+            $application->update(['status' => 'approved', 'reviewed_by' => $adminId, 'reviewed_at' => now(), 'approved_at' => now()]);
             return $profile;
         });
     }
@@ -132,5 +136,14 @@ class PartnerProgramService
         $prefix = $program === 'reseller' ? 'RS' : 'AF';
         do { $code = $prefix . strtoupper(Str::random(8)); } while (PartnerProfile::where('code', $code)->exists());
         return $code;
+    }
+
+    private function uniqueApplicationReference(string $program): string
+    {
+        do {
+            $reference = 'FX-' . ($program === 'reseller' ? 'RS' : 'AF') . '-' . strtoupper(Str::random(10));
+        } while (PartnerApplication::where('reference', $reference)->exists());
+
+        return $reference;
     }
 }
