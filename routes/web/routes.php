@@ -61,6 +61,12 @@ Route::get('mail/unsubscribe/{token}', function (string $token) {
     return response()->view('mail.unsubscribe', ['email' => $record->email]);
 })->name('mail.unsubscribe');
 
+Route::get('reseller/login', [\App\Http\Controllers\Web\PartnerPortalAuthController::class, 'login'])->defaults('program', 'reseller')->name('reseller.login');
+Route::get('reseller/register', [\App\Http\Controllers\Web\PartnerPortalAuthController::class, 'register'])->defaults('program', 'reseller')->name('reseller.register');
+Route::post('reseller/register', [\App\Http\Controllers\Web\PartnerPortalAuthController::class, 'registerSubmit'])->defaults('program', 'reseller')->name('reseller.register.submit');
+Route::get('affiliate/login', [\App\Http\Controllers\Web\PartnerPortalAuthController::class, 'login'])->defaults('program', 'affiliate')->name('affiliate.login');
+Route::get('affiliate/register', [\App\Http\Controllers\Web\PartnerPortalAuthController::class, 'register'])->defaults('program', 'affiliate')->name('affiliate.register');
+Route::post('affiliate/register', [\App\Http\Controllers\Web\PartnerPortalAuthController::class, 'registerSubmit'])->defaults('program', 'affiliate')->name('affiliate.register.submit');
 Route::get('reseller/apply', [\App\Http\Controllers\Web\PartnerProgramController::class, 'apply'])->defaults('program', 'reseller')->name('reseller.apply');
 Route::get('affiliate/apply', [\App\Http\Controllers\Web\PartnerProgramController::class, 'apply'])->defaults('program', 'affiliate')->name('affiliate.apply');
 Route::group(['middleware' => ['customer']], function () {

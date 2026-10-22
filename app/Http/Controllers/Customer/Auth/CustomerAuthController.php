@@ -13,6 +13,7 @@ use App\Services\FirebaseService;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Contracts\View\View;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Web\PartnerPortalAuthController;
 use Brian2694\Toastr\Facades\Toastr;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Http;
@@ -232,6 +233,12 @@ class CustomerAuthController extends Controller
             CustomerManager::updateCustomerSessionData(userId: auth('customer')->id());
             CartManager::cartListSessionToDatabase();
             $this->customerRepo->updateWhere(params: ['id' => $user['id']], data: $this->customerAuthService->getCustomerLoginDataReset());
+
+            $partnerPortal = $request->input('partner_portal');
+            if (in_array($partnerPortal, ['reseller', 'affiliate'], true)) {
+                $authAttemptRedirectUrl = PartnerPortalAuthController::destination($partnerPortal, auth('customer')->user());
+                session()->forget('keep_customer_login_redirect_url');
+            }
 
             if ($request->ajax()) {
                 return response()->json([

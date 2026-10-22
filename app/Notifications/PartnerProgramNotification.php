@@ -33,7 +33,7 @@ class PartnerProgramNotification extends Notification implements ShouldQueue
         if ($this->reference !== '') $message->line('Application reference: ' . $this->reference);
         if ($this->code !== '') $message->line('Your partner code is: ' . $this->code);
         if ($this->reason !== '' && $this->state === 'rejected') $message->line('Applicant-facing reason: ' . $this->reason);
-        if ($this->state === 'approved') $message->action('Open your dashboard', route($this->program . '.dashboard'));
+        if ($this->state === 'approved') $message->line('Sign in to your partner portal: ' . route($this->program . '.login'))->action('Open your dashboard', route($this->program . '.dashboard'));
         return $message->line('Please contact support if you need assistance.');
     }
 }

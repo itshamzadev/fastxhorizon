@@ -21,7 +21,7 @@
                 @elseif(auth('customer')->check())
                     <a href="#application" class="btn btn-primary px-4">Apply to join</a>
                 @else
-                    <a href="{{ route('customer.auth.login') }}?redirect={{ urlencode(route($program.'.apply')) }}" class="btn btn-primary px-4">Log in to apply</a>
+                    <a href="{{ route($program.'.login') }}" class="btn btn-primary px-4">Log in to apply</a>
                 @endif
             </div>
             <div class="col-lg-5"><div class="card border-0 shadow-sm rounded-4 p-4"><h5>Simple, transparent growth</h5><p class="text-muted mb-0">Share. Track. Earn. Commission rates are configured by FastXHorizon and shown after approval.</p></div></div>
