@@ -68,16 +68,59 @@ class PartnerProgramController extends Controller
     public function settings(string $program)
     {
         abort_unless(in_array($program, ['reseller', 'affiliate'], true), 404);
-        $settings = BusinessSetting::whereIn('type', collect(config("fastxhorizon.partner_programs.{$program}"))->keys()->map(fn ($key) => $program . '_' . $key))->pluck('value', 'type');
-        return view('admin-views.partner.settings', compact('program', 'settings'));
+        $defaults = config("fastxhorizon.partner_programs.{$program}", []);
+        $settings = BusinessSetting::whereIn('type', collect($defaults)->keys()->map(fn ($key) => $program . '_' . $key))->pluck('value', 'type');
+        $summary = [
+            'pending_applications' => PartnerApplication::where('program', $program)->where('status', 'pending')->count(),
+            'approved_profiles' => PartnerProfile::where('program', $program)->where('status', 'approved')->count(),
+            'pending_payouts' => PartnerPayoutRequest::where('program', $program)->where('status', 'pending')->count(),
+        ];
+        return view('admin-views.partner.settings', compact('program', 'settings', 'defaults', 'summary'));
     }
 
     public function updateSettings(Request $request, string $program)
     {
         abort_unless(in_array($program, ['reseller', 'affiliate'], true), 404);
-        $request->validate(['enabled' => ['required', 'boolean'], 'applications_enabled' => ['required', 'boolean'], 'commission_type' => ['required', 'in:percentage,fixed'], 'commission_amount' => ['required', 'numeric', 'min:0'], 'attribution_days' => ['required', 'integer', 'min:1', 'max:365'], 'minimum_payout' => ['required', 'numeric', 'min:0']]);
-        foreach ($request->only(['enabled', 'applications_enabled', 'commission_type', 'commission_amount', 'attribution_days', 'minimum_payout']) as $key => $value) BusinessSetting::updateOrCreate(['type' => $program . '_' . $key], ['value' => (string) $value]);
-        PartnerAuditEvent::create(['admin_id' => auth('admin')->id(), 'program' => $program, 'action' => 'settings_updated']);
-        return back()->with('success', 'Partner program settings updated.');
+        $validated = $request->validate([
+            'enabled' => ['required', 'boolean'],
+            'applications_enabled' => ['required', 'boolean'],
+            'commission_type' => ['required', 'in:percentage,fixed'],
+            'commission_amount' => ['required', 'numeric', 'min:0'],
+            'attribution_days' => ['required', 'integer', 'min:1', 'max:365'],
+            'minimum_payout' => ['required', 'numeric', 'min:0'],
+            'payout_methods' => ['required', 'array', 'min:1'],
+            'payout_methods.*' => ['string', 'in:bank_transfer,mobile_wallet'],
+        ]);
+        if ($validated['commission_type'] === 'percentage' && (float) $validated['commission_amount'] > 100) {
+            return back()->withErrors(['commission_amount' => 'Percentage commission must be between 0 and 100.'])->withInput();
+        }
+
+        $keys = ['enabled', 'applications_enabled', 'commission_type', 'commission_amount', 'attribution_days', 'minimum_payout', 'payout_methods'];
+        $before = BusinessSetting::whereIn('type', collect($keys)->map(fn ($key) => $program . '_' . $key))->pluck('value', 'type');
+        $beforeValues = [];
+        foreach ($keys as $key) {
+            $raw = $before->get($program . '_' . $key, config("fastxhorizon.partner_programs.{$program}.{$key}"));
+            $beforeValues[$key] = $key === 'payout_methods' && is_string($raw) ? (json_decode($raw, true) ?: []) : $raw;
+        }
+        DB::transaction(function () use ($program, $validated, $keys, $beforeValues) {
+            foreach ($keys as $key) {
+                $value = $validated[$key];
+                BusinessSetting::updateOrCreate(
+                    ['type' => $program . '_' . $key],
+                    ['value' => is_array($value) ? json_encode(array_values($value), JSON_UNESCAPED_SLASHES) : (string) $value]
+                );
+            }
+            PartnerAuditEvent::create([
+                'admin_id' => auth('admin')->id(),
+                'program' => $program,
+                'action' => 'settings_updated',
+                'metadata' => ['old' => $beforeValues, 'new' => $validated],
+            ]);
+        });
+        $warning = null;
+        if ((float) $validated['commission_amount'] === 0.0) $warning = ucfirst($program) . ' commission is currently 0%. Approved partners will not earn commission until a rate is configured.';
+        elseif ((float) $validated['minimum_payout'] === 0.0) $warning = 'Minimum payout is 0. Payouts may be requested without a threshold.';
+        $redirect = back()->with('success', ucfirst($program) . ' program settings updated successfully.');
+        return $warning ? $redirect->with('warning', $warning) : $redirect;
     }
 }
