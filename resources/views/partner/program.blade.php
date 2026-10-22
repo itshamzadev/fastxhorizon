@@ -1,4 +1,4 @@
-@extends('theme-views.layouts.app')
+@extends(theme_root_path() === 'theme_aster' ? 'theme-views.layouts.app' : 'layouts.front-end.app')
 
 @section('title', 'FastXHorizon '.ucfirst($program).' Program')
 

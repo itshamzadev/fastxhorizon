@@ -448,6 +448,12 @@
                                     </a>
                                 </li>
                             @endif
+                            @if(Route::has('reseller.apply'))
+                                <li class="d-xl-none"><a href="{{ route('reseller.apply') }}" class="d-flex text-capitalize"><div class="fz-16">Reseller</div></a></li>
+                            @endif
+                            @if(Route::has('affiliate.apply'))
+                                <li class="d-xl-none"><a href="{{ route('affiliate.apply') }}" class="d-flex text-capitalize"><div class="fz-16">Affiliate</div></a></li>
+                            @endif
                         </ul>
                     </div>
 
@@ -787,6 +793,12 @@
                                     {{ translate('Auction') }}
                                 </a>
                             </li>
+                            @endif
+                            @if(Route::has('reseller.apply'))
+                                <li><a href="{{ route('reseller.apply') }}">Reseller</a></li>
+                            @endif
+                            @if(Route::has('affiliate.apply'))
+                                <li><a href="{{ route('affiliate.apply') }}">Affiliate</a></li>
                             @endif
                         </ul>
                     </div>

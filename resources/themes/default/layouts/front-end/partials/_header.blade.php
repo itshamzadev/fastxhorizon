@@ -564,6 +564,12 @@
                                 </li>
                             @endif
                         @endif
+                        @if(Route::has('reseller.apply'))
+                            <li class="nav-item"><a class="nav-link fw-semibold text-capitalize" href="{{ route('reseller.apply') }}">Reseller</a></li>
+                        @endif
+                        @if(Route::has('affiliate.apply'))
+                            <li class="nav-item"><a class="nav-link fw-semibold text-capitalize" href="{{ route('affiliate.apply') }}">Affiliate</a></li>
+                        @endif
                     </ul>
 
                      @if((getWebConfig(name: 'auction_feature_status') && !(Request::is('auction*'))))
