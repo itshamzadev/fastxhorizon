@@ -17,7 +17,7 @@
         </div>
 
         <form class="product-form text-start form-advance-validation form-advance-file-validation" enctype="multipart/form-data" id="product_form" method="POST"
-              action="{{ request('product-gallery') == 1 ? route('admin.products.add') : route('admin.products.update', $product->id) }}" novalidate="novalidate">
+              action="{{ route('admin.products.update', $product->id) }}" novalidate="novalidate">
             @csrf
             @include('admin-views.product.update._basic-setup')
             @include("admin-views.product.update._general-setup")

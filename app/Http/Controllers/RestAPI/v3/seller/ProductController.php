@@ -765,6 +765,7 @@ class ProductController extends Controller
     public function add_new(Request $request): JsonResponse
     {
         $seller = $request->seller;
+        abort_unless($seller && $seller->status === 'approved', 403, translate('seller_is_not_approved'));
 
         $validator = Validator::make($request->all(), [
             'name' => 'required',
@@ -1013,7 +1014,8 @@ class ProductController extends Controller
 
             'video_provider' => 'youtube',
             'video_url' => $request['video_url'],
-            'request_status' => getWebConfig(name: 'new_product_approval') == 1 ? 0 : 1,
+            'request_status' => app(\App\Services\SellerProductModerationService::class)
+                ->creationStatus($seller)['request_status'],
             'status' => 0,
             'shipping_cost' => $request['product_type'] == 'physical' ? Convert::usd($request['shipping_cost']) : 0,
             'multiply_qty' => ($request['product_type'] == 'physical') ? ($request['multiplyQTY'] == 1 ? 1 : 0) : 0,
@@ -1183,6 +1185,7 @@ class ProductController extends Controller
     {
         $storage = config('filesystems.disks.default') ?? 'public';
         $seller = $request->seller;
+        abort_unless($seller && $seller->status === 'approved', 403, translate('seller_is_not_approved'));
         $product = Product::with(['digitalVariation', 'seoInfo'])->withCount('reviews')->find($id);
         $oldProductData = $product;
         $validator = Validator::make($request->all(), [
@@ -1535,7 +1538,8 @@ class ProductController extends Controller
 
         if ($product['request_status'] == 2) {
             $productArray += [
-                'request_status' => 0,
+                'request_status' => app(\App\Services\SellerProductModerationService::class)
+                    ->shouldAutoApprove($seller) ? 1 : 0,
             ];
         }
 

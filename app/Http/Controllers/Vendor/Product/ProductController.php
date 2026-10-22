@@ -211,8 +211,10 @@ class ProductController extends BaseController
             return response()->json([], 200);
         }
 
-        $shopId = $this->shopRepo->getFirstWhere(params: ['seller_id' => auth('seller')->user()->id])['id'];
-        $dataArray = $service->getAddProductData(request: $request, addedBy: 'seller', shopId: $shopId);
+        $seller = auth('seller')->user();
+        abort_unless($seller && $seller->status === 'approved', 403);
+        $shopId = $this->shopRepo->getFirstWhere(params: ['seller_id' => $seller->id])['id'];
+        $dataArray = $service->getAddProductData(request: $request, addedBy: 'seller', shopId: $shopId, seller: $seller);
         $savedProduct = $this->productRepo->add(data: $dataArray);
         $this->productRepo->addRelatedTags(request: $request, product: $savedProduct);
         $this->translationRepo->add(request: $request, model: 'App\Models\Product', id: $savedProduct->id);

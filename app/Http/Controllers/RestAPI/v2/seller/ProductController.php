@@ -117,6 +117,7 @@ class ProductController extends Controller
         $data = Helpers::get_seller_by_token($request);
         if ($data['success'] == 1) {
             $seller = $data['data'];
+            abort_unless($seller->status === 'approved', 403, translate('seller_is_not_approved'));
         } else {
             return response()->json([
                 'auth-001' => translate('Your existing session token does not authorize you any more')
@@ -305,7 +306,8 @@ class ProductController extends Controller
 
         $product->video_provider = 'youtube';
         $product->video_url = $request->video_link;
-        $product->request_status = getWebConfig(name: 'new_product_approval') == 1 ? 0 : 1;
+        $product->request_status = app(\App\Services\SellerProductModerationService::class)
+            ->creationStatus($seller)['request_status'];
         $product->status = 0;
         $product->shipping_cost  = $request->product_type == 'physical' ? Convert::usd($request->shipping_cost) : 0;
         $product->multiply_qty = ($request->product_type == 'physical') ? ($request->multiplyQTY == 1 ? 1 : 0) : 0;
@@ -358,6 +360,7 @@ class ProductController extends Controller
         $data = Helpers::get_seller_by_token($request);
         if ($data['success'] == 1) {
             $seller = $data['data'];
+            abort_unless($seller->status === 'approved', 403, translate('seller_is_not_approved'));
         } else {
             return response()->json([
                 'auth-001' => translate('Your existing session token does not authorize you any more')
@@ -570,7 +573,8 @@ class ProductController extends Controller
         $product->video_url = $request->video_link;
 
         if ($product->request_status == 2) {
-            $product->request_status = 0;
+            $product->request_status = app(\App\Services\SellerProductModerationService::class)
+                ->shouldAutoApprove($seller) ? 1 : 0;
         }
         $product->save();
 

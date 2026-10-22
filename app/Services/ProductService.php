@@ -5,6 +5,8 @@ namespace App\Services;
 
 use App\Events\RestockProductNotificationEvent;
 use App\Models\Color;
+use App\Models\Product;
+use App\Models\Seller;
 use App\Traits\FileManagerTrait;
 use Illuminate\Support\Str;
 use Rap2hpoutre\FastExcel\FastExcel;
@@ -511,7 +513,7 @@ class ProductService
         ];
     }
 
-    public function getAddProductData(object $request, string $addedBy, int|string $shopId): array
+    public function getAddProductData(object $request, string $addedBy, int|string $shopId, ?Seller $seller = null): array
     {
         $storage = config('filesystems.disks.default') ?? 'public';
         $processedImages = $this->getProcessedImages(request: $request); //once the images are processed do not call this function again just use the variable
@@ -532,7 +534,7 @@ class ProductService
         $digitalFileOptions = $this->getDigitalVariationOptions(request: $request);
         $digitalFileCombinations = $this->getDigitalVariationCombinations(arrays: $digitalFileOptions);
 
-        return [
+        $data = [
             'added_by' => $addedBy,
             'user_id' => $addedBy == 'admin' ? auth('admin')->id() : auth('seller')->id(),
             'shop_id' => $shopId,
@@ -581,6 +583,13 @@ class ProductService
             'meta_description' => $request['meta_description'],
             'meta_image' => $request->has('meta_image') ? $this->upload(dir: 'product/meta/', format: 'webp', image: $request['meta_image']) : $request->existing_meta_image,
         ];
+
+        if ($addedBy === 'seller') {
+            $seller ??= auth('seller')->user();
+            $data = app(SellerProductModerationService::class)->applyCreationStatus($data, $seller);
+        }
+
+        return $data;
     }
 
     public function getUpdateProductData(object $request, object $product, string $updateBy): array
@@ -684,6 +693,14 @@ class ProductService
             $dataArray += [
                 'request_status' => 0
             ];
+        }
+
+        if ($updateBy === 'seller') {
+            $dataArray = app(SellerProductModerationService::class)->applySellerEditStatus(
+                $dataArray,
+                $product instanceof Product ? $product : Product::findOrFail($product->id),
+                auth('seller')->user()
+            );
         }
         if ($updateBy == 'admin' && $product->added_by == 'seller' && ($product->request_status == 2 || $product->request_status == 0)) {
             $dataArray += [

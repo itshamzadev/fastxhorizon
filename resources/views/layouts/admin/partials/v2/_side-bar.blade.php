@@ -58,10 +58,6 @@
                         <button class="v2-pin-btn" type="button" data-pin="inhouse-products" aria-label="Pin"></button>
                     </div>
                 </a>
-                <a class="v2-nav-item {{ Request::is('admin/products/add') ? 'v2-is-active' : '' }}" data-item="add-product" href="{{ route('admin.products.add') }}">
-                    <span class="v2-nav-btn"><span class="v2-nav-label">{{ translate('add_New_Product') }}</span></span>
-                    <div class="v2-nav-right"><button class="v2-pin-btn" type="button" data-pin="add-product" aria-label="Pin"></button></div>
-                </a>
                 <a class="v2-nav-item {{ Request::is('admin/products/stock-limit-list/in_house') ? 'v2-is-active' : '' }}" data-item="limited-stock" href="{{ route('admin.products.stock-limit-list', ['in_house']) }}">
                     <span class="v2-nav-btn"><span class="v2-nav-label">{{ translate('Limited_Stock') }}</span></span>
                     <div class="v2-nav-right"><button class="v2-pin-btn" type="button" data-pin="limited-stock" aria-label="Pin"></button></div>
@@ -69,10 +65,6 @@
                 <a class="v2-nav-item {{ Request::is('admin/products/request-restock-list') ? 'v2-is-active' : '' }}" data-item="restock-requests" href="{{ route('admin.products.request-restock-list') }}">
                     <span class="v2-nav-btn"><span class="v2-nav-label">{{ translate('Request_Restock_List') }}</span></span>
                     <div class="v2-nav-right"><button class="v2-pin-btn" type="button" data-pin="restock-requests" aria-label="Pin"></button></div>
-                </a>
-                <a class="v2-nav-item {{ Request::is('admin/products/bulk-import') ? 'v2-is-active' : '' }}" data-item="bulk-import" href="{{ route('admin.products.bulk-import') }}">
-                    <span class="v2-nav-btn"><span class="v2-nav-label">{{ translate('Bulk_Import') }}</span></span>
-                    <div class="v2-nav-right"><button class="v2-pin-btn" type="button" data-pin="bulk-import" aria-label="Pin"></button></div>
                 </a>
             </div>
 
@@ -145,10 +137,6 @@
                 <a class="v2-nav-item {{ Request::is('admin/attribute*') ? 'v2-is-active' : '' }}" data-item="attributes" href="{{ route('admin.attribute.view') }}">
                     <span class="v2-nav-btn"><span class="v2-nav-label">{{ translate('product_Attribute_Setup') }}</span></span>
                     <div class="v2-nav-right"><button class="v2-pin-btn" type="button" data-pin="attributes" aria-label="Pin"></button></div>
-                </a>
-                <a class="v2-nav-item {{ Request::is('admin/products/product-gallery') ? 'v2-is-active' : '' }}" data-item="product-gallery" href="{{ route('admin.products.product-gallery') }}">
-                    <span class="v2-nav-btn"><span class="v2-nav-label">{{ translate('Product_Gallery') }}</span></span>
-                    <div class="v2-nav-right"><button class="v2-pin-btn" type="button" data-pin="product-gallery" aria-label="Pin"></button></div>
                 </a>
             </div>
         </div>

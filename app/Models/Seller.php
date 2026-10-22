@@ -78,6 +78,8 @@ class Seller extends Authenticatable
         'pos_status'             => 'integer',
         'cm_firebase_token'      => 'string',
         'cm_firebase_token_web'  => 'string',
+        'is_verified'           => 'boolean',
+        'auto_approve_products' => 'boolean',
     ];
 
     protected $hidden = [

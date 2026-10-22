@@ -16,7 +16,7 @@
         </div>
 
         <form class="product-form text-start"
-              action="{{ request('product-gallery')==1? route('admin.products.add') : route('admin.products.update', $product->id) }}"
+              action="{{ route('admin.products.update', $product->id) }}"
               method="post"
               enctype="multipart/form-data" id="product_form">
             @csrf

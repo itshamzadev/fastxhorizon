@@ -294,8 +294,8 @@
                         </span>
                     </a>
                 </li>
-                <li class="{{ (Request::is('admin/products/list/in-house*') || Request::is('admin/products/bulk-import') || Request::is('admin/products/request-restock-list')  || (Request::is('admin/products/add')) || (Request::is('admin/products/view/in-house/*')) || (Request::is('admin/products/barcode/*'))|| (Request::is('admin/products/stock-limit-list/in_house')) || (Request::is('admin/products/update/*') || request()->has('product-gallery'))) ? 'sub-menu-opened' : '' }}">
-                    <a class="nav-link nav-link-toggle {{ (Request::is('admin/products/list/in-house*') || Request::is('admin/products/bulk-import') || Request::is('admin/products/request-restock-list')  || (Request::is('admin/products/add')) || (Request::is('admin/products/view/in-house/*')) || (Request::is('admin/products/barcode/*'))|| Request::is('admin/products/stock-limit-list/in_house') || (Request::is('admin/products/update/*') || request()->has('product-gallery'))) ? 'active' : '' }}"
+                <li class="{{ (Request::is('admin/products/list/in-house*') || Request::is('admin/products/request-restock-list') || (Request::is('admin/products/view/in-house/*')) || (Request::is('admin/products/barcode/*'))|| (Request::is('admin/products/stock-limit-list/in_house')) || (Request::is('admin/products/update/*'))) ? 'sub-menu-opened' : '' }}">
+                    <a class="nav-link nav-link-toggle {{ (Request::is('admin/products/list/in-house*') || Request::is('admin/products/request-restock-list') || (Request::is('admin/products/view/in-house/*')) || (Request::is('admin/products/barcode/*'))|| Request::is('admin/products/stock-limit-list/in_house') || (Request::is('admin/products/update/*'))) ? 'active' : '' }}"
                        href="javascript:" title="{{ translate('In_House_Products') }}">
                         <i class="fi fi-sr-box-open"></i>
                         <span
@@ -321,21 +321,9 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link {{ Request::is('admin/products/add') || (Request::is('admin/products/update/*') || request()->has('product-gallery')) ? 'active' : '' }}"
-                               href="{{ route('admin.products.add') }}" title="{{ translate('add_New_Product') }}">
-                                <span class="text-truncate">{{ translate('add_New_Product') }}</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
                             <a class="nav-link {{ Request::is('admin/products/stock-limit-list/in_house') ? 'active' : '' }}"
                                href="{{ route('admin.products.stock-limit-list', ['in_house']) }}" title="{{ translate('Limited_stock') }}">
                                 <span class="text-truncate">{{ translate('Limited_Stock') }}</span>
-                            </a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ Request::is('admin/products/bulk-import') ? 'active' : '' }}"
-                               href="{{ route('admin.products.bulk-import') }}" title="{{ translate('bulk_import') }}">
-                                <span class="text-truncate">{{ translate('Bulk_Import') }}</span>
                             </a>
                         </li>
                         <li class="nav-item">
@@ -412,15 +400,6 @@
                             </a>
                         </li>
                     </ul>
-                </li>
-                <li>
-                    <a class="nav-link {{ Request::is('admin/products/product-gallery') ? 'active' : '' }}"
-                       href="{{ route('admin.products.product-gallery') }}" title="{{ translate('Product_Gallery') }}">
-                        <i class="fi fi-sr-boxes"></i>
-                        <span class="aside-mini-hidden-element text-truncate">
-                            {{ translate('Product_Gallery') }}
-                        </span>
-                    </a>
                 </li>
             @endif
 

@@ -35,6 +35,8 @@ use App\Exports\VendorWithdrawRequest;
 use App\Events\VendorRegistrationEvent;
 use App\Http\Controllers\BaseController;
 use App\Events\WithdrawStatusUpdateEvent;
+use App\Models\Seller;
+use App\Models\SellerSettingAudit;
 use Devrabiul\ToastMagic\Facades\ToastMagic;
 use App\Contracts\Repositories\ShopRepositoryInterface;
 use App\Contracts\Repositories\OrderRepositoryInterface;
@@ -544,6 +546,38 @@ class VendorController extends BaseController
 
     public function updateSetting(Request $request, $id): RedirectResponse
     {
+        if ($request->has('seller_moderation_update')) {
+            $seller = Seller::findOrFail($id);
+            $changes = [
+                'is_verified' => $request->boolean('is_verified'),
+                'auto_approve_products' => $request->boolean('auto_approve_products'),
+            ];
+
+            DB::transaction(function () use ($seller, $changes): void {
+                foreach ($changes as $setting => $value) {
+                    $oldValue = (bool) $seller->{$setting};
+                    if ($oldValue === $value) {
+                        continue;
+                    }
+
+                    $seller->{$setting} = $value;
+                    if (Schema::hasTable('seller_setting_audits')) {
+                        SellerSettingAudit::create([
+                            'seller_id' => $seller->id,
+                            'admin_id' => auth('admin')->id(),
+                            'setting' => $setting,
+                            'old_value' => $oldValue,
+                            'new_value' => $value,
+                        ]);
+                    }
+                }
+                $seller->save();
+            });
+
+            ToastMagic::success('Seller verification and product moderation settings updated.');
+            return redirect()->back();
+        }
+
         if ($request->has('commission')) {
             request()->validate([
                 'commission' => 'required|numeric|min:1',

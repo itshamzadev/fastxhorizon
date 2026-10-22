@@ -58,7 +58,6 @@
                                         <i class="fi fi-sr-bulb text-info fs-16"></i>
                                        <span>
                                             {{ translate('to_add_new_digital_product_for_your_shop_visit') }}
-                                            <a href="{{ route('admin.products.add') }}" target="_blank" class="text-decoration-underline fw-semibold">{{ translate('Add_New_Product') }}</a>
                                             {{ translate('page') }}.
                                         </span>
                                     </div>

@@ -150,6 +150,14 @@
                                 </td>
                                 <td>
                                     {!! $seller->status=='approved'?'<label class="badge badge-success text-bg-success">'.translate('active').'</label>':'<label class="badge badge-danger text-bg-danger">'.translate('inactive').'</label>' !!}
+                                    <div class="mt-1 d-flex flex-wrap gap-1">
+                                        @if($seller->is_verified)
+                                            <span class="badge badge-info text-bg-info">Verified</span>
+                                        @endif
+                                        <span class="badge {{ $seller->auto_approve_products ? 'badge-success text-bg-success' : 'badge-secondary text-bg-secondary' }}">
+                                            {{ $seller->auto_approve_products ? 'Auto Approval' : 'Manual Approval' }}
+                                        </span>
+                                    </div>
                                 </td>
                                 <td class="text-center">
                                     <a href="{{ route('admin.vendors.view', ['id'=>$seller['id'], 'tab'=>'product']) }}"

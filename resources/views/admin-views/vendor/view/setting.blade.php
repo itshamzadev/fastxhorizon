@@ -86,6 +86,45 @@
 
         <div class="row g-3">
             <div class="col-md-6">
+                <form action="{{ route('admin.vendors.update-setting',['id'=>$seller['id']]) }}" method="post">
+                    @csrf
+                    <input type="hidden" name="seller_moderation_update" value="1">
+                    <div class="card h-100">
+                        <div class="card-header">
+                            <h4 class="mb-0">Seller Verification &amp; Product Moderation</h4>
+                        </div>
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center gap-10 form-control mb-3">
+                                <div>
+                                    <strong>Verified Seller</strong>
+                                    <small class="d-block text-muted">Marks this seller as verified by FastXHorizon.</small>
+                                </div>
+                                <label class="switcher" for="seller-is-verified">
+                                    <input type="hidden" name="is_verified" value="0">
+                                    <input class="switcher_input" type="checkbox" value="1" name="is_verified" id="seller-is-verified" {{ $seller->is_verified ? 'checked' : '' }}>
+                                    <span class="switcher_control"></span>
+                                </label>
+                            </div>
+                            <div class="d-flex justify-content-between align-items-center gap-10 form-control mb-3">
+                                <div>
+                                    <strong>Auto Approve Products</strong>
+                                    <small class="d-block text-muted">Valid products from this approved seller bypass manual approval.</small>
+                                </div>
+                                <label class="switcher" for="seller-auto-approve">
+                                    <input type="hidden" name="auto_approve_products" value="0">
+                                    <input class="switcher_input" type="checkbox" value="1" name="auto_approve_products" id="seller-auto-approve" {{ $seller->auto_approve_products ? 'checked' : '' }}>
+                                    <span class="switcher_control"></span>
+                                </label>
+                            </div>
+                            @if ($seller->auto_approve_products && !$seller->is_verified)
+                                <small class="badge badge-warning text-bg-warning text-wrap mb-3">Auto approval is enabled for an unverified seller. Review this combination carefully.</small>
+                            @endif
+                            <button type="submit" class="btn btn-primary">Save seller controls</button>
+                        </div>
+                    </div>
+                </form>
+            </div>
+            <div class="col-md-6">
                 <form action="{{ route('admin.vendors.update-setting',['id'=>$seller['id']]) }}" method="post" id="update-setting-form-0">
                     @csrf
                     <div class="card">

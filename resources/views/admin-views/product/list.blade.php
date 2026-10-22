@@ -70,12 +70,6 @@
                                     @endif
                                 </div>
 
-                                @if ($type == 'in_house')
-                                    <a href="{{ route('admin.products.add') }}" class="btn btn-primary">
-                                        <i class="fi fi-sr-add"></i>
-                                        <span class="text">{{ translate('Add_New_Product') }}</span>
-                                    </a>
-                                @endif
                             </div>
                         </div>
                     </div>
@@ -87,6 +81,9 @@
                             <tr>
                                 <th>{{ translate('SL') }}</th>
                                 <th>{{ translate('product Name') }}</th>
+                                @if ($type == 'seller')
+                                    <th>{{ translate('vendor_name') }}</th>
+                                @endif
                                 <th class="text-center">{{ translate('product Type') }}</th>
                                 <th class="text-center">{{ translate('unit_price') }}</th>
                                 <th class="text-center">{{ translate('stock') }}</th>
@@ -147,6 +144,16 @@
                                             </div>
                                         </a>
                                     </td>
+                                    @if ($type == 'seller')
+                                        <td>
+                                            <a class="text-dark text-hover-primary" href="{{ $product->seller ? route('admin.vendors.view', $product->seller->id) : '#' }}">
+                                                {{ $product->seller ? $product->seller->f_name.' '.$product->seller->l_name : translate('shop_not_found') }}
+                                            </a>
+                                            @if ($product->seller?->is_verified)
+                                                <span class="badge badge-info text-bg-info">Verified</span>
+                                            @endif
+                                        </td>
+                                    @endif
                                     <td class="text-center">
                                         {{ translate(str_replace('_', ' ', $product['product_type'])) }}
                                     </td>

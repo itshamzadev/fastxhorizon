@@ -6,6 +6,23 @@
 
 @section('content')
     <div class="content container-fluid">
+        @php($currentSeller = auth('seller')->user())
+        <div class="card mb-3">
+            <div class="card-body d-flex flex-wrap justify-content-between align-items-center gap-3">
+                <div>
+                    <h5 class="mb-1">Seller marketplace status</h5>
+                    <small class="text-muted">These controls are managed by FastXHorizon administrators.</small>
+                </div>
+                <div class="d-flex flex-wrap gap-2">
+                    <span class="badge {{ $currentSeller?->is_verified ? 'badge-info text-bg-info' : 'badge-secondary text-bg-secondary' }}">
+                        Verification: {{ $currentSeller?->is_verified ? 'Verified' : 'Unverified' }}
+                    </span>
+                    <span class="badge {{ $currentSeller?->auto_approve_products ? 'badge-success text-bg-success' : 'badge-secondary text-bg-secondary' }}">
+                        Product approval: {{ $currentSeller?->auto_approve_products ? 'Automatic' : 'Manual review' }}
+                    </span>
+                </div>
+            </div>
+        </div>
         <div class="page-header pb-0 border-0 mb-3">
             <div class="flex-between row align-items-center mx-1">
                 <div>

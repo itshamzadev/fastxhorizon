@@ -224,8 +224,6 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin', '
     Route::group(['prefix' => 'products', 'as' => 'products.', 'middleware' => ['module:catalog']], function () {
         Route::controller(ProductController::class)->group(function () {
             Route::get('list/{type}', 'index')->name('list');
-            Route::get('add', 'getAddView')->name('add');
-            Route::post('add', 'add')->name('store');
             Route::get('view/{addedBy}/{id}', 'getView')->name('view');
             Route::post('sku-combination', 'getSkuCombinationView')->name('sku-combination');
             Route::post('digital-variation-combination', 'getDigitalVariationCombinationView')->name('digital-variation-combination');
@@ -243,13 +241,10 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin', '
             Route::get('delete-image', 'deleteImage')->name('delete-image');
             Route::get('get-variations', 'getVariations')->name('get-variations');
             Route::post('update-quantity', 'updateQuantity')->name('update-quantity');
-            Route::get('bulk-import', 'getBulkImportView')->name('bulk-import');
-            Route::post('bulk-import', 'importBulkProduct');
             Route::get('updated-product-list/{type}', 'updatedProductList')->name('updated-product-list');
             Route::post('updated-shipping', 'updatedShipping')->name('updated-shipping');
             Route::post('deny', 'deny')->name('deny');
             Route::post('approve-status', 'approveStatus')->name('approve-status');
-            Route::get('product-gallery', 'getProductGalleryView')->name('product-gallery');
             Route::get('stock-limit-status/{type}', 'getStockLimitStatus')->name('stock-limit-status');
             Route::post('delete-preview-file', 'deletePreviewFile')->name('delete-preview-file');
             Route::get('request-restock-list', 'getRequestRestockListView')->name('request-restock-list');

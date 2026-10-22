@@ -769,6 +769,9 @@
                                                         class="ms-2 w-0 flex-grow">
                                                         <h2 class="fs-15 mb-2">
                                                             {{ $product->seller->shop->name }}
+                                                            @if($product->seller->is_verified)
+                                                                <span class="badge badge-primary ms-1" title="Verified Seller">Verified</span>
+                                                            @endif
                                                         </h2>
                                                         @if(checkVendorAbility(type: 'vendor', status: 'temporary_close', vendor: $product->seller->shop))
                                                             <span class="badge-danger fs-12 px-3 rounded-full small">

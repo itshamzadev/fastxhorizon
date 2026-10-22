@@ -814,6 +814,9 @@
                                                 <div class="d-flex flex-column gap-1 justify-content-start">
                                                     <h2 class="cursor-pointer h5 mb-1 link-hover-base">
                                                         {{ $product->seller->shop->name }}
+                                                        @if($product->seller->is_verified)
+                                                            <span class="badge bg-primary ms-1 align-middle" title="Verified Seller">Verified</span>
+                                                        @endif
                                                     </h2>
 
                                                     @if(checkVendorAbility(type: 'vendor', status: 'temporary_close', vendor: $product?->seller?->shop))

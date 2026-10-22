@@ -134,7 +134,7 @@ class ProductController extends BaseController
                 return $query->with(['tax'])->wherehas('tax', function ($query) {
                     return $query->where('is_active', 1);
                 });
-            }], dataLimit: $paginationLimit);
+            }, 'seller.shop'], dataLimit: $paginationLimit);
 
         $sellers = $this->sellerRepo->getByStatusExcept(status: 'pending', relations: ['shop'], paginateBy: $paginationLimit);
         $brands = $this->brandRepo->getListWhere(orderBy: ['id' => 'desc'], dataLimit: 'all');
@@ -155,6 +155,7 @@ class ProductController extends BaseController
 
     public function getAddView(): View
     {
+        abort(403, 'Marketplace products must be created through an approved seller account.');
         $taxData = $this->getTaxSystemType();
         $productWiseTax = $taxData['productWiseTax'] && !$taxData['is_included'];
         $taxVats = $taxData['taxVats'];
@@ -176,6 +177,7 @@ class ProductController extends BaseController
 
     public function add(ProductAddRequest $request, ProductService $service): JsonResponse|RedirectResponse
     {
+        abort(403, 'Marketplace products must be created through an approved seller account.');
         if ($request->ajax()) {
             return response()->json([], 200);
         }
@@ -247,6 +249,7 @@ class ProductController extends BaseController
 
     public function getUpdateView(string|int $id): View|RedirectResponse
     {
+        abort_if(request()->boolean('product-gallery'), 403, 'Admin product cloning is disabled; edit an existing seller product instead.');
         $taxData = $this->getTaxSystemType();
         $productWiseTax = $taxData['productWiseTax'] && !$taxData['is_included'];
         $taxVats = $taxData['taxVats'];
@@ -777,11 +780,13 @@ class ProductController extends BaseController
 
     public function getBulkImportView(): View
     {
+        abort(403, 'Admin product import is disabled; products must be created through an approved seller account.');
         return view('admin-views.product.bulk-import');
     }
 
     public function importBulkProduct(Request $request, ProductService $service): RedirectResponse
     {
+        abort(403, 'Admin product import is disabled; products must be created through an approved seller account.');
         $request->validate([
             'products_file' => 'required'
         ]);
@@ -949,6 +954,7 @@ class ProductController extends BaseController
 
     public function getProductGalleryView(Request $request): View
     {
+        abort(403, 'Admin product gallery cloning is disabled.');
         $searchValue = $request['searchValue'];
         $filters = [
             'searchValue' => $searchValue,

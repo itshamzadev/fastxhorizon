@@ -209,12 +209,6 @@ if (!function_exists('getSetupGuideSteps')) {
                 'disabled' => checkSetupGuideCacheKey(key: 'inhouse_shop_setup', panel: 'admin'),
             ];
 
-            $steps['add_new_product'] = [
-                'title' => translate('Add_New_Product'),
-                'route' => route('admin.products.add'),
-                'checked' => checkSetupGuideCacheKey(key: 'add_new_product', panel: 'admin'),
-                'disabled' => checkSetupGuideCacheKey(key: 'add_new_product', panel: 'admin'),
-            ];
         } elseif ($panel == 'vendor') {
             $steps['shop_setup'] = [
                 'title' => translate('Shop_Setup'),

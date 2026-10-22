@@ -104,11 +104,9 @@
             'groups' => [
                 ['label' => 'Product Management', 'items' => [
                     ['label' => 'All Products', 'route' => 'admin.products.list', 'params' => ['all'], 'patterns' => ['admin/products/list/all*', 'admin/products/view*', 'admin/products/update*']],
-                    ['label' => 'Add New Product', 'route' => 'admin.products.add', 'patterns' => ['admin/products/add']],
                     ['label' => 'Seller Products', 'route' => 'admin.products.list', 'params' => ['vendor'], 'patterns' => ['admin/products/list/vendor*'], 'exclude_query' => ['request_status' => '0']],
                     ['label' => 'Seller Product Requests', 'route' => 'admin.products.list', 'params' => ['vendor', 'request_status' => '0'], 'query' => ['request_status' => '0'], 'patterns' => ['admin/products/list/vendor*']],
                     ['label' => 'Product Update Requests', 'route' => 'admin.products.updated-product-list', 'params' => ['type' => 'vendor'], 'patterns' => ['admin/products/updated-product-list*']],
-                    ['label' => 'Bulk Import', 'route' => 'admin.products.bulk-import', 'patterns' => ['admin/products/bulk-import']],
                 ]],
                 ['label' => 'Inventory', 'items' => [
                     ['label' => 'Limited Stock', 'route' => 'admin.products.stock-limit-list', 'params' => ['in_house'], 'patterns' => ['admin/products/stock-limit-list*']],
@@ -125,7 +123,6 @@
                     ['label' => 'Sub-subcategories', 'route' => 'admin.sub-sub-category.view', 'patterns' => ['admin/sub-sub-category*']],
                     ['label' => 'Brands', 'route' => 'admin.brand.list', 'patterns' => ['admin/brand*']],
                     ['label' => 'Attributes', 'route' => 'admin.attribute.view', 'patterns' => ['admin/attribute*']],
-                    ['label' => 'Product Gallery', 'route' => 'admin.products.product-gallery', 'patterns' => ['admin/products/product-gallery*']],
                 ]],
                 ['label' => 'Homepage Taxonomy', 'items' => [
                     // Contextual shortcut to the canonical Categories page. It must not
