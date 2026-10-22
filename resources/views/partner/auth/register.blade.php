@@ -21,13 +21,13 @@
 
     <form method="post" action="{{ route($program.'.register.submit') }}">
         @csrf
-        <div class="row g-3">
-            <div class="col-md-6"><label for="partner-first-name">First name</label><input id="partner-first-name" class="form-control" name="f_name" value="{{ old('f_name') }}" required autocomplete="given-name"></div>
-            <div class="col-md-6"><label for="partner-last-name">Last name</label><input id="partner-last-name" class="form-control" name="l_name" value="{{ old('l_name') }}" autocomplete="family-name"></div>
-            <div class="col-md-6"><label for="partner-email">Email</label><input id="partner-email" class="form-control" type="email" name="email" value="{{ old('email') }}" required autocomplete="email"></div>
-            <div class="col-md-6"><label for="partner-phone">Mobile</label><input id="partner-phone" class="form-control" name="phone" value="{{ old('phone') }}" required autocomplete="tel"></div>
-            <div class="col-md-6"><label for="partner-password">Password</label><input id="partner-password" class="form-control" type="password" name="password" required minlength="8" autocomplete="new-password"></div>
-            <div class="col-md-6"><label for="partner-confirm-password">Confirm password</label><input id="partner-confirm-password" class="form-control" type="password" name="con_password" required minlength="8" autocomplete="new-password"></div>
+        <div>
+            <div class="mb-3"><label for="partner-first-name">First name</label><input id="partner-first-name" class="form-control" name="f_name" value="{{ old('f_name') }}" required autocomplete="given-name"></div>
+            <div class="mb-3"><label for="partner-last-name">Last name</label><input id="partner-last-name" class="form-control" name="l_name" value="{{ old('l_name') }}" autocomplete="family-name"></div>
+            <div class="mb-3"><label for="partner-email">Email</label><input id="partner-email" class="form-control" type="email" name="email" value="{{ old('email') }}" required autocomplete="email"></div>
+            <div class="mb-3"><label for="partner-phone">Mobile</label><input id="partner-phone" class="form-control" name="phone" value="{{ old('phone') }}" required autocomplete="tel"></div>
+            <div class="mb-3"><label for="partner-password">Password</label><input id="partner-password" class="form-control" type="password" name="password" required minlength="8" autocomplete="new-password"></div>
+            <div class="mb-3"><label for="partner-confirm-password">Confirm password</label><input id="partner-confirm-password" class="form-control" type="password" name="con_password" required minlength="8" autocomplete="new-password"></div>
         </div>
         <button class="fx-auth-primary mt-4" type="submit">Create account and continue</button>
     </form>

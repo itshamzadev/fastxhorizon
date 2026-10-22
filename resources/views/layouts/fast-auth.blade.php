@@ -13,9 +13,14 @@
         .fx-auth-heading { text-align:center; margin-bottom:24px; }
         .fx-auth-heading h1 { color:var(--fx-ink); font-size:28px; font-weight:700; margin:0 0 8px; }
         .fx-auth-heading p { color:var(--fx-muted); margin:0; line-height:1.55; }
-        .fx-auth-card label { color:#374151; font-size:14px; font-weight:600; margin-bottom:7px; }
-        .fx-auth-card .form-control, .fx-auth-card .form-select { min-height:48px; border:1px solid var(--fx-border); border-radius:12px; padding:11px 14px; box-shadow:none; }
+        .fx-auth-card form { width:100%; }
+        .fx-auth-card label { display:block; width:100%; color:#374151; font-size:14px; font-weight:600; margin:0 0 7px; }
+        .fx-auth-card .form-control, .fx-auth-card .form-select { display:block; width:100%; min-height:48px; box-sizing:border-box; border:1px solid var(--fx-border); border-radius:12px; padding:11px 14px; box-shadow:none; }
         .fx-auth-card .form-control:focus, .fx-auth-card .form-select:focus { border-color:var(--fx-primary); box-shadow:0 0 0 3px rgba(22,119,255,.12); }
+        .fx-auth-card input[type="checkbox"] { width:16px; height:16px; margin:0 7px 0 0; accent-color:var(--fx-primary); vertical-align:middle; }
+        .fx-auth-remember { display:flex; width:100%; justify-content:space-between; align-items:center; gap:16px; flex-wrap:wrap; margin:0 0 18px; font-size:14px; }
+        .fx-auth-remember label { display:flex; width:auto; align-items:center; margin:0; font-weight:500; white-space:nowrap; }
+        .fx-auth-remember a { margin-left:auto; white-space:nowrap; }
         .fx-auth-primary { width:100%; min-height:48px; border:0; border-radius:12px; background:var(--fx-primary); color:#fff; font-weight:700; padding:12px 18px; transition:opacity .2s,transform .2s; }
         .fx-auth-primary:hover { color:#fff; opacity:.92; transform:translateY(-1px); }
         .fx-auth-links { text-align:center; color:var(--fx-muted); font-size:14px; }

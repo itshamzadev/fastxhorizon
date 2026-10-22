@@ -20,8 +20,8 @@
             <label for="signingVendorPassword"><span class="d-flex justify-content-between align-items-center">Password <a href="{{ route('vendor.auth.forgot-password.index') }}">Forgot password?</a></span></label>
             <input type="password" class="form-control" name="password" id="signingVendorPassword" required autocomplete="current-password">
         </div>
-        <div class="d-flex justify-content-between align-items-center mb-3 small">
-            <label class="mb-0"><input type="checkbox" name="remember" value="1"> Remember me</label>
+        <div class="fx-auth-remember">
+            <label for="seller-remember"><input id="seller-remember" type="checkbox" name="remember" value="1"> Remember me</label>
             <a href="{{ route('vendor.auth.registration.index') }}">Become a Seller</a>
         </div>
         <button type="submit" id="vendorLoginBtn" class="fx-auth-primary">Login as Seller</button>
