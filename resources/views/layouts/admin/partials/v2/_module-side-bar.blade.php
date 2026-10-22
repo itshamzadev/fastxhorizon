@@ -365,6 +365,23 @@
             ],
         ],
         [
+            'id' => 'partner-programs', 'title' => 'Partner Programs', 'permission' => Helpers::module_permission_check('people'),
+            'groups' => [
+                ['label' => 'Reseller Management', 'items' => [
+                    ['label' => 'Applications', 'route' => 'admin.partner-programs.applications', 'params' => ['reseller'], 'patterns' => ['admin/partner-programs/reseller*']],
+                    ['label' => 'Approved Resellers', 'route' => 'admin.partner-programs.profiles', 'params' => ['reseller'], 'patterns' => ['admin/partner-programs/reseller/profiles*']],
+                    ['label' => 'Reseller Payouts', 'route' => 'admin.partner-programs.payouts', 'params' => ['reseller'], 'patterns' => ['admin/partner-programs/reseller/payouts*']],
+                    ['label' => 'Reseller Settings', 'route' => 'admin.partner-programs.settings', 'params' => ['reseller'], 'patterns' => ['admin/partner-programs/reseller/settings*']],
+                ]],
+                ['label' => 'Affiliate Management', 'items' => [
+                    ['label' => 'Applications', 'route' => 'admin.partner-programs.applications', 'params' => ['affiliate'], 'patterns' => ['admin/partner-programs/affiliate*']],
+                    ['label' => 'Affiliates', 'route' => 'admin.partner-programs.profiles', 'params' => ['affiliate'], 'patterns' => ['admin/partner-programs/affiliate/profiles*']],
+                    ['label' => 'Affiliate Payouts', 'route' => 'admin.partner-programs.payouts', 'params' => ['affiliate'], 'patterns' => ['admin/partner-programs/affiliate/payouts*']],
+                    ['label' => 'Affiliate Settings', 'route' => 'admin.partner-programs.settings', 'params' => ['affiliate'], 'patterns' => ['admin/partner-programs/affiliate/settings*']],
+                ]],
+            ],
+        ],
+        [
             'id' => 'system-settings', 'title' => 'System Settings', 'permission' => Helpers::module_permission_check('system_settings') || Helpers::module_permission_check('business_settings'),
             'groups' => [
                 ['label' => 'Business', 'items' => [

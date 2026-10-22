@@ -106,6 +106,8 @@ return Application::configure(basePath: dirname(__DIR__))
             'guestCheck' => GuestMiddleware::class,
             'apiGuestCheck' => APIGuestMiddleware::class,
             'logUserBrowsingNavigation' => \App\Http\Middleware\LogUserBrowsingNavigationMiddleware::class,
+            'partner.attribution' => \App\Http\Middleware\PartnerAttributionMiddleware::class,
+            'partner.program' => \App\Http\Middleware\PartnerProgramMiddleware::class,
             'detectMobile' => \App\Http\Middleware\DetectMobile::class,
             'delivery_partner_service' => \App\Http\Middleware\DeliveryPartnerServiceMiddleware::class,
             'vendor_delivery_partner_setup' => \App\Http\Middleware\VendorDeliveryPartnerSetupMiddleware::class,

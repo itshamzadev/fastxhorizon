@@ -4,6 +4,8 @@ namespace App\Listeners;
 
 use App\Events\OrderPlacedEvent;
 use App\Models\ReferralCustomer;
+use App\Models\Order;
+use App\Services\PartnerProgramService;
 use App\Traits\EmailTemplateTrait;
 use App\Traits\PushNotificationTrait;
 
@@ -51,6 +53,12 @@ class OrderPlacedListener
         $type = $event->notification->type;
         $order = $event->notification->order;
         $this->sendOrderNotification(key: $key, type: $type, order: $order);
+
+        // Partner attribution is additive to the existing referral reward
+        // flow. It is idempotent at the partner/order/program constraint.
+        if ($order instanceof Order) {
+            app(PartnerProgramService::class)->captureOrderAttribution($order);
+        }
 
         if (!$order['is_guest'] && isset($order?->customer?->id)) {
             $getCustomer = ReferralCustomer::where('user_id', $order->customer->id)->first();

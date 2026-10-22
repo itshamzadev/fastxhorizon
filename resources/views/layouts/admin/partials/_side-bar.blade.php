@@ -627,6 +627,12 @@
                 </li>
             @endif
 
+            @if(Helpers::module_permission_check('people'))
+                <li class="nav-item nav-item_title"><small class="nav-subtitle">Partner Programs</small></li>
+                <li><a class="nav-link" href="{{ route('admin.partner-programs.applications', ['program' => 'reseller']) }}"><i class="fi fi-sr-users"></i><span class="aside-mini-hidden-element">Reseller Management</span></a></li>
+                <li><a class="nav-link" href="{{ route('admin.partner-programs.applications', ['program' => 'affiliate']) }}"><i class="fi fi-sr-share"></i><span class="aside-mini-hidden-element">Affiliate Management</span></a></li>
+            @endif
+
             @if(Helpers::module_permission_check('reports'))
                 <li class="nav-item nav-item_title
                 {{ (Request::is('admin/report/earning') ||

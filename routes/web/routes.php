@@ -61,6 +61,17 @@ Route::get('mail/unsubscribe/{token}', function (string $token) {
     return response()->view('mail.unsubscribe', ['email' => $record->email]);
 })->name('mail.unsubscribe');
 
+Route::group(['middleware' => ['customer']], function () {
+    Route::get('reseller/apply', [\App\Http\Controllers\Web\PartnerProgramController::class, 'apply'])->defaults('program', 'reseller')->name('reseller.apply');
+    Route::post('reseller/apply', [\App\Http\Controllers\Web\PartnerProgramController::class, 'submit'])->defaults('program', 'reseller')->name('reseller.apply.submit');
+    Route::get('reseller/dashboard', [\App\Http\Controllers\Web\PartnerProgramController::class, 'dashboard'])->defaults('program', 'reseller')->middleware('partner.program:reseller')->name('reseller.dashboard');
+    Route::post('reseller/payout', [\App\Http\Controllers\Web\PartnerProgramController::class, 'payout'])->defaults('program', 'reseller')->middleware('partner.program:reseller')->name('reseller.payout');
+    Route::get('affiliate/apply', [\App\Http\Controllers\Web\PartnerProgramController::class, 'apply'])->defaults('program', 'affiliate')->name('affiliate.apply');
+    Route::post('affiliate/apply', [\App\Http\Controllers\Web\PartnerProgramController::class, 'submit'])->defaults('program', 'affiliate')->name('affiliate.apply.submit');
+    Route::get('affiliate/dashboard', [\App\Http\Controllers\Web\PartnerProgramController::class, 'dashboard'])->defaults('program', 'affiliate')->middleware('partner.program:affiliate')->name('affiliate.dashboard');
+    Route::post('affiliate/payout', [\App\Http\Controllers\Web\PartnerProgramController::class, 'payout'])->defaults('program', 'affiliate')->middleware('partner.program:affiliate')->name('affiliate.payout');
+});
+
 Route::get('/image-proxy', function () {
     $url = request('url');
     if (!$url) {

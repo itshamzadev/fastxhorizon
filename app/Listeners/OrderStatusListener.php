@@ -4,6 +4,8 @@ namespace App\Listeners;
 
 use App\Events\OrderStatusEvent;
 use App\Traits\PushNotificationTrait;
+use App\Models\Order;
+use App\Services\PartnerProgramService;
 
 class OrderStatusListener
 {
@@ -31,5 +33,6 @@ class OrderStatusListener
         $type = $event->type;
         $order = $event->order;
         $this->sendOrderNotification(key: $key, type: $type, order: $order);
+        if ($order instanceof Order) app(PartnerProgramService::class)->reconcileOrderStatus($order);
     }
 }

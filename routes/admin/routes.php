@@ -103,6 +103,7 @@ use App\Http\Controllers\Admin\Deliveryman\DeliveryManCashCollectController;
 use App\Http\Controllers\Admin\Settings\StorageConnectionSettingsController;
 use App\Http\Controllers\Admin\Settings\VendorRegistrationSettingController;
 use App\Http\Controllers\Admin\Notification\PushNotificationSettingsController;
+use App\Http\Controllers\Admin\PartnerProgramController;
 
 
 Route::get('search', function () {
@@ -1251,6 +1252,17 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin', '
                 Route::post('refund-status-update', 'updateRefundStatus')->name('refund-status-update');
             });
         });
+    });
+
+    Route::group(['prefix' => 'partner-programs', 'as' => 'partner-programs.', 'middleware' => ['module:people']], function () {
+        Route::get('{program}/applications', [PartnerProgramController::class, 'applications'])->name('applications');
+        Route::post('{program}/applications/{application}/approve', [PartnerProgramController::class, 'approve'])->name('applications.approve');
+        Route::post('{program}/applications/{application}/reject', [PartnerProgramController::class, 'reject'])->name('applications.reject');
+        Route::get('{program}/profiles', [PartnerProgramController::class, 'profiles'])->name('profiles');
+        Route::get('{program}/payouts', [PartnerProgramController::class, 'payouts'])->name('payouts');
+        Route::post('{program}/payouts/{payout}/status', [PartnerProgramController::class, 'updatePayout'])->name('payouts.status');
+        Route::get('{program}/settings', [PartnerProgramController::class, 'settings'])->name('settings');
+        Route::post('{program}/settings', [PartnerProgramController::class, 'updateSettings'])->name('settings.update');
     });
 
     // Auction Time Adjustment — demo mode only, requires the Auction addon

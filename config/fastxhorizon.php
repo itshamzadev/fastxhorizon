@@ -17,6 +17,27 @@ return [
         'canonical_role_name' => 'Master Admin',
     ],
 
+    'partner_programs' => [
+        'reseller' => [
+            'enabled' => env('RESELLER_PROGRAM_ENABLED', false),
+            'applications_enabled' => env('RESELLER_APPLICATIONS_ENABLED', false),
+            'commission_type' => env('RESELLER_COMMISSION_TYPE', 'percentage'),
+            'commission_amount' => env('RESELLER_COMMISSION_AMOUNT', 0),
+            'attribution_days' => env('RESELLER_ATTRIBUTION_DAYS', 30),
+            'minimum_payout' => env('RESELLER_MINIMUM_PAYOUT', 0),
+            'payout_methods' => ['bank_transfer', 'mobile_wallet'],
+        ],
+        'affiliate' => [
+            'enabled' => env('AFFILIATE_PROGRAM_ENABLED', false),
+            'applications_enabled' => env('AFFILIATE_APPLICATIONS_ENABLED', false),
+            'commission_type' => env('AFFILIATE_COMMISSION_TYPE', 'percentage'),
+            'commission_amount' => env('AFFILIATE_COMMISSION_AMOUNT', 0),
+            'attribution_days' => env('AFFILIATE_ATTRIBUTION_DAYS', 30),
+            'minimum_payout' => env('AFFILIATE_MINIMUM_PAYOUT', 0),
+            'payout_methods' => ['bank_transfer', 'mobile_wallet'],
+        ],
+    ],
+
     'mail_addresses' => [
         'info' => 'info@fastxhorizon.com',
         'support' => 'support@fastxhorizon.com',
