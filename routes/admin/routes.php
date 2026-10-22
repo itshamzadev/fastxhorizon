@@ -1265,6 +1265,32 @@ Route::group(['prefix' => 'admin', 'as' => 'admin.', 'middleware' => ['admin', '
         Route::post('{program}/settings', [PartnerProgramController::class, 'updateSettings'])->name('settings.update');
     });
 
+    Route::group(['prefix' => 'reseller', 'as' => 'reseller.', 'middleware' => ['module:reseller_management']], function () {
+        Route::get('/', [PartnerProgramController::class, 'dashboard'])->defaults('program', 'reseller')->name('dashboard');
+        Route::get('applications', [PartnerProgramController::class, 'applications'])->defaults('program', 'reseller')->name('applications');
+        Route::post('applications/{application}/approve', [PartnerProgramController::class, 'approve'])->defaults('program', 'reseller')->name('applications.approve');
+        Route::post('applications/{application}/reject', [PartnerProgramController::class, 'reject'])->defaults('program', 'reseller')->name('applications.reject');
+        Route::get('profiles', [PartnerProgramController::class, 'profiles'])->defaults('program', 'reseller')->name('profiles');
+        Route::get('payouts', [PartnerProgramController::class, 'payouts'])->defaults('program', 'reseller')->name('payouts');
+        Route::post('payouts/{payout}/status', [PartnerProgramController::class, 'updatePayout'])->defaults('program', 'reseller')->name('payouts.status');
+        Route::get('settings', [PartnerProgramController::class, 'settings'])->defaults('program', 'reseller')->name('settings');
+        Route::post('settings', [PartnerProgramController::class, 'updateSettings'])->defaults('program', 'reseller')->name('settings.update');
+        Route::get('audit', [PartnerProgramController::class, 'audit'])->defaults('program', 'reseller')->name('audit');
+    });
+
+    Route::group(['prefix' => 'affiliate', 'as' => 'affiliate.', 'middleware' => ['module:affiliate_management']], function () {
+        Route::get('/', [PartnerProgramController::class, 'dashboard'])->defaults('program', 'affiliate')->name('dashboard');
+        Route::get('applications', [PartnerProgramController::class, 'applications'])->defaults('program', 'affiliate')->name('applications');
+        Route::post('applications/{application}/approve', [PartnerProgramController::class, 'approve'])->defaults('program', 'affiliate')->name('applications.approve');
+        Route::post('applications/{application}/reject', [PartnerProgramController::class, 'reject'])->defaults('program', 'affiliate')->name('applications.reject');
+        Route::get('profiles', [PartnerProgramController::class, 'profiles'])->defaults('program', 'affiliate')->name('profiles');
+        Route::get('payouts', [PartnerProgramController::class, 'payouts'])->defaults('program', 'affiliate')->name('payouts');
+        Route::post('payouts/{payout}/status', [PartnerProgramController::class, 'updatePayout'])->defaults('program', 'affiliate')->name('payouts.status');
+        Route::get('settings', [PartnerProgramController::class, 'settings'])->defaults('program', 'affiliate')->name('settings');
+        Route::post('settings', [PartnerProgramController::class, 'updateSettings'])->defaults('program', 'affiliate')->name('settings.update');
+        Route::get('audit', [PartnerProgramController::class, 'audit'])->defaults('program', 'affiliate')->name('audit');
+    });
+
     // Auction Time Adjustment — demo mode only, requires the Auction addon
     if (env('APP_MODE') == 'demo' && function_exists('getCheckAddonPublishedStatus') && getCheckAddonPublishedStatus(moduleName: 'Auction')) {
         Route::get('auction-time/{auction_id}', function ($auction_id) {

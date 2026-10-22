@@ -627,10 +627,23 @@
                 </li>
             @endif
 
-            @if(Helpers::module_permission_check('people'))
-                <li class="nav-item nav-item_title"><small class="nav-subtitle">Partner Programs</small></li>
-                <li><a class="nav-link" href="{{ route('admin.partner-programs.applications', ['program' => 'reseller']) }}"><i class="fi fi-sr-users"></i><span class="aside-mini-hidden-element">Reseller Management</span></a></li>
-                <li><a class="nav-link" href="{{ route('admin.partner-programs.applications', ['program' => 'affiliate']) }}"><i class="fi fi-sr-share"></i><span class="aside-mini-hidden-element">Affiliate Management</span></a></li>
+            @if(Helpers::module_permission_check('reseller_management'))
+                <li class="nav-item nav-item_title"><small class="nav-subtitle">Reseller Management</small></li>
+                <li><a class="nav-link" href="{{ route('admin.reseller.dashboard') }}"><i class="fi fi-sr-users"></i><span class="aside-mini-hidden-element">Dashboard</span></a></li>
+                <li><a class="nav-link" href="{{ route('admin.reseller.applications') }}"><i class="fi fi-sr-document"></i><span class="aside-mini-hidden-element">Applications</span></a></li>
+                <li><a class="nav-link" href="{{ route('admin.reseller.profiles') }}"><i class="fi fi-sr-user-check"></i><span class="aside-mini-hidden-element">Resellers</span></a></li>
+                <li><a class="nav-link" href="{{ route('admin.reseller.payouts') }}"><i class="fi fi-sr-wallet"></i><span class="aside-mini-hidden-element">Payout Requests</span></a></li>
+                <li><a class="nav-link" href="{{ route('admin.reseller.settings') }}"><i class="fi fi-sr-settings"></i><span class="aside-mini-hidden-element">Settings</span></a></li>
+                <li><a class="nav-link" href="{{ route('admin.reseller.audit') }}"><i class="fi fi-sr-time-past"></i><span class="aside-mini-hidden-element">Audit Logs</span></a></li>
+            @endif
+            @if(Helpers::module_permission_check('affiliate_management'))
+                <li class="nav-item nav-item_title"><small class="nav-subtitle">Affiliate Management</small></li>
+                <li><a class="nav-link" href="{{ route('admin.affiliate.dashboard') }}"><i class="fi fi-sr-share"></i><span class="aside-mini-hidden-element">Dashboard</span></a></li>
+                <li><a class="nav-link" href="{{ route('admin.affiliate.applications') }}"><i class="fi fi-sr-document"></i><span class="aside-mini-hidden-element">Applications</span></a></li>
+                <li><a class="nav-link" href="{{ route('admin.affiliate.profiles') }}"><i class="fi fi-sr-user-check"></i><span class="aside-mini-hidden-element">Affiliates</span></a></li>
+                <li><a class="nav-link" href="{{ route('admin.affiliate.payouts') }}"><i class="fi fi-sr-wallet"></i><span class="aside-mini-hidden-element">Payout Requests</span></a></li>
+                <li><a class="nav-link" href="{{ route('admin.affiliate.settings') }}"><i class="fi fi-sr-settings"></i><span class="aside-mini-hidden-element">Settings</span></a></li>
+                <li><a class="nav-link" href="{{ route('admin.affiliate.audit') }}"><i class="fi fi-sr-time-past"></i><span class="aside-mini-hidden-element">Audit Logs</span></a></li>
             @endif
 
             @if(Helpers::module_permission_check('reports'))

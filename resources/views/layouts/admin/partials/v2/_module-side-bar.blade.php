@@ -365,21 +365,26 @@
             ],
         ],
         [
-            'id' => 'partner-programs', 'title' => 'Partner Programs', 'permission' => Helpers::module_permission_check('people'),
-            'groups' => [
-                ['label' => 'Reseller Management', 'items' => [
-                    ['label' => 'Applications', 'route' => 'admin.partner-programs.applications', 'params' => ['reseller'], 'patterns' => ['admin/partner-programs/reseller*']],
-                    ['label' => 'Approved Resellers', 'route' => 'admin.partner-programs.profiles', 'params' => ['reseller'], 'patterns' => ['admin/partner-programs/reseller/profiles*']],
-                    ['label' => 'Reseller Payouts', 'route' => 'admin.partner-programs.payouts', 'params' => ['reseller'], 'patterns' => ['admin/partner-programs/reseller/payouts*']],
-                    ['label' => 'Reseller Settings', 'route' => 'admin.partner-programs.settings', 'params' => ['reseller'], 'patterns' => ['admin/partner-programs/reseller/settings*']],
-                ]],
-                ['label' => 'Affiliate Management', 'items' => [
-                    ['label' => 'Applications', 'route' => 'admin.partner-programs.applications', 'params' => ['affiliate'], 'patterns' => ['admin/partner-programs/affiliate*']],
-                    ['label' => 'Affiliates', 'route' => 'admin.partner-programs.profiles', 'params' => ['affiliate'], 'patterns' => ['admin/partner-programs/affiliate/profiles*']],
-                    ['label' => 'Affiliate Payouts', 'route' => 'admin.partner-programs.payouts', 'params' => ['affiliate'], 'patterns' => ['admin/partner-programs/affiliate/payouts*']],
-                    ['label' => 'Affiliate Settings', 'route' => 'admin.partner-programs.settings', 'params' => ['affiliate'], 'patterns' => ['admin/partner-programs/affiliate/settings*']],
-                ]],
-            ],
+            'id' => 'reseller-management', 'title' => 'Reseller Management', 'permission' => Helpers::module_permission_check('reseller_management'),
+            'groups' => [['label' => 'Reseller', 'items' => [
+                ['label' => 'Dashboard', 'route' => 'admin.reseller.dashboard', 'patterns' => ['admin/reseller']],
+                ['label' => 'Applications', 'route' => 'admin.reseller.applications', 'patterns' => ['admin/reseller/applications*']],
+                ['label' => 'Resellers', 'route' => 'admin.reseller.profiles', 'patterns' => ['admin/reseller/profiles*']],
+                ['label' => 'Payout Requests', 'route' => 'admin.reseller.payouts', 'patterns' => ['admin/reseller/payouts*']],
+                ['label' => 'Settings', 'route' => 'admin.reseller.settings', 'patterns' => ['admin/reseller/settings*']],
+                ['label' => 'Audit Logs', 'route' => 'admin.reseller.audit', 'patterns' => ['admin/reseller/audit*']],
+            ]]],
+        ],
+        [
+            'id' => 'affiliate-management', 'title' => 'Affiliate Management', 'permission' => Helpers::module_permission_check('affiliate_management'),
+            'groups' => [['label' => 'Affiliate', 'items' => [
+                ['label' => 'Dashboard', 'route' => 'admin.affiliate.dashboard', 'patterns' => ['admin/affiliate']],
+                ['label' => 'Applications', 'route' => 'admin.affiliate.applications', 'patterns' => ['admin/affiliate/applications*']],
+                ['label' => 'Affiliates', 'route' => 'admin.affiliate.profiles', 'patterns' => ['admin/affiliate/profiles*']],
+                ['label' => 'Payout Requests', 'route' => 'admin.affiliate.payouts', 'patterns' => ['admin/affiliate/payouts*']],
+                ['label' => 'Settings', 'route' => 'admin.affiliate.settings', 'patterns' => ['admin/affiliate/settings*']],
+                ['label' => 'Audit Logs', 'route' => 'admin.affiliate.audit', 'patterns' => ['admin/affiliate/audit*']],
+            ]]],
         ],
         [
             'id' => 'system-settings', 'title' => 'System Settings', 'permission' => Helpers::module_permission_check('system_settings') || Helpers::module_permission_check('business_settings'),

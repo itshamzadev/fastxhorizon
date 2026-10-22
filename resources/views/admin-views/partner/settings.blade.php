@@ -26,7 +26,7 @@
         <div class="col-md-4"><div class="card h-100"><div class="card-body"><small class="text-muted">Pending payout requests</small><h3 class="mb-0">{{ $summary['pending_payouts'] }}</h3></div></div></div>
     </div>
 
-    <form method="post" action="{{ route('admin.partner-programs.settings.update', $program) }}">
+    <form method="post" action="{{ route('admin.'.($program === 'reseller' ? 'reseller' : 'affiliate').'.settings.update') }}">
         @csrf
         <div class="row g-4">
             <div class="col-lg-6"><div class="card h-100"><div class="card-header"><h4 class="mb-0">Program status</h4></div><div class="card-body">

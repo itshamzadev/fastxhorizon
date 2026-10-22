@@ -8,6 +8,8 @@ use App\Models\PartnerProfile;
 use App\Models\PartnerPayoutRequest;
 use App\Models\PartnerLedgerTransaction;
 use App\Models\PartnerAuditEvent;
+use App\Models\PartnerCommission;
+use App\Models\PartnerAttribution;
 use App\Models\BusinessSetting;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -21,6 +23,36 @@ class PartnerProgramController extends Controller
     {
         abort_unless(in_array($program, ['reseller', 'affiliate'], true), 404);
         return view('admin-views.partner.applications', ['program' => $program, 'applications' => PartnerApplication::with('user')->where('program', $program)->latest()->paginate(25)]);
+    }
+
+    public function dashboard(string $program)
+    {
+        abort_unless(in_array($program, ['reseller', 'affiliate'], true), 404);
+        $settings = app(PartnerProgramService::class);
+        $summary = [
+            'enabled' => (bool) $settings->setting($program, 'enabled', false),
+            'applications_enabled' => (bool) $settings->setting($program, 'applications_enabled', false),
+            'commission_type' => $settings->setting($program, 'commission_type', 'percentage'),
+            'commission_amount' => $settings->setting($program, 'commission_amount', 0),
+            'pending_applications' => PartnerApplication::where(['program' => $program, 'status' => 'pending'])->count(),
+            'approved_profiles' => PartnerProfile::where(['program' => $program, 'status' => 'approved'])->count(),
+            'rejected_applications' => PartnerApplication::where(['program' => $program, 'status' => 'rejected'])->count(),
+            'pending_payouts' => PartnerPayoutRequest::where(['program' => $program, 'status' => 'pending'])->count(),
+            'paid_payouts' => PartnerPayoutRequest::where(['program' => $program, 'status' => 'paid'])->count(),
+            'pending_commission' => PartnerCommission::where(['program' => $program, 'status' => 'pending'])->sum('amount'),
+            'available_commission' => PartnerCommission::where(['program' => $program, 'status' => 'available'])->sum('amount'),
+            'paid_commission' => PartnerPayoutRequest::where(['program' => $program, 'status' => 'paid'])->sum('amount'),
+        ];
+        $summary['clicks'] = PartnerAttribution::where(['program' => $program])->whereNull('order_id')->count();
+        $summary['conversions'] = PartnerAttribution::where(['program' => $program])->whereNotNull('order_id')->count();
+        return view('admin-views.partner.dashboard', compact('program', 'summary'));
+    }
+
+    public function audit(string $program)
+    {
+        abort_unless(in_array($program, ['reseller', 'affiliate'], true), 404);
+        $events = PartnerAuditEvent::with(['admin', 'profile'])->where('program', $program)->latest()->paginate(30);
+        return view('admin-views.partner.audit', compact('program', 'events'));
     }
 
     public function approve(Request $request, string $program, PartnerApplication $application, PartnerProgramService $service)
