@@ -14,6 +14,7 @@ class PartnerProfile extends Model
     public function user(): BelongsTo { return $this->belongsTo(User::class); }
     public function applications(): HasMany { return $this->hasMany(PartnerApplication::class); }
     public function commissions(): HasMany { return $this->hasMany(PartnerCommission::class); }
+    public function attributions(): HasMany { return $this->hasMany(PartnerAttribution::class); }
     public function payouts(): HasMany { return $this->hasMany(PartnerPayoutRequest::class); }
     public function ledger(): HasMany { return $this->hasMany(PartnerLedgerTransaction::class); }
 }

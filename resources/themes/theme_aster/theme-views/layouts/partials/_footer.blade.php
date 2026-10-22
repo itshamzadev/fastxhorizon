@@ -1,3 +1,9 @@
+@php
+    $resellerPartner = \App\Support\PartnerProgramPresentation::profile('reseller');
+    $affiliatePartner = \App\Support\PartnerProgramPresentation::profile('affiliate');
+    $resellerApplication = \App\Support\PartnerProgramPresentation::application('reseller');
+    $affiliateApplication = \App\Support\PartnerProgramPresentation::application('affiliate');
+@endphp
 <footer class="footer">
     <div class="footer-bg-img">
     </div>
@@ -130,6 +136,12 @@
                                             </button>
                                         @endif
                                     </li>
+                                    @if(Route::has('reseller.apply'))
+                                        <li><a href="{{ $resellerPartner?->status === 'approved' ? route('reseller.dashboard') : route('reseller.apply') }}">{{ $resellerApplication?->status === 'pending' ? 'Reseller Application — Pending' : ($resellerPartner?->status === 'approved' ? 'Reseller Dashboard' : 'Become a Reseller') }}</a></li>
+                                    @endif
+                                    @if(Route::has('affiliate.apply'))
+                                        <li><a href="{{ $affiliatePartner?->status === 'approved' ? route('affiliate.dashboard') : route('affiliate.apply') }}">{{ $affiliateApplication?->status === 'pending' ? 'Affiliate Application — Pending' : ($affiliatePartner?->status === 'approved' ? 'Affiliate Dashboard' : 'Become an Affiliate') }}</a></li>
+                                    @endif
                                     <li>
                                         <a class="text-capitalize" href="{{ route('track-order.index') }}">
                                             {{ translate('track_order') }}

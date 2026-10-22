@@ -1,5 +1,6 @@
 @php
     use function App\Utils\customer_info;
+    use App\Support\PartnerProgramPresentation;
     $customer = customer_info();
     $customerId   = $customer?->id ?? 0;
     $firstName    = $customer?->f_name ?? 'Guest';
@@ -24,6 +25,10 @@
     $isSavedAuctionActive = request()->routeIs('auction.saved-products-list');
     $isSalesReportActive = request()->routeIs('auction.sales-report');
     $isTransactionHistoryActive = request()->routeIs('auction.transaction-history');
+    $resellerPartner = PartnerProgramPresentation::profile('reseller');
+    $affiliatePartner = PartnerProgramPresentation::profile('affiliate');
+    $resellerApplication = PartnerProgramPresentation::application('reseller');
+    $affiliateApplication = PartnerProgramPresentation::application('affiliate');
 @endphp
 <div class="col-lg-3">
     <div class="card profile-sidebar-sticky">
@@ -142,6 +147,12 @@
                                 <span>{{translate('refer_&_earn')}}</span>
                             </a>
                         </li>
+                    @endif
+                    @if(Route::has('reseller.apply'))
+                        <li class="{{ Request::is('reseller/*') ? 'active' : '' }}"><a href="{{ $resellerPartner?->status === 'approved' ? route('reseller.dashboard') : route('reseller.apply') }}"><i class="bi bi-shop me-2"></i><span>{{ $resellerApplication?->status === 'pending' ? 'Reseller Application — Pending' : ($resellerPartner?->status === 'approved' ? 'Reseller Dashboard' : 'Become a Reseller') }}</span></a></li>
+                    @endif
+                    @if(Route::has('affiliate.apply'))
+                        <li class="{{ Request::is('affiliate/*') ? 'active' : '' }}"><a href="{{ $affiliatePartner?->status === 'approved' ? route('affiliate.dashboard') : route('affiliate.apply') }}"><i class="bi bi-share me-2"></i><span>{{ $affiliateApplication?->status === 'pending' ? 'Affiliate Application — Pending' : ($affiliatePartner?->status === 'approved' ? 'Affiliate Dashboard' : 'Become an Affiliate') }}</span></a></li>
                     @endif
                     <li class="{{Request::is ('user-coupons') || Request::is('user-coupons*') ? 'active' : ''}}">
                         <a href="{{route('user-coupons')}}">

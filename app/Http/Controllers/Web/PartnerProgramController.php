@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Web;
 use App\Http\Controllers\Controller;
 use App\Services\PartnerProgramService;
 use App\Notifications\PartnerProgramNotification;
+use App\Support\PartnerProgramPresentation;
 use Illuminate\Http\Request;
 
 class PartnerProgramController extends Controller
@@ -14,7 +15,7 @@ class PartnerProgramController extends Controller
     public function apply(string $program)
     {
         abort_unless(in_array($program, ['reseller', 'affiliate'], true), 404);
-        return view('partner.program', ['program' => $program, 'profile' => auth('customer')->user() ? $this->service->profileForUser(auth('customer')->user(), $program) : null]);
+        return view('partner.program', ['program' => $program, 'profile' => PartnerProgramPresentation::profile($program), 'application' => PartnerProgramPresentation::application($program), 'enabled' => PartnerProgramPresentation::enabled($program), 'applicationsOpen' => PartnerProgramPresentation::applicationsOpen($program)]);
     }
 
     public function submit(Request $request, string $program)
@@ -32,7 +33,12 @@ class PartnerProgramController extends Controller
         $profile = request()->attributes->get('partner_profile');
         $profile->loadCount(['commissions', 'payouts']);
         $balance = $this->service->availableBalance($profile);
-        return view('partner.dashboard', compact('program', 'profile', 'balance'));
+        $pending = (float) $profile->commissions()->where('status', 'pending')->sum('amount');
+        $available = (float) $profile->commissions()->where('status', 'available')->sum('amount');
+        $paid = (float) $profile->payouts()->where('status', 'paid')->sum('amount');
+        $clicks = $profile->attributions()->whereNull('order_id')->count();
+        $recentCommissions = $profile->commissions()->with('order')->latest()->limit(5)->get();
+        return view('partner.dashboard', compact('program', 'profile', 'balance', 'pending', 'available', 'paid', 'clicks', 'recentCommissions'));
     }
 
     public function payout(Request $request, string $program)

@@ -2,8 +2,13 @@
     use App\Models\Brand;
     use App\Models\Category;
     use App\Utils\Helpers;
+    use App\Support\PartnerProgramPresentation;
     $categories = \App\Utils\CategoryManager::getCategoriesWithCountingAndPriorityWiseSorting(dataLimit: 11);
     $brands = \App\Utils\BrandManager::getActiveBrandWithCountingAndPriorityWiseSorting();
+    $resellerPartner = PartnerProgramPresentation::profile('reseller');
+    $affiliatePartner = PartnerProgramPresentation::profile('affiliate');
+    $resellerApplication = PartnerProgramPresentation::application('reseller');
+    $affiliateApplication = PartnerProgramPresentation::application('affiliate');
 @endphp
 
 @if (isset($web_config['announcement']) && $web_config['announcement']['status']==1)
@@ -821,6 +826,8 @@
                                         <li><a href="{{ route('account-oder') }}">{{ translate('My_Order') }}</a></li>
                                     @endif
                                     <li class="fs-14 fw-medium"><a href="{{ route('user-profile') }}">{{ translate('My_Profile') }}</a></li>
+                                    @if(Route::has('reseller.apply'))<li class="fs-14 fw-medium"><a href="{{ $resellerPartner?->status === 'approved' ? route('reseller.dashboard') : route('reseller.apply') }}">{{ $resellerApplication?->status === 'pending' ? 'Reseller Application — Pending' : ($resellerPartner?->status === 'approved' ? 'Reseller Dashboard' : 'Become a Reseller') }}</a></li>@endif
+                                    @if(Route::has('affiliate.apply'))<li class="fs-14 fw-medium"><a href="{{ $affiliatePartner?->status === 'approved' ? route('affiliate.dashboard') : route('affiliate.apply') }}">{{ $affiliateApplication?->status === 'pending' ? 'Affiliate Application — Pending' : ($affiliatePartner?->status === 'approved' ? 'Affiliate Dashboard' : 'Become an Affiliate') }}</a></li>@endif
                                     <li class="fs-14 fw-medium"><a href="{{ route('customer.auth.logout') }}">{{ translate('Logout') }}</a></li>
                                 </ul>
                             </div>

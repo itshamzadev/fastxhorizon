@@ -1,1 +1,46 @@
-<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ ucfirst($program) }} | FastXHorizon</title><style>body{font-family:Arial,sans-serif;background:#f5f8fb;color:#152238;margin:0}.wrap{max-width:760px;margin:50px auto;padding:28px;background:#fff;border-radius:14px;box-shadow:0 8px 30px #102a4314}label{display:block;margin:14px 0 6px;font-weight:600}input,textarea{width:100%;box-sizing:border-box;padding:11px;border:1px solid #d5dee8;border-radius:8px}button{margin-top:20px;background:#0875d1;color:#fff;border:0;padding:12px 20px;border-radius:8px;cursor:pointer}.ok{padding:12px;background:#e9f8ef;color:#176b38}.err{padding:12px;background:#fff0f0;color:#9b2525}</style></head><body><main class="wrap"><h1>FastXHorizon {{ ucfirst($program) }} Program</h1>@if(session('success'))<div class="ok">{{ session('success') }}</div>@endif@if($errors->any())<div class="err">{{ $errors->first() }}</div>@endif@if($profile)<p>Your current status is <strong>{{ ucfirst($profile->status) }}</strong>.</p>@else<form method="post" action="{{ route($program.'.apply.submit') }}">@csrf<label>Display name</label><input name="display_name" value="{{ old('display_name', auth('customer')->user()->name ?? '') }}" required><label>Phone</label><input name="phone" value="{{ old('phone', auth('customer')->user()->phone ?? '') }}"><label>City</label><input name="city" value="{{ old('city') }}"><label>Province</label><input name="province" value="{{ old('province') }}"><label>Sales channel</label><input name="sales_channel" value="{{ old('sales_channel') }}"><label>Address</label><textarea name="address">{{ old('address') }}</textarea><label>Why would you like to join?</label><textarea name="reason">{{ old('reason') }}</textarea><button type="submit">Submit application</button></form>@endif</main></body></html>
+@extends('theme-views.layouts.app')
+
+@section('title', 'FastXHorizon '.ucfirst($program).' Program')
+
+@section('content')
+<section class="py-5 bg-section-secondary">
+    <div class="container py-lg-4">
+        <div class="row align-items-center g-4 mb-5">
+            <div class="col-lg-7">
+                <span class="badge rounded-pill bg-primary text-white mb-3">FastXHorizon Partner Network</span>
+                <h1 class="display-5 fw-bold mb-3">Build with the FastXHorizon {{ ucfirst($program) }} Program</h1>
+                <p class="fs-5 text-muted mb-4">Promote products you believe in, share your unique link, and grow with a marketplace built for customers and partners.</p>
+                @if(!$enabled)
+                    <div class="alert alert-info">The {{ $program }} program is coming soon. Applications are not currently available.</div>
+                @elseif(!$applicationsOpen)
+                    <div class="alert alert-warning">Applications are currently closed. Please check back later.</div>
+                @elseif($application && $application->status === 'pending')
+                    <div class="alert alert-info">Your {{ $program }} application is pending review.</div>
+                @elseif($profile)
+                    <a href="{{ route($program.'.dashboard') }}" class="btn btn-primary px-4">Open your {{ ucfirst($program) }} dashboard</a>
+                @elseif(auth('customer')->check())
+                    <a href="#application" class="btn btn-primary px-4">Apply to join</a>
+                @else
+                    <a href="{{ route('customer.auth.login') }}?redirect={{ urlencode(route($program.'.apply')) }}" class="btn btn-primary px-4">Log in to apply</a>
+                @endif
+            </div>
+            <div class="col-lg-5"><div class="card border-0 shadow-sm rounded-4 p-4"><h5>Simple, transparent growth</h5><p class="text-muted mb-0">Share. Track. Earn. Commission rates are configured by FastXHorizon and shown after approval.</p></div></div>
+        </div>
+        <div class="row g-4 mb-5">
+            <div class="col-md-4"><div class="card h-100 border-0 shadow-sm rounded-4 p-4"><h5>How it works</h5><p class="text-muted mb-0">Apply, receive approval, and use your unique partner link to introduce customers to FastXHorizon.</p></div></div>
+            <div class="col-md-4"><div class="card h-100 border-0 shadow-sm rounded-4 p-4"><h5>Who can join</h5><p class="text-muted mb-0">Creators, community builders, online sellers, and professionals with a genuine audience or sales channel.</p></div></div>
+            <div class="col-md-4"><div class="card h-100 border-0 shadow-sm rounded-4 p-4"><h5>Reliable payouts</h5><p class="text-muted mb-0">Approved earnings move through the FastXHorizon payout process.</p></div></div>
+        </div>
+        @if(auth('customer')->check() && $applicationsOpen && !$profile && (!$application || $application->status !== 'pending'))
+            <div id="application" class="card border-0 shadow-sm rounded-4 p-4 p-lg-5">
+                <h2 class="h4 mb-1">Apply as a {{ ucfirst($program) }}</h2><p class="text-muted mb-4">Tell us how you plan to promote FastXHorizon.</p>
+                @if($errors->any())<div class="alert alert-danger">{{ $errors->first() }}</div>@endif
+                @if(session('success'))<div class="alert alert-success">{{ session('success') }}</div>@endif
+                <form method="post" action="{{ route($program.'.apply.submit') }}">@csrf
+                    <div class="row g-3"><div class="col-md-6"><label class="form-label">Display name</label><input class="form-control" name="display_name" value="{{ old('display_name', auth('customer')->user()->name) }}" required></div><div class="col-md-6"><label class="form-label">Phone</label><input class="form-control" name="phone" value="{{ old('phone', auth('customer')->user()->phone) }}"></div><div class="col-md-6"><label class="form-label">City</label><input class="form-control" name="city" value="{{ old('city') }}"></div><div class="col-md-6"><label class="form-label">Province</label><input class="form-control" name="province" value="{{ old('province') }}"></div><div class="col-12"><label class="form-label">Sales channel</label><input class="form-control" name="sales_channel" value="{{ old('sales_channel') }}" placeholder="Website, social page, community, or other channel"></div><div class="col-12"><label class="form-label">Why would you like to join?</label><textarea class="form-control" name="reason" rows="4">{{ old('reason') }}</textarea></div></div><button class="btn btn-primary mt-4" type="submit">Submit application</button>
+                </form>
+            </div>
+        @endif
+    </div>
+</section>
+@endsection
