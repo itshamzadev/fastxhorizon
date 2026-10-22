@@ -48,10 +48,13 @@ class HomeController extends Controller
     public function index(): View
     {
         $themeName = theme_root_path();
-        return match ($themeName) {
-            'default' => self::default_theme(),
-            'theme_aster' => self::theme_aster(),
-        };
+
+        // Keep the complete storefront, account, seller, admin and API
+        // application available. Only the public landing page is temporarily
+        // replaced while the store is being prepared for launch.
+        return view($themeName === 'theme_aster'
+            ? 'theme-views.coming-soon'
+            : 'web-views.coming-soon');
     }
 
     public function outOfStock(): View
