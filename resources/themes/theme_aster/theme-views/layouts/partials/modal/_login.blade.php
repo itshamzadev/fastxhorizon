@@ -211,8 +211,21 @@ if (!$customerOTPLogin && $customerManualLogin && $customerSocialLogin) {
             </div>
         </div>
     </div>
+    <nav class="fx-customer-auth-switcher" aria-label="Authentication portal switcher">
+        <small>Looking for another portal?</small>
+        <a href="{{ route('vendor.auth.login') }}">Seller</a>
+        <a href="{{ route('reseller.login') }}">Reseller</a>
+        <a href="{{ route('affiliate.login') }}">Affiliate</a>
+    </nav>
 </div>
 
+@push('css_or_js')
+    <style>
+        .fx-customer-auth-switcher { border-top:1px solid #e5e7eb; margin:0 1.5rem 1.5rem; padding-top:1rem; text-align:center; color:#6b7280; font-size:13px; }
+        .fx-customer-auth-switcher a { color:var(--bs-primary, #1677ff); font-weight:600; margin-left:10px; text-decoration:none; }
+        .fx-customer-auth-switcher a:hover { text-decoration:underline; }
+    </style>
+@endpush
 
 @push('script')
     @if ($multiColumn)

@@ -169,6 +169,14 @@
     </div>
 </div>
 
+@push('css_or_js')
+    <style>
+        #registerModal .modal-content { border-radius:24px; box-shadow:0 18px 55px rgba(31,55,80,.12); }
+        #registerModal .form-control { min-height:48px; border-radius:12px; }
+        #registerModal .btn-primary { min-height:48px; border-radius:12px; font-weight:700; }
+    </style>
+@endpush
+
 @push('script')
     <script>
         "use strict";
