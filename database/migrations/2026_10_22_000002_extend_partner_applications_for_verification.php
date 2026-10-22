@@ -111,7 +111,10 @@ return new class extends Migration
             return (bool) DB::selectOne('SELECT 1 FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = ? AND index_name = ? LIMIT 1', [$tableName, $indexName]);
         }
 
-        return collect(DB::select("PRAGMA index_list('{$tableName}')"))->contains(fn ($index) => ($index->name ?? null) === $indexName);
+        return collect(DB::select("PRAGMA index_list('{$tableName}')"))->contains(function ($index) use ($indexName): bool {
+            $metadata = array_change_key_case((array) $index, CASE_LOWER);
+            return ($metadata['name'] ?? $metadata['index_name'] ?? null) === $indexName;
+        });
     }
 
     private function hasEquivalentUniqueIndex(string $tableName, array $columns): bool
@@ -121,8 +124,14 @@ return new class extends Migration
         $rows = DB::select('SELECT index_name, non_unique, seq_in_index, column_name FROM information_schema.statistics WHERE table_schema = DATABASE() AND table_name = ? ORDER BY index_name, seq_in_index', [$tableName]);
         $indexes = [];
         foreach ($rows as $row) {
-            if ((int) $row->non_unique !== 0 || $row->index_name === 'PRIMARY') continue;
-            $indexes[$row->index_name][] = $row->column_name;
+            // MySQL/PDO may return aliases as NON_UNIQUE, Non_unique, or
+            // non_unique depending on driver and connection attributes.
+            $index = array_change_key_case((array) $row, CASE_LOWER);
+            $indexName = $index['index_name'] ?? $index['key_name'] ?? null;
+            $nonUnique = $index['non_unique'] ?? null;
+            $columnName = $index['column_name'] ?? null;
+            if ($indexName === null || $columnName === null || (int) $nonUnique !== 0 || $indexName === 'PRIMARY') continue;
+            $indexes[$indexName][] = $columnName;
         }
 
         foreach ($indexes as $indexColumns) {
