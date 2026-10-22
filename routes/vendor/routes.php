@@ -48,7 +48,7 @@ Route::group(['middleware' => ['maintenance_mode', 'actch:admin_panel']], functi
             Route::controller(LoginController::class)->group(function () {
                 Route::get('login', 'getLoginView');
                 Route::post('login', 'login')->name('login');
-                Route::get('vendor.auth.login', 'logout')->name('logout');
+                Route::get('logout', 'logout')->name('logout');
             });
             Route::group(['prefix' => 'forgot-password', 'as' => 'forgot-password.'], function () {
                 Route::controller(ForgotPasswordController::class)->group(function () {

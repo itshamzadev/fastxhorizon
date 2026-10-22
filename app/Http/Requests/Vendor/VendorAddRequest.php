@@ -68,6 +68,7 @@ class VendorAddRequest extends FormRequest
             'tax_identification_number' => 'nullable|string',
             'tin_expire_date' => 'nullable|date|after_or_equal:today',
             'tin_certificate' => 'nullable|mimes:pdf,doc,docx,jpg|max:5120',
+            'terms' => 'accepted',
         ];
     }
 
@@ -107,6 +108,7 @@ class VendorAddRequest extends FormRequest
             'tin_expire_date.after_or_equal' => translate('The_tin_expire_date_must_be_a_future_date'),
             'tin_certificate.mimes' => translate('The_tin_certificate_must_be_a_file_of_type_pdf_doc_docx_jpg'),
             'tin_certificate.max' => translate('The_tin_certificate_must_not_exceed_5MB'),
+            'terms.accepted' => translate('You_must_agree_to_the_terms_and_conditions'),
         ];
     }
 

@@ -274,7 +274,7 @@
 
                          <div class="col-12">
                              <label class="custom-checkbox align-items-center">
-                                 <input type="checkbox" class="form-check-input" id="terms-checkbox">
+                                 <input type="checkbox" class="form-check-input" id="terms-checkbox" name="terms" value="1">
                                  <span class="form-check-label">
                                      {{ translate('i_agree_with_the') }}
                                      <a href="{{ route('business-page.view', ['slug' => 'terms-and-conditions']) }}"

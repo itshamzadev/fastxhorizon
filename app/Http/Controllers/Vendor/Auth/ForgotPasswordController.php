@@ -42,7 +42,10 @@ class ForgotPasswordController extends BaseController
         private readonly FirebaseService                  $firebaseService,
     )
     {
-        $this->middleware('guest:seller', ['except' => ['logout']]);
+        // Recovery is an explicit OTP/token-protected flow. Keep it
+        // reachable if a previous login response left a seller session in
+        // the browser; guest middleware would redirect to the dashboard and
+        // make the link appear to authenticate the seller.
     }
 
     /**

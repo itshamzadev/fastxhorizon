@@ -36,13 +36,14 @@ class LoginController extends Controller
             ToastMagic::error(translate('credentials_doesnt_match') . '!');
             return back();
         }
-        $passwordCheck = Hash::check($request['password'], $vendor['password']);
-        if ($passwordCheck && $vendor['status'] !== 'approved') {
+        if ($vendor['status'] !== 'approved' && Hash::check($request['password'], $vendor['password'])) {
             ToastMagic::error(translate('Not_approve_yet') . '!');
             return back();
         }
         if ($this->vendorService->isLoginSuccessful($request->email, $request->password, $request->remember)) {
-            if ($this->vendorWalletRepo->getFirstWhere(params: ['id' => auth('seller')->id()]) === false) {
+            session()->regenerate();
+
+            if (!$this->vendorWalletRepo->getFirstWhere(params: ['seller_id' => auth('seller')->id()])) {
                 $this->vendorWalletRepo->add($this->vendorService->getInitialWalletData(vendorId: auth('seller')->id()));
             }
             ToastMagic::info(translate('welcome_to_your_dashboard') . '.');

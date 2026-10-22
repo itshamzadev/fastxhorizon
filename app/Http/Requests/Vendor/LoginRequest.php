@@ -29,7 +29,10 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => 'required|email',
+            // Seller accounts historically use this field for either the
+            // account email or the normalized phone number. Requiring the
+            // email rule here made valid phone logins fail before the guard.
+            'email' => 'required|string|max:255',
             'password' => 'required|min:8',
         ];
     }
@@ -49,6 +52,16 @@ class LoginRequest extends FormRequest
 
     protected function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException(response()->json(['errors' => $this->errorProcessor($validator)]));
+        if ($this->expectsJson()) {
+            throw new HttpResponseException(response()->json([
+                'errors' => $this->errorProcessor($validator),
+            ], 422));
+        }
+
+        throw new HttpResponseException(
+            redirect()->back()
+                ->withInput($this->except('password'))
+                ->withErrors($validator)
+        );
     }
 }

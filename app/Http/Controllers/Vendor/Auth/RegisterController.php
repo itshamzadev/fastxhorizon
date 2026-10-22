@@ -17,6 +17,7 @@ use Devrabiul\ToastMagic\Facades\ToastMagic;
 use Illuminate\Database\Eloquent\Collection;
 use App\Http\Requests\Vendor\VendorAddRequest;
 use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use App\Contracts\Repositories\ShopRepositoryInterface;
 use App\Repositories\VendorRegistrationReasonRepository;
 use App\Contracts\Repositories\VendorRepositoryInterface;
@@ -73,9 +74,11 @@ class RegisterController extends BaseController
                 'error' => translate('Email_already_exist_please_try_another_email'),
             ]);
         }
-        $vendor = $this->vendorRepo->add(data: $this->vendorService->getAddData($request));
-        $this->shopRepo->add($this->shopService->getAddShopDataForRegistration(request: $request, vendorId: $vendor['id']));
-        $this->vendorWalletRepo->add($this->vendorService->getInitialWalletData(vendorId: $vendor['id']));
+        DB::transaction(function () use ($request, &$vendor): void {
+            $vendor = $this->vendorRepo->add(data: $this->vendorService->getAddData($request));
+            $this->shopRepo->add($this->shopService->getAddShopDataForRegistration(request: $request, vendorId: $vendor['id']));
+            $this->vendorWalletRepo->add($this->vendorService->getInitialWalletData(vendorId: $vendor['id']));
+        });
 
         $data = [
             'vendorName' => $request['f_name'],

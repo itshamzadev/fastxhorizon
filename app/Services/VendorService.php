@@ -15,12 +15,13 @@ class VendorService
      * @param string|bool|null $rememberToken
      * @return bool
      */
-    public function isLoginSuccessful(string $email, string $password, string|null|bool $rememberToken): bool
+    public function isLoginSuccessful(string $identity, string $password, string|null|bool $rememberToken): bool
     {
-        if (auth('seller')->attempt(['email' => $email, 'password' => $password], $rememberToken)) {
-            return true;
-        }
-        return false;
+        $credentials = filter_var($identity, FILTER_VALIDATE_EMAIL)
+            ? ['email' => $identity, 'password' => $password]
+            : ['phone' => $identity, 'password' => $password];
+
+        return auth('seller')->attempt($credentials, (bool) $rememberToken);
     }
 
     /**
