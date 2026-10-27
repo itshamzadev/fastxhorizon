@@ -1,0 +1,18 @@
+# Used when Coolify builds the backend with repository root as the context.
+.git
+.gitignore
+**/node_modules
+**/build
+**/dist
+**/coverage
+**/.env
+**/.env.*
+!**/.env.example
+frontend/
+admin/
+others/
+deploy/
+*.log
+*.zip
+*.tar
+*.gz

@@ -3,10 +3,10 @@ FROM node:20-alpine
 WORKDIR /app
 ENV NODE_ENV=production
 
-COPY package*.json ./
+COPY backend/package*.json ./
 RUN npm ci --omit=dev
 
-COPY . .
+COPY backend/ ./
 RUN mkdir -p /app/storage/payment-proof
 
 EXPOSE 5000

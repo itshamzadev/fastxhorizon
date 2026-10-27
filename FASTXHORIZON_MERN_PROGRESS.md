@@ -241,6 +241,14 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Tracked-file scan confirmed no `.env` files, build output, `node_modules`, catalog export, private payment storage or credential-key files were included.
 - GitHub API verification reported `private=false`; repository visibility must be changed to Private manually before sharing or production work. No repository settings were changed by Codex.
 
+## Backend Coolify lockfile fix — 2026-10-27
+
+- Confirmed `backend/package-lock.json` exists locally and remotely with lockfile version 3; its root package metadata matches `backend/package.json`.
+- Fixed `backend/Dockerfile` for Coolify’s repository-root build context: it now copies `backend/package*.json` before retaining reproducible `npm ci --omit=dev`, then copies only `backend/` source.
+- Added root `.dockerignore` for the root-context backend build so frontend/admin dependencies, builds, secrets and unrelated archives are excluded.
+- Updated `PRODUCTION_DEPLOYMENT_GUIDE.md` with the required Coolify settings: build context `.`, Dockerfile `backend/Dockerfile`.
+- Verification: backend `npm ci --omit=dev --ignore-scripts --dry-run` passed; Docker daemon was unavailable locally, so an actual image build remains pending.
+
 ## Customer frontend folder rename - 2026-10-27
 
 - Renamed the customer application directory from `user website/` to `frontend/` after explicit approval.
