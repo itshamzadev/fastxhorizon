@@ -233,6 +233,14 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Payment-proof object storage/security hardening is not complete; do not launch sensitive uploads until resolved.
 - Production-like HTTPS end-to-end checks for customer checkout and Admin MFA/payment verification remain to be run after staging infrastructure exists.
 
+## GitHub repository replacement — 2026-10-27
+
+- Recreated remote `itshamzadev/fastxhorizon` was verified empty before push.
+- Current FastXHorizon workspace was committed as fresh `main` history at `e41320c35e72ac33b7b9d86101f6dc00b911c894`.
+- Remote `main` was pushed successfully and local/remote commit IDs matched.
+- Tracked-file scan confirmed no `.env` files, build output, `node_modules`, catalog export, private payment storage or credential-key files were included.
+- GitHub API verification reported `private=false`; repository visibility must be changed to Private manually before sharing or production work. No repository settings were changed by Codex.
+
 ## Customer frontend folder rename - 2026-10-27
 
 - Renamed the customer application directory from `user website/` to `frontend/` after explicit approval.
