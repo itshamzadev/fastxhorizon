@@ -16,6 +16,7 @@
     "categories:migrate-jewellery": "node scripts/migrate-jewellery-top-level.js",
     "categories:remove-women": "node scripts/remove-women-category.js",
     "catalog:export-local": "node scripts/export-local-catalog.js",
+    "catalog:validate": "node scripts/validate-catalog-export.js",
     "catalog:import": "node scripts/import-catalog-export.js",
     "seed": "node seed/productSeeds.js dev",
     "dev": "nodemon index.js",

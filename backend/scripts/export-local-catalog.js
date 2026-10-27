@@ -23,7 +23,15 @@ async function main() {
     exportedAt: new Date().toISOString(),
     source: 'local-loopback-only',
     categories: categories.map(({ _id, __v, createdAt, updatedAt, ...category }) => category),
-    products: products.map(({ _id, __v, createdAt, updatedAt, ...product }) => product),
+    products: products.map(({ _id, __v, createdAt, updatedAt, ...product }) => ({
+      ...product,
+      // The three local jewellery batches were explicitly priced in PKR, but
+      // legacy documents predate the currency field. Normalize only that
+      // known company-owned catalogue scope; never relabel other records.
+      ...(product.category === 'Jewellery' && product.storeName === 'FASTXHORIZON' && !product.currency
+        ? { currency: 'PKR' }
+        : {}),
+    })),
   };
   const output = path.resolve(__dirname, '../../others/docs/catalog-export.json');
   fs.writeFileSync(output, `${JSON.stringify(payload, null, 2)}\n`, 'utf8');

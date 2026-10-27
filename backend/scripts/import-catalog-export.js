@@ -16,7 +16,9 @@ if (process.env.PRODUCTION_IMPORT_CONFIRM !== 'YES') {
 }
 if (!process.env.MONGO_URI) throw new Error('MONGO_URI is required.');
 
-const exportPath = path.resolve(process.env.CATALOG_EXPORT_PATH || '../../others/docs/catalog-export.json');
+const exportPath = process.env.CATALOG_EXPORT_PATH
+  ? path.resolve(process.env.CATALOG_EXPORT_PATH)
+  : path.resolve(__dirname, '../../others/docs/catalog-export.json');
 const allowedProductFields = [
   'name', 'description', 'price', 'currency', 'category', 'subcategory', 'categoryPath',
   'productType', 'shortDescription', 'longDescription', 'tags', 'slug', 'storeName',

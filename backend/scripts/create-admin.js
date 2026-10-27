@@ -6,6 +6,10 @@ const mongoose = require('mongoose');
 const Admin = require('../models/admin');
 const { isLocalMongoUri } = require('../middleware/adminAuth');
 
+function isValidEmail(value) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value || '').trim());
+}
+
 function question(prompt, hidden = false) {
   if (!hidden) {
     const rl = readline.createInterface({ input: process.stdin, output: process.stdout });
@@ -47,20 +51,26 @@ function question(prompt, hidden = false) {
 }
 
 async function main() {
-  if (process.env.NODE_ENV === 'production' || !isLocalMongoUri(process.env.MONGO_URI)) {
-    throw new Error('Admin bootstrap is restricted to a local MongoDB URI and non-production NODE_ENV.');
+  const production = process.env.NODE_ENV === 'production';
+  const confirmed = process.env.PRODUCTION_ADMIN_BOOTSTRAP_CONFIRM === 'YES';
+  if (production) {
+    if (!confirmed) throw new Error('Production bootstrap requires PRODUCTION_ADMIN_BOOTSTRAP_CONFIRM=YES.');
+    if (!process.env.MONGO_URI || isLocalMongoUri(process.env.MONGO_URI)) throw new Error('Production bootstrap requires a non-loopback MongoDB URI.');
+    if (process.env.ADMIN_DEV_SKIP_MFA === 'true') throw new Error('Production bootstrap refuses ADMIN_DEV_SKIP_MFA=true.');
+  } else if (!isLocalMongoUri(process.env.MONGO_URI)) {
+    throw new Error('Non-production bootstrap is restricted to a local MongoDB URI.');
   }
-  const email = (process.argv.find((arg) => arg.startsWith('--email=')) || '').slice('--email='.length) || await question('Super Admin email: ');
+  const email = (process.argv.find((arg) => arg.startsWith('--email=')) || '').slice('--email='.length) || process.env.ADMIN_INITIAL_EMAIL || await question('Super Admin email: ');
   const password = process.env.ADMIN_INITIAL_PASSWORD || await question('Super Admin password (min 12 characters): ', true);
   const name = process.env.ADMIN_INITIAL_NAME || await question('Super Admin name: ');
-  if (!email || !password || password.length < 12 || !name) throw new Error('Name, valid email, and a password of at least 12 characters are required.');
+  if (!isValidEmail(email) || !password || password.length < 12 || !name) throw new Error('Name, valid email, and a password of at least 12 characters are required.');
 
   await mongoose.connect(process.env.MONGO_URI);
   const existing = await Admin.findOne({ email: email.toLowerCase() });
   if (existing) throw new Error('An administrator with that email already exists.');
   const passwordHash = await bcrypt.hash(password, 12);
   await Admin.create({ name, email: email.toLowerCase(), passwordHash, role: 'super_admin', status: 'active' });
-  console.log(`Created local Super Admin ${email.toLowerCase()}. MFA enrollment is required outside the explicitly gated local bypass.`);
+  console.log(`Created ${production ? 'production' : 'local'} Super Admin ${email.toLowerCase()}. MFA enrollment is required on first login.`);
 }
 
 main()

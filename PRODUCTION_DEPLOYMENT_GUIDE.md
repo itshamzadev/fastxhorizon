@@ -13,11 +13,6 @@ Create separate Coolify application resources from this repository:
 | Admin | `admin/Dockerfile` | 80 | `https://controlpanel.fastxhorizon.com` |
 | API | `backend/Dockerfile` | 5000 | `https://api.fastxhorizon.com` |
 
-For the API resource, use repository root (`.`) as the build context and
-`backend/Dockerfile` as the Dockerfile path. The backend Dockerfile intentionally
-copies `backend/package*.json`; this prevents Coolify from accidentally using the
-root workspace `package.json` without the backend lockfile.
-
 Set `www.fastxhorizon.com` as an additional customer domain. The customer Nginx
 configuration redirects it to the apex domain. Enable Coolify-managed HTTPS for
 all three resources before accepting traffic.

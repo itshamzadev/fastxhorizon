@@ -249,6 +249,14 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Updated `PRODUCTION_DEPLOYMENT_GUIDE.md` with the required Coolify settings: build context `.`, Dockerfile `backend/Dockerfile`.
 - Verification: backend `npm ci --omit=dev --ignore-scripts --dry-run` passed; Docker daemon was unavailable locally, so an actual image build remains pending.
 
+## Production Admin and catalog migration preparation — 2026-10-27
+
+- Extended `backend/scripts/create-admin.js` to support production only with explicit `PRODUCTION_ADMIN_BOOTSTRAP_CONFIRM=YES`, a non-loopback MongoDB URI, `ADMIN_DEV_SKIP_MFA=false`, secure interactive password input and duplicate protection.
+- Added `backend/scripts/validate-catalog-export.js` and `npm run catalog:validate`; validation reports actual catalog counts and checks PKR, Jewellery hierarchy, company store, image URLs, unique slugs and availability-based IN_STOCK state.
+- Added `PRODUCTION_ADMIN_AND_CATALOG_MIGRATION.md` with Coolify terminal commands, backup/checksum requirements, private file transfer, read-only verification queries and rollback guidance.
+- Production Admin creation and catalog import were intentionally not executed. They require explicit operator authorization inside Coolify.
+- Local validation found 23 active Jewellery products with legacy missing `currency` fields; the exporter explicitly normalizes only company-owned Jewellery records to PKR (without changing numeric prices) because all three supplied batches were specified in PKR. No production records were changed.
+
 ## Customer frontend folder rename - 2026-10-27
 
 - Renamed the customer application directory from `user website/` to `frontend/` after explicit approval.
