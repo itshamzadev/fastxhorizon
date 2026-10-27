@@ -1,0 +1,20 @@
+{
+  "name": "fastxhorizon-mern",
+  "private": true,
+  "version": "0.1.0",
+  "description": "FASTXHORIZON MERN marketplace workspace",
+  "scripts": {
+    "install:user": "npm install --prefix frontend",
+    "install:admin": "npm install --prefix admin",
+    "install:backend": "npm install --prefix backend",
+    "dev:user": "npm --prefix frontend run dev",
+    "dev:admin": "npm --prefix admin run dev",
+    "dev:backend": "npm --prefix backend run dev",
+    "build:user": "npm --prefix frontend run build",
+    "build:admin": "npm --prefix admin run build",
+    "test:user": "npm --prefix frontend test",
+    "test:admin": "npm --prefix admin run test:run",
+    "test:backend": "npm --prefix backend test"
+  },
+  "engines": { "node": ">=18" }
+}

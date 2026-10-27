@@ -1,0 +1,184 @@
+[
+  {
+    "id": "act_0001",
+    "actorName": "Wren Moreau",
+    "action": "placed_order",
+    "target": "product Stride Running Belt",
+    "createdAt": "2026-08-23T11:10:24.649Z"
+  },
+  {
+    "id": "act_0002",
+    "actorName": "Liam Moreau",
+    "action": "placed_order",
+    "target": "product Flux Portable Charger",
+    "createdAt": "2026-08-23T04:27:12.649Z"
+  },
+  {
+    "id": "act_0003",
+    "actorName": "Marco Petrov",
+    "action": "signed_in",
+    "target": "order ORD-1093",
+    "createdAt": "2026-08-22T21:44:00.649Z"
+  },
+  {
+    "id": "act_0004",
+    "actorName": "Marcus Lindqvist",
+    "action": "created",
+    "target": "user Naomi Garcia",
+    "createdAt": "2026-08-22T15:00:48.649Z"
+  },
+  {
+    "id": "act_0005",
+    "actorName": "Quinn Jansen",
+    "action": "placed_order",
+    "target": "workspace settings",
+    "createdAt": "2026-08-22T08:17:36.649Z"
+  },
+  {
+    "id": "act_0006",
+    "actorName": "Marcus Bergstrom",
+    "action": "updated",
+    "target": "user Bianca Ibrahim",
+    "createdAt": "2026-08-22T01:34:24.649Z"
+  },
+  {
+    "id": "act_0007",
+    "actorName": "Dalia Muller",
+    "action": "placed_order",
+    "target": "user Marco Kowalski",
+    "createdAt": "2026-08-21T18:51:12.649Z"
+  },
+  {
+    "id": "act_0008",
+    "actorName": "Dalia Garcia",
+    "action": "updated",
+    "target": "product Vertex 4K Monitor",
+    "createdAt": "2026-08-21T12:08:00.649Z"
+  },
+  {
+    "id": "act_0009",
+    "actorName": "Quinn Jansen",
+    "action": "updated",
+    "target": "order ORD-1095",
+    "createdAt": "2026-08-21T05:24:48.649Z"
+  },
+  {
+    "id": "act_0010",
+    "actorName": "Marcus Bergstrom",
+    "action": "signed_in",
+    "target": "user Petra Jansen",
+    "createdAt": "2026-08-20T22:41:36.649Z"
+  },
+  {
+    "id": "act_0011",
+    "actorName": "Theo Lindqvist",
+    "action": "signed_in",
+    "target": "product Flux Portable Charger",
+    "createdAt": "2026-08-20T15:58:24.649Z"
+  },
+  {
+    "id": "act_0012",
+    "actorName": "Marco Sato",
+    "action": "updated",
+    "target": "order ORD-1024",
+    "createdAt": "2026-08-20T09:15:12.649Z"
+  },
+  {
+    "id": "act_0013",
+    "actorName": "Caleb Okoye",
+    "action": "placed_order",
+    "target": "order ORD-1043",
+    "createdAt": "2026-08-20T02:32:00.649Z"
+  },
+  {
+    "id": "act_0014",
+    "actorName": "Caleb Okoye",
+    "action": "created",
+    "target": "order ORD-1047",
+    "createdAt": "2026-08-19T19:48:48.649Z"
+  },
+  {
+    "id": "act_0015",
+    "actorName": "Liam Moreau",
+    "action": "updated",
+    "target": "user Zara Kimura",
+    "createdAt": "2026-08-19T13:05:36.649Z"
+  },
+  {
+    "id": "act_0016",
+    "actorName": "Aisha Novotna",
+    "action": "placed_order",
+    "target": "product Trailblaze Merino Hoodie",
+    "createdAt": "2026-08-19T06:22:24.649Z"
+  },
+  {
+    "id": "act_0017",
+    "actorName": "Caleb Petrov",
+    "action": "updated",
+    "target": "user Maya Weber",
+    "createdAt": "2026-08-18T23:39:12.649Z"
+  },
+  {
+    "id": "act_0018",
+    "actorName": "Quinn Jansen",
+    "action": "signed_in",
+    "target": "order ORD-1044",
+    "createdAt": "2026-08-18T16:56:00.649Z"
+  },
+  {
+    "id": "act_0019",
+    "actorName": "Theo Tanaka",
+    "action": "updated",
+    "target": "product Atlas Office Chair",
+    "createdAt": "2026-08-18T10:12:48.649Z"
+  },
+  {
+    "id": "act_0020",
+    "actorName": "Wren Moreau",
+    "action": "updated",
+    "target": "workspace settings",
+    "createdAt": "2026-08-18T03:29:36.649Z"
+  },
+  {
+    "id": "act_0021",
+    "actorName": "Zara Haddad",
+    "action": "signed_in",
+    "target": "product Halo Webcam Pro",
+    "createdAt": "2026-08-17T20:46:24.649Z"
+  },
+  {
+    "id": "act_0022",
+    "actorName": "Naomi Garcia",
+    "action": "placed_order",
+    "target": "user Omar Moreau",
+    "createdAt": "2026-08-17T14:03:12.649Z"
+  },
+  {
+    "id": "act_0023",
+    "actorName": "Naomi Garcia",
+    "action": "placed_order",
+    "target": "order ORD-1083",
+    "createdAt": "2026-08-17T07:20:00.649Z"
+  },
+  {
+    "id": "act_0024",
+    "actorName": "Caleb Okoye",
+    "action": "signed_in",
+    "target": "product Terrace Plant Pot",
+    "createdAt": "2026-08-17T00:36:48.649Z"
+  },
+  {
+    "id": "act_0025",
+    "actorName": "Marcus Muller",
+    "action": "updated",
+    "target": "order ORD-1060",
+    "createdAt": "2026-08-16T17:53:36.649Z"
+  },
+  {
+    "id": "act_0026",
+    "actorName": "Caleb Petrov",
+    "action": "created",
+    "target": "user Aisha Novotna",
+    "createdAt": "2026-08-16T11:10:24.649Z"
+  }
+]

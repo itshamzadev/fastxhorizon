@@ -1,0 +1,52 @@
+# Reference only. In Coolify, create separate resources or import this file
+# with secrets supplied through the Coolify UI. No production secret belongs here.
+services:
+  mongo:
+    image: mongo:8
+    restart: unless-stopped
+    command: ["mongod", "--bind_ip_all"]
+    volumes:
+      - mongo_data:/data/db
+    networks: [private]
+
+  backend:
+    build: ./backend
+    restart: unless-stopped
+    env_file: ./deploy/coolify/backend.env.example
+    environment:
+      MONGO_URI: mongodb://mongo:27017/fastxhorizon
+      PAYMENT_PROOF_STORAGE_PATH: /app/storage/payment-proof
+    volumes:
+      - payment_proof_data:/app/storage/payment-proof
+    depends_on: [mongo]
+    networks: [private]
+    ports:
+      - "5000:5000"
+
+  frontend:
+    build:
+      context: ./frontend
+      args:
+        REACT_APP_API_BASE_URL: https://api.fastxhorizon.com/api
+        REACT_APP_API_USE_PROXY: "false"
+    restart: unless-stopped
+    ports:
+      - "3000:80"
+
+  admin:
+    build:
+      context: ./admin
+      args:
+        VITE_API_URL: https://api.fastxhorizon.com/api
+        VITE_ENABLE_MOCK_API: "false"
+    restart: unless-stopped
+    ports:
+      - "5173:80"
+
+volumes:
+  mongo_data:
+  payment_proof_data:
+
+networks:
+  private:
+    internal: true

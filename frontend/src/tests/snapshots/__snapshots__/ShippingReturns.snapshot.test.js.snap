@@ -1,0 +1,492 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`ShippingReturns snapshot matches the rendered markup 1`] = `
+<DocumentFragment>
+  <div
+    class="MuiContainer-root MuiContainer-maxWidthMd css-doq7n0-MuiContainer-root"
+  >
+    <div
+      class="MuiStack-root css-fb8lv7-MuiStack-root"
+    >
+      <div
+        class="MuiChip-root MuiChip-outlined MuiChip-sizeMedium MuiChip-colorPrimary MuiChip-outlinedPrimary css-gww9aq-MuiChip-root"
+      >
+        <span
+          class="MuiChip-label MuiChip-labelMedium css-1jzq0dw-MuiChip-label"
+        >
+          Shipping & Returns
+        </span>
+      </div>
+      <h3
+        class="MuiTypography-root MuiTypography-h3 css-1ey9xtw-MuiTypography-root"
+      >
+        Shipping and returns, clearly explained
+      </h3>
+      <p
+        class="MuiTypography-root MuiTypography-body1 css-81jeky-MuiTypography-root"
+      >
+        We confirm order handling details after checkout and keep the relevant status information available in your account.
+      </p>
+    </div>
+    <div
+      class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-4 css-480o17-MuiGrid-root"
+    >
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-1fyyp8j-MuiGrid-root"
+      >
+        <div
+          class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 css-1yl6qxb-MuiPaper-root"
+        >
+          <div
+            class="MuiStack-root css-v2woy3-MuiStack-root"
+          >
+            <div
+              class="MuiStack-root css-1sos3zc-MuiStack-root"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeLarge css-bsqp9w-MuiSvgIcon-root"
+                data-testid="LocalShippingIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5m13.5-9 1.96 2.5H17V9.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5"
+                />
+              </svg>
+              <h5
+                class="MuiTypography-root MuiTypography-h5 css-bezmlo-MuiTypography-root"
+              >
+                Shipping details
+              </h5>
+            </div>
+            <p
+              class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
+            >
+              Shipping charges, destination requirements and fulfillment status are shown during checkout or communicated after confirmation.
+            </p>
+            <p
+              class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
+            >
+              If additional information is needed for your order, customer care will contact you using the details provided at checkout.
+            </p>
+          </div>
+        </div>
+      </div>
+      <div
+        class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-md-6 css-1fyyp8j-MuiGrid-root"
+      >
+        <div
+          class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 css-1yl6qxb-MuiPaper-root"
+        >
+          <div
+            class="MuiStack-root css-v2woy3-MuiStack-root"
+          >
+            <div
+              class="MuiStack-root css-1sos3zc-MuiStack-root"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeLarge css-bsqp9w-MuiSvgIcon-root"
+                data-testid="Inventory2Icon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M20 2H4c-1 0-2 .9-2 2v3.01c0 .72.43 1.34 1 1.69V20c0 1.1 1.1 2 2 2h14c.9 0 2-.9 2-2V8.7c.57-.35 1-.97 1-1.69V4c0-1.1-1-2-2-2m-5 12H9v-2h6zm5-7H4V4h16z"
+                />
+              </svg>
+              <h5
+                class="MuiTypography-root MuiTypography-h5 css-bezmlo-MuiTypography-root"
+              >
+                Order preparation
+              </h5>
+            </div>
+            <p
+              class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
+            >
+              Products are checked and prepared according to the order and payment method. Delivery details will be communicated after your order is confirmed.
+            </p>
+            <p
+              class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
+            >
+              For help with an order, use the support page or your authenticated account order history.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div
+      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 css-1fql2dk-MuiPaper-root"
+    >
+      <div
+        class="MuiStack-root css-v2woy3-MuiStack-root"
+      >
+        <h5
+          class="MuiTypography-root MuiTypography-h5 css-bezmlo-MuiTypography-root"
+        >
+          Returns and refunds
+        </h5>
+        <p
+          class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
+        >
+          Return eligibility, item condition requirements and any applicable charges are communicated for the relevant order. Contact support before sending an item back so the request can be recorded correctly.
+        </p>
+        <hr
+          class="MuiDivider-root MuiDivider-fullWidth css-9mgopn-MuiDivider-root"
+        />
+        <div
+          class="MuiStack-root css-kdc3n8-MuiStack-root"
+        >
+          <svg
+            aria-hidden="true"
+            class="MuiSvgIcon-root MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeSmall css-1bptiuh-MuiSvgIcon-root"
+            data-testid="ReplayIcon"
+            focusable="false"
+            viewBox="0 0 24 24"
+          >
+            <path
+              d="M12 5V1L7 6l5 5V7c3.31 0 6 2.69 6 6s-2.69 6-6 6-6-2.69-6-6H4c0 4.42 3.58 8 8 8s8-3.58 8-8-3.58-8-8-8"
+            />
+          </svg>
+          <span
+            class="MuiTypography-root MuiTypography-caption css-ol7wxs-MuiTypography-root"
+          >
+            Keep the original packaging and order information where possible.
+          </span>
+        </div>
+      </div>
+    </div>
+    <div
+      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 css-1fql2dk-MuiPaper-root"
+    >
+      <h6
+        class="MuiTypography-root MuiTypography-h6 MuiTypography-gutterBottom css-sskem8-MuiTypography-root"
+      >
+        Fulfillment stages
+      </h6>
+      <p
+        class="MuiTypography-root MuiTypography-body2 css-7dlf9o-MuiTypography-root"
+      >
+        Order status information is updated as fulfillment progresses; no fixed delivery estimate is promised.
+      </p>
+      <div
+        class="MuiStack-root css-10kbc59-MuiStack-root"
+      >
+        <div
+          class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded css-1d9bfw6-MuiPaper-root-MuiAccordion-root"
+        >
+          <div
+            aria-expanded="false"
+            class="MuiButtonBase-root MuiAccordionSummary-root css-1pvvkxv-MuiButtonBase-root-MuiAccordionSummary-root"
+            role="button"
+            tabindex="0"
+          >
+            <div
+              class="MuiAccordionSummary-content css-1betqn-MuiAccordionSummary-content"
+            >
+              <div
+                class="MuiStack-root css-1hyf038-MuiStack-root"
+              >
+                <div
+                  class="MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorPrimary MuiChip-outlinedPrimary css-1y6wsfa-MuiChip-root"
+                >
+                  <span
+                    class="MuiChip-label MuiChip-labelSmall css-rrn746-MuiChip-label"
+                  >
+                    1
+                  </span>
+                </div>
+                <div
+                  class="MuiBox-root css-axw7ok"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeSmall css-1bptiuh-MuiSvgIcon-root"
+                    data-testid="VerifiedIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="m23 12-2.44-2.79.34-3.69-3.61-.82-1.89-3.2L12 2.96 8.6 1.5 6.71 4.69 3.1 5.5l.34 3.7L1 12l2.44 2.79-.34 3.7 3.61.82L8.6 22.5l3.4-1.47 3.4 1.46 1.89-3.19 3.61-.82-.34-3.69zm-12.91 4.72-3.8-3.81 1.48-1.48 2.32 2.33 5.85-5.87 1.48 1.48z"
+                    />
+                  </svg>
+                  <h6
+                    class="MuiTypography-root MuiTypography-subtitle1 css-1isisa7-MuiTypography-root"
+                  >
+                    Order confirmed
+                  </h6>
+                </div>
+              </div>
+            </div>
+            <div
+              class="MuiAccordionSummary-expandIconWrapper css-yw020d-MuiAccordionSummary-expandIconWrapper"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                data-testid="ExpandMoreIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                />
+              </svg>
+            </div>
+          </div>
+          <div
+            class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-bz4dnt-MuiCollapse-root"
+            style="min-height: 0px;"
+          >
+            <div
+              class="MuiCollapse-wrapper MuiCollapse-vertical css-smkl36-MuiCollapse-wrapper"
+            >
+              <div
+                class="MuiCollapse-wrapperInner MuiCollapse-vertical css-9l5vo-MuiCollapse-wrapperInner"
+              >
+                <div
+                  class="MuiAccordion-region"
+                  role="region"
+                >
+                  <div
+                    class="MuiAccordionDetails-root css-15v22id-MuiAccordionDetails-root"
+                  >
+                    <p
+                      class="MuiTypography-root MuiTypography-body2 css-afy0d9-MuiTypography-root"
+                    >
+                      Your order is recorded and the next fulfillment status is shared through your account.
+                    </p>
+                    <ul
+                      class="MuiStack-root css-vk5bob-MuiStack-root"
+                    >
+                      <li
+                        class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
+                      >
+                        Payment and inventory information are reviewed according to the selected method.
+                      </li>
+                      <li
+                        class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
+                      >
+                        Any order notes are passed to the fulfillment team.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded css-1d9bfw6-MuiPaper-root-MuiAccordion-root"
+        >
+          <div
+            aria-expanded="false"
+            class="MuiButtonBase-root MuiAccordionSummary-root css-1pvvkxv-MuiButtonBase-root-MuiAccordionSummary-root"
+            role="button"
+            tabindex="0"
+          >
+            <div
+              class="MuiAccordionSummary-content css-1betqn-MuiAccordionSummary-content"
+            >
+              <div
+                class="MuiStack-root css-1hyf038-MuiStack-root"
+              >
+                <div
+                  class="MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorPrimary MuiChip-outlinedPrimary css-1y6wsfa-MuiChip-root"
+                >
+                  <span
+                    class="MuiChip-label MuiChip-labelSmall css-rrn746-MuiChip-label"
+                  >
+                    2
+                  </span>
+                </div>
+                <div
+                  class="MuiBox-root css-axw7ok"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeSmall css-1bptiuh-MuiSvgIcon-root"
+                    data-testid="ChecklistIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M22 7h-9v2h9zm0 8h-9v2h9zM5.54 11 2 7.46l1.41-1.41 2.12 2.12 4.24-4.24 1.41 1.41zm0 8L2 15.46l1.41-1.41 2.12 2.12 4.24-4.24 1.41 1.41z"
+                    />
+                  </svg>
+                  <h6
+                    class="MuiTypography-root MuiTypography-subtitle1 css-1isisa7-MuiTypography-root"
+                  >
+                    Prepared for dispatch
+                  </h6>
+                </div>
+              </div>
+            </div>
+            <div
+              class="MuiAccordionSummary-expandIconWrapper css-yw020d-MuiAccordionSummary-expandIconWrapper"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                data-testid="ExpandMoreIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                />
+              </svg>
+            </div>
+          </div>
+          <div
+            class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-bz4dnt-MuiCollapse-root"
+            style="min-height: 0px;"
+          >
+            <div
+              class="MuiCollapse-wrapper MuiCollapse-vertical css-smkl36-MuiCollapse-wrapper"
+            >
+              <div
+                class="MuiCollapse-wrapperInner MuiCollapse-vertical css-9l5vo-MuiCollapse-wrapperInner"
+              >
+                <div
+                  class="MuiAccordion-region"
+                  role="region"
+                >
+                  <div
+                    class="MuiAccordionDetails-root css-15v22id-MuiAccordionDetails-root"
+                  >
+                    <p
+                      class="MuiTypography-root MuiTypography-body2 css-afy0d9-MuiTypography-root"
+                    >
+                      The fulfillment team prepares your items for dispatch and quality checks.
+                    </p>
+                    <ul
+                      class="MuiStack-root css-vk5bob-MuiStack-root"
+                    >
+                      <li
+                        class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
+                      >
+                        Packaging and item handling follow the requirements of the products in your order.
+                      </li>
+                      <li
+                        class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
+                      >
+                        Status changes remain available in your authenticated account order history.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div
+          class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation1 MuiAccordion-root MuiAccordion-rounded css-1d9bfw6-MuiPaper-root-MuiAccordion-root"
+        >
+          <div
+            aria-expanded="false"
+            class="MuiButtonBase-root MuiAccordionSummary-root css-1pvvkxv-MuiButtonBase-root-MuiAccordionSummary-root"
+            role="button"
+            tabindex="0"
+          >
+            <div
+              class="MuiAccordionSummary-content css-1betqn-MuiAccordionSummary-content"
+            >
+              <div
+                class="MuiStack-root css-1hyf038-MuiStack-root"
+              >
+                <div
+                  class="MuiChip-root MuiChip-outlined MuiChip-sizeSmall MuiChip-colorPrimary MuiChip-outlinedPrimary css-1y6wsfa-MuiChip-root"
+                >
+                  <span
+                    class="MuiChip-label MuiChip-labelSmall css-rrn746-MuiChip-label"
+                  >
+                    3
+                  </span>
+                </div>
+                <div
+                  class="MuiBox-root css-axw7ok"
+                >
+                  <svg
+                    aria-hidden="true"
+                    class="MuiSvgIcon-root MuiSvgIcon-colorPrimary MuiSvgIcon-fontSizeSmall css-1bptiuh-MuiSvgIcon-root"
+                    data-testid="LocalShippingIcon"
+                    focusable="false"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      d="M20 8h-3V4H3c-1.1 0-2 .9-2 2v11h2c0 1.66 1.34 3 3 3s3-1.34 3-3h6c0 1.66 1.34 3 3 3s3-1.34 3-3h2v-5zM6 18.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5m13.5-9 1.96 2.5H17V9.5zm-1.5 9c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5"
+                    />
+                  </svg>
+                  <h6
+                    class="MuiTypography-root MuiTypography-subtitle1 css-1isisa7-MuiTypography-root"
+                  >
+                    Fulfillment update
+                  </h6>
+                </div>
+              </div>
+            </div>
+            <div
+              class="MuiAccordionSummary-expandIconWrapper css-yw020d-MuiAccordionSummary-expandIconWrapper"
+            >
+              <svg
+                aria-hidden="true"
+                class="MuiSvgIcon-root MuiSvgIcon-fontSizeMedium css-i4bv87-MuiSvgIcon-root"
+                data-testid="ExpandMoreIcon"
+                focusable="false"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  d="M16.59 8.59 12 13.17 7.41 8.59 6 10l6 6 6-6z"
+                />
+              </svg>
+            </div>
+          </div>
+          <div
+            class="MuiCollapse-root MuiCollapse-vertical MuiCollapse-hidden css-bz4dnt-MuiCollapse-root"
+            style="min-height: 0px;"
+          >
+            <div
+              class="MuiCollapse-wrapper MuiCollapse-vertical css-smkl36-MuiCollapse-wrapper"
+            >
+              <div
+                class="MuiCollapse-wrapperInner MuiCollapse-vertical css-9l5vo-MuiCollapse-wrapperInner"
+              >
+                <div
+                  class="MuiAccordion-region"
+                  role="region"
+                >
+                  <div
+                    class="MuiAccordionDetails-root css-15v22id-MuiAccordionDetails-root"
+                  >
+                    <p
+                      class="MuiTypography-root MuiTypography-body2 css-afy0d9-MuiTypography-root"
+                    >
+                      Further fulfillment details will be communicated after your order is confirmed.
+                    </p>
+                    <ul
+                      class="MuiStack-root css-vk5bob-MuiStack-root"
+                    >
+                      <li
+                        class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
+                      >
+                        Please keep your contact details current so customer care can reach you when needed.
+                      </li>
+                      <li
+                        class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
+                      >
+                        Contact support if you need help with an order status.
+                      </li>
+                    </ul>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</DocumentFragment>
+`;

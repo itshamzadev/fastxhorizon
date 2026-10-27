@@ -1,0 +1,281 @@
+const express = require('express');
+const mongoose = require('mongoose');
+const Product = require('../models/product');
+const Order = require('../models/order');
+const User = require('../models/user');
+const AdminAuditLog = require('../models/adminAuditLog');
+const { requireAdminSession, requireAdminPermission } = require('../middleware/adminAuth');
+const { publicAdmin } = require('../services/adminSecurity');
+const StorefrontSetting = require('../models/storefrontSetting');
+const NewsletterSubscriber = require('../models/newsletterSubscriber');
+const Refund = require('../models/refund');
+const { SETTING_KEY, DEFAULT_MESSAGE, publicAnnouncement } = require('./storefront');
+
+const router = express.Router();
+const MAX_PAGE_SIZE = 50;
+const PRODUCT_STATUSES = new Set(['active', 'draft', 'archived']);
+const ORDER_STATUSES = new Set(['pending', 'processing', 'shipped', 'delivered', 'cancelled']);
+
+router.use(requireAdminSession);
+
+function pageQuery(req) {
+  const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
+  const pageSize = Math.min(MAX_PAGE_SIZE, Math.max(1, Number.parseInt(req.query.pageSize, 10) || 10));
+  return { page, pageSize, skip: (page - 1) * pageSize };
+}
+
+function sortQuery(value, allowed, fallback = { createdAt: -1 }) {
+  const raw = String(value || '');
+  const descending = raw.startsWith('-');
+  const field = descending ? raw.slice(1) : raw;
+  return allowed.has(field) ? { [field]: descending ? -1 : 1 } : fallback;
+}
+
+function validImageValue(value) {
+  if (!value) return true;
+  if (typeof value !== 'string' || value.length > 3000000) return false;
+  return /^(https?:\/\/|data:image\/(png|jpeg|jpg|webp|gif);base64,)/i.test(value);
+}
+
+function productView(product) {
+  const id = String(product._id);
+  return { id, name: product.name, sku: product.sku || `FXH-${id.slice(-8).toUpperCase()}`, description: product.description || null, shortDescription: product.shortDescription || null, longDescription: product.longDescription || product.description || null, category: product.category, subcategory: product.subcategory || null, categoryPath: product.categoryPath || [], tags: product.tags || [], slug: product.slug || null, price: product.price, currency: product.currency || null, inventory: product.stock || 0, inventoryMode: ['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product.inventoryMode) ? 'AVAILABILITY_BASED' : 'NUMERIC', availabilityStatus: product.availabilityStatus || (product.stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK'), status: product.status || 'active', image: product.image || null, brand: product.brand || null, storeName: product.storeName || 'FASTXHORIZON', featured: Boolean(product.featured), createdAt: product.createdAt, updatedAt: product.updatedAt || product.createdAt };
+}
+
+function orderStatus(order) {
+  if (order.statusIndex < 0) return 'cancelled';
+  const code = order.statusHistory?.[order.statusIndex || 0]?.code;
+  if (code === 'DELIVERED' || code === 'DELIVERY_CONFIRMED') return 'delivered';
+  if (code === 'IN_TRANSIT' || code === 'OUT_FOR_DELIVERY' || code === 'HANDOFF_TO_CARRIER') return 'shipped';
+  if ((order.statusIndex || 0) > 0) return 'processing';
+  return 'pending';
+}
+
+function orderView(order) {
+  return { id: String(order._id), number: order.orderNumber, customerName: order.name, customerEmail: order.email, items: (order.items || []).map((item) => ({ productId: String(item.productId), name: item.name, quantity: item.quantity, unitPrice: item.price })), subtotal: order.total, shipping: 0, tax: 0, total: order.total, currency: order.currency || null, status: orderStatus(order), paymentStatus: order.paymentStatus || 'pending', paymentLifecycle: order.paymentLifecycle || 'PENDING_PAYMENT_VERIFICATION', availabilityStatus: order.availabilityStatus || 'CONFIRMED', paymentMethod: order.paymentMethod || 'cod', placedAt: order.createdAt, updatedAt: order.updatedAt, shippingAddress: order.shippingAddress, statusHistory: order.statusHistory || [] };
+}
+
+async function audit(req, action, success = true, metadata = {}) {
+  try {
+    await AdminAuditLog.create({ adminId: req.admin._id, email: req.admin.email, action, success, ip: req.ip, userAgent: req.get('user-agent'), metadata });
+  } catch (error) { console.error('Admin audit write failed:', error.message); }
+}
+
+router.get('/me', (req, res) => res.json({ user: publicAdmin(req.admin) }));
+
+router.get('/storefront/announcement', requireAdminPermission('settings.manage'), async (req, res, next) => {
+  try {
+    const setting = await StorefrontSetting.findOne({ key: SETTING_KEY }).lean();
+    return res.json({ data: publicAnnouncement(setting) });
+  } catch (error) { return next(error); }
+});
+
+router.put('/storefront/announcement', requireAdminPermission('settings.manage'), async (req, res, next) => {
+  try {
+    const enabled = req.body?.enabled;
+    const message = typeof req.body?.message === 'string' ? req.body.message.trim() : '';
+    if (typeof enabled !== 'boolean' || message.length < 1 || message.length > 180 || /[<>]/.test(message)) {
+      return res.status(400).json({ code: 'validation_error', message: 'Announcement enabled state and plain-text message (1–180 characters) are required.' });
+    }
+    const setting = await StorefrontSetting.findOneAndUpdate(
+      { key: SETTING_KEY },
+      { $set: { announcementEnabled: enabled, announcementMessage: message } },
+      { new: true, upsert: true, setDefaultsOnInsert: true, runValidators: true }
+    ).lean();
+    await audit(req, 'storefront_announcement_updated', true, { enabled, messageLength: message.length });
+    return res.json({ data: publicAnnouncement(setting) });
+  } catch (error) { return next(error); }
+});
+
+router.get('/newsletter/subscribers', requireAdminPermission('newsletter.read'), async (req, res, next) => {
+  try {
+    const { page, pageSize, skip } = pageQuery(req);
+    const status = ['pending', 'confirmed', 'unsubscribed'].includes(String(req.query.status)) ? String(req.query.status) : null;
+    const search = String(req.query.search || '').trim().slice(0, 100);
+    const filter = {};
+    if (status) filter.status = status;
+    if (search) filter.email = { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' };
+    const [items, total] = await Promise.all([
+      NewsletterSubscriber.find(filter).select('email status source consentAt confirmedAt unsubscribedAt createdAt').sort({ createdAt: -1 }).skip(skip).limit(pageSize).lean(),
+      NewsletterSubscriber.countDocuments(filter),
+    ]);
+    return res.json({ data: items.map(item => ({ id: String(item._id), ...item })), meta: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) } });
+  } catch (error) { return next(error); }
+});
+
+router.get('/newsletter/overview', requireAdminPermission('newsletter.read'), async (req, res, next) => {
+  try {
+    const [total, confirmed, pending, unsubscribed] = await Promise.all([
+      NewsletterSubscriber.countDocuments(),
+      NewsletterSubscriber.countDocuments({ status: 'confirmed' }),
+      NewsletterSubscriber.countDocuments({ status: 'pending' }),
+      NewsletterSubscriber.countDocuments({ status: 'unsubscribed' }),
+    ]);
+    return res.json({ data: { total, confirmed, pending, unsubscribed } });
+  } catch (error) { return next(error); }
+});
+
+router.get('/newsletter/subscribers/export', requireAdminPermission('newsletter.export'), async (req, res, next) => {
+  try {
+    const items = await NewsletterSubscriber.find().select('email status source consentAt confirmedAt unsubscribedAt createdAt').sort({ createdAt: -1 }).lean();
+    const csvValue = value => `"${String(value || '').replace(/"/g, '""')}"`;
+    const lines = ['email,status,source,consentAt,confirmedAt,unsubscribedAt,createdAt', ...items.map(item => [item.email, item.status, item.source, item.consentAt, item.confirmedAt, item.unsubscribedAt, item.createdAt].map(csvValue).join(','))];
+    await audit(req, 'newsletter_exported', true, { count: items.length });
+    res.setHeader('Content-Type', 'text/csv; charset=utf-8');
+    res.setHeader('Content-Disposition', 'attachment; filename="newsletter-subscribers.csv"');
+    return res.send(lines.join('\n'));
+  } catch (error) { return next(error); }
+});
+
+router.get('/dashboard/overview', requireAdminPermission('dashboard.read'), async (req, res, next) => {
+  try {
+    const [customers, activeCustomers, products, activeProducts, outOfStock, orders, pendingOrders, completedOrders, cancelledOrders, gross, recentOrders, recentCustomers] = await Promise.all([
+      User.countDocuments(), User.countDocuments({ status: { $ne: 'suspended' } }), Product.countDocuments(), Product.countDocuments({ $or: [{ status: 'active' }, { status: { $exists: false } }] }), Product.countDocuments({ stock: { $lte: 0 } }), Order.countDocuments(), Order.countDocuments({ statusIndex: 0 }), Order.countDocuments({ statusIndex: { $gte: 9 } }), Order.countDocuments({ statusIndex: -1 }), Order.aggregate([{ $match: { statusIndex: { $gte: 0 } } }, { $group: { _id: null, value: { $sum: '$total' } } }]), Order.find().sort({ createdAt: -1 }).limit(5).lean(), User.find().select('name email date status').sort({ date: -1 }).limit(5).lean(),
+    ]);
+    return res.json({ data: { totalCustomers: customers, activeCustomers, totalSellers: 0, totalProducts: products, activeProducts, outOfStockProducts: outOfStock, totalOrders: orders, pendingOrders, completedOrders, cancelledOrders, grossMerchandiseValue: gross[0]?.value || 0, confirmedCollectedRevenue: 0, pendingManualPayments: 0, recentOrders: recentOrders.map(orderView), recentCustomers: recentCustomers.map((user) => ({ id: String(user._id), name: user.name, email: user.email, createdAt: user.date, status: user.status || 'active' })), topSellingProducts: [], revenueByMonth: [], orderCountByMonth: [] } });
+  } catch (error) { return next(error); }
+});
+
+router.get('/products', requireAdminPermission('products.read'), async (req, res, next) => {
+  try {
+    const { page, pageSize, skip } = pageQuery(req); const filter = {}; const search = String(req.query.search || '').trim();
+    if (search) filter.$or = [{ name: { $regex: search.slice(0, 80), $options: 'i' } }, { sku: { $regex: search.slice(0, 40), $options: 'i' } }];
+    if (req.query.category && req.query.category !== 'all') filter.category = String(req.query.category);
+    if (req.query.status && req.query.status !== 'all' && PRODUCT_STATUSES.has(String(req.query.status))) filter.status = String(req.query.status);
+    const [items, total] = await Promise.all([Product.find(filter).sort(sortQuery(req.query.sort, new Set(['name', 'category', 'price', 'stock', 'createdAt']))).skip(skip).limit(pageSize).lean(), Product.countDocuments(filter)]);
+    return res.json({ data: items.map(productView), meta: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) } });
+  } catch (error) { return next(error); }
+});
+
+router.get('/products/:id', requireAdminPermission('products.read'), async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(404).json({ code: 'not_found', message: 'Product not found.' });
+    const product = await Product.findById(req.params.id).lean(); return product ? res.json({ data: productView(product) }) : res.status(404).json({ code: 'not_found', message: 'Product not found.' });
+  } catch (error) { return next(error); }
+});
+
+router.post('/products', requireAdminPermission('products.create'), async (req, res, next) => {
+  try {
+    const body = req.body || {}; const name = String(body.name || '').trim(); const category = String(body.category || '').trim(); const price = Number(body.price); const stock = Number(body.inventory ?? body.stock ?? 0); const status = body.status || 'draft'; const inventoryMode = body.inventoryMode === 'AVAILABILITY_BASED' ? 'AVAILABILITY_BASED' : 'NUMERIC'; const availabilityStatus = body.availabilityStatus === 'IN_STOCK' ? 'IN_STOCK' : 'OUT_OF_STOCK';
+    if (name.length < 2 || name.length > 120 || !category || !Number.isFinite(price) || price <= 0 || (inventoryMode === 'NUMERIC' && (!Number.isInteger(stock) || stock < 0)) || !PRODUCT_STATUSES.has(status) || !validImageValue(String(body.image || '').trim())) return res.status(400).json({ code: 'validation_error', message: 'Invalid product fields or image.' });
+    const product = await Product.create({ name, description: String(body.description || '').trim(), category, price, stock: inventoryMode === 'AVAILABILITY_BASED' ? 0 : stock, inventoryMode, availabilityStatus, status, sku: body.sku ? String(body.sku).trim().toUpperCase() : undefined, image: String(body.image || '').trim(), brand: body.brand ? String(body.brand).trim() : undefined });
+    await audit(req, 'product_created', true, { productId: String(product._id) }); return res.status(201).json({ data: productView(product) });
+  } catch (error) { if (error.code === 11000) return res.status(409).json({ code: 'conflict', message: 'A product with that name or SKU already exists.' }); return next(error); }
+});
+
+router.patch('/products/:id', requireAdminPermission('products.update'), async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(404).json({ code: 'not_found', message: 'Product not found.' });
+    const allowed = ['name', 'description', 'category', 'price', 'sku', 'image', 'brand', 'featured', 'status', 'inventoryMode', 'availabilityStatus']; const update = {};
+    for (const key of allowed) if (Object.prototype.hasOwnProperty.call(req.body || {}, key)) update[key] = req.body[key];
+    if (Object.prototype.hasOwnProperty.call(req.body || {}, 'inventory')) update.stock = Number(req.body.inventory); if (Object.prototype.hasOwnProperty.call(update, 'inventoryMode') && !['NUMERIC', 'AVAILABILITY_BASED'].includes(update.inventoryMode)) return res.status(400).json({ code: 'validation_error', message: 'Invalid inventory mode.' }); if (Object.prototype.hasOwnProperty.call(update, 'availabilityStatus') && !['IN_STOCK', 'OUT_OF_STOCK'].includes(update.availabilityStatus)) return res.status(400).json({ code: 'validation_error', message: 'Invalid availability status.' }); if (Object.prototype.hasOwnProperty.call(update, 'price')) update.price = Number(update.price); if (Object.prototype.hasOwnProperty.call(update, 'image') && !validImageValue(String(update.image || '').trim())) return res.status(400).json({ code: 'validation_error', message: 'Invalid product image.' }); if (Object.prototype.hasOwnProperty.call(update, 'stock') && (!Number.isInteger(update.stock) || update.stock < 0)) return res.status(400).json({ code: 'validation_error', message: 'Inventory cannot be negative.' }); if (update.inventoryMode === 'AVAILABILITY_BASED') update.stock = 0; update.updatedAt = new Date();
+    const product = await Product.findByIdAndUpdate(req.params.id, { $set: update }, { new: true, runValidators: true }).lean(); if (!product) return res.status(404).json({ code: 'not_found', message: 'Product not found.' });
+    await audit(req, 'product_updated', true, { productId: req.params.id, fields: Object.keys(update) }); return res.json({ data: productView(product) });
+  } catch (error) { if (error.code === 11000) return res.status(409).json({ code: 'conflict', message: 'A product with that name or SKU already exists.' }); return next(error); }
+});
+
+router.delete('/products/:id', requireAdminPermission('products.delete'), async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(404).json({ code: 'not_found', message: 'Product not found.' });
+    if (await Order.exists({ 'items.productId': req.params.id })) return res.status(409).json({ code: 'conflict', message: 'Products referenced by orders cannot be deleted; archive them instead.' });
+    const deleted = await Product.findByIdAndDelete(req.params.id); if (!deleted) return res.status(404).json({ code: 'not_found', message: 'Product not found.' }); await audit(req, 'product_deleted', true, { productId: req.params.id }); return res.status(204).send();
+  } catch (error) { return next(error); }
+});
+
+router.get('/customers', requireAdminPermission('customers.read'), async (req, res, next) => {
+  try {
+    const { page, pageSize, skip } = pageQuery(req); const search = String(req.query.search || '').trim(); const filter = search ? { $or: [{ name: { $regex: search.slice(0, 80), $options: 'i' } }, { email: { $regex: search.slice(0, 120), $options: 'i' } }] } : {};
+    const [items, total] = await Promise.all([User.find(filter).select('name email date status').sort({ date: -1 }).skip(skip).limit(pageSize).lean(), User.countDocuments(filter)]); return res.json({ data: items.map((user) => ({ id: String(user._id), name: user.name, email: user.email, role: 'customer', status: user.status || 'active', createdAt: user.date, lastLoginAt: null })), meta: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) } });
+  } catch (error) { return next(error); }
+});
+
+router.get('/customers/:id', requireAdminPermission('customers.read'), async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(404).json({ code: 'not_found', message: 'Customer not found.' });
+    const user = await User.findById(req.params.id).select('name email date status').lean();
+    return user ? res.json({ data: { id: String(user._id), name: user.name, email: user.email, role: 'customer', status: user.status || 'active', createdAt: user.date, lastLoginAt: null } }) : res.status(404).json({ code: 'not_found', message: 'Customer not found.' });
+  } catch (error) { return next(error); }
+});
+
+router.patch('/customers/:id', requireAdminPermission('customers.manage'), async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(404).json({ code: 'not_found', message: 'Customer not found.' });
+    const update = {};
+    if (req.body?.name !== undefined) update.name = String(req.body.name).trim();
+    if (req.body?.email !== undefined) update.email = String(req.body.email).trim().toLowerCase();
+    if (req.body?.status !== undefined && ['active', 'suspended'].includes(req.body.status)) update.status = req.body.status;
+    const user = await User.findByIdAndUpdate(req.params.id, { $set: update }, { new: true, runValidators: true }).select('name email date status').lean();
+    if (!user) return res.status(404).json({ code: 'not_found', message: 'Customer not found.' });
+    await audit(req, 'customer_updated', true, { customerId: req.params.id, fields: Object.keys(update) });
+    return res.json({ data: { id: String(user._id), name: user.name, email: user.email, role: 'customer', status: user.status || 'active', createdAt: user.date, lastLoginAt: null } });
+  } catch (error) { if (error.code === 11000) return res.status(409).json({ code: 'conflict', message: 'That email is already registered.' }); return next(error); }
+});
+
+router.get('/orders', requireAdminPermission('orders.read'), async (req, res, next) => {
+  try {
+    const { page, pageSize, skip } = pageQuery(req); const search = String(req.query.search || '').trim(); const filter = search ? { $or: [{ orderNumber: { $regex: search.slice(0, 80), $options: 'i' } }, { email: { $regex: search.slice(0, 120), $options: 'i' } }, { name: { $regex: search.slice(0, 80), $options: 'i' } }] } : {};
+    const [items, total] = await Promise.all([Order.find(filter).sort({ createdAt: -1 }).skip(skip).limit(pageSize).lean(), Order.countDocuments(filter)]); return res.json({ data: items.map(orderView), meta: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) } });
+  } catch (error) { return next(error); }
+});
+
+router.get('/orders/:id', requireAdminPermission('orders.read'), async (req, res, next) => {
+  try { if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(404).json({ code: 'not_found', message: 'Order not found.' }); const order = await Order.findById(req.params.id).lean(); return order ? res.json({ data: orderView(order) }) : res.status(404).json({ code: 'not_found', message: 'Order not found.' }); } catch (error) { return next(error); }
+});
+
+router.patch('/orders/:id', requireAdminPermission('orders.manage'), async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id) || !ORDER_STATUSES.has(req.body?.status)) return res.status(400).json({ code: 'validation_error', message: 'A valid order status is required.' }); const order = await Order.findById(req.params.id); if (!order) return res.status(404).json({ code: 'not_found', message: 'Order not found.' }); const current = orderStatus(order); const allowed = { pending: ['processing', 'cancelled'], processing: ['shipped', 'cancelled'], shipped: ['delivered'], delivered: [], cancelled: [] }; if (req.body.status !== current && !allowed[current].includes(req.body.status)) return res.status(409).json({ code: 'conflict', message: `Cannot move an order from ${current} to ${req.body.status}.` }); const target = req.body.status; if (target === 'cancelled') order.statusIndex = -1; else if (target === 'processing') order.statusIndex = Math.max(order.statusIndex, 1); else if (target === 'shipped') order.statusIndex = Math.max(order.statusIndex, 6); else if (target === 'delivered') order.statusIndex = Math.max(order.statusIndex, 9); order.updatedAt = new Date(); await order.save(); await audit(req, 'order_status_changed', true, { orderId: req.params.id, from: current, to: target }); return res.json({ data: orderView(order) });
+  } catch (error) { return next(error); }
+});
+
+router.patch('/orders/:id/availability', requireAdminPermission('orders.manage'), async (req, res, next) => {
+  try {
+    const status = String(req.body?.status || '');
+    if (!['CONFIRMED', 'UNAVAILABLE'].includes(status) || !mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(400).json({ code: 'validation_error', message: 'A valid availability status is required.' });
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ code: 'not_found', message: 'Order not found.' });
+    if (order.availabilityStatus !== 'PENDING_CONFIRMATION') return res.status(409).json({ code: 'conflict', message: 'Availability has already been confirmed.' });
+    order.availabilityStatus = status;
+    await order.save();
+    if (status === 'UNAVAILABLE' && order.paymentStatus === 'verified') {
+      const existing = await Refund.findOne({ orderId: order._id, state: { $in: ['REFUND_PENDING', 'REFUND_PROCESSING', 'REFUNDED'] } });
+      if (!existing) await Refund.create({ orderId: order._id, amount: order.total, currency: order.currency || 'PKR', reason: 'Availability could not be confirmed for one or more items.', method: 'MANUAL_REPAYMENT', initiatedBy: req.admin._id });
+    }
+    await audit(req, 'order_availability_updated', true, { orderId: req.params.id, status });
+    return res.json({ data: { id: String(order._id), availabilityStatus: order.availabilityStatus, refundWorkflowStarted: status === 'UNAVAILABLE' && order.paymentStatus === 'verified' } });
+  } catch (error) { return next(error); }
+});
+
+router.post('/orders/:id/refund', requireAdminPermission('refunds.manage'), async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(404).json({ code: 'not_found', message: 'Order not found.' });
+    const order = await Order.findById(req.params.id);
+    if (!order) return res.status(404).json({ code: 'not_found', message: 'Order not found.' });
+    if (order.paymentStatus !== 'verified') return res.status(409).json({ code: 'conflict', message: 'Only collected payments can enter the refund workflow.' });
+    const amount = Number(req.body?.amount ?? order.total);
+    if (!Number.isFinite(amount) || amount <= 0 || amount > order.total) return res.status(400).json({ code: 'validation_error', message: 'Refund amount must be greater than zero and no more than the collected amount.' });
+    const existing = await Refund.findOne({ orderId: order._id, state: { $in: ['REFUND_PENDING', 'REFUND_PROCESSING', 'REFUNDED'] } });
+    if (existing) return res.status(409).json({ code: 'conflict', message: 'A refund workflow already exists for this order.' });
+    const refund = await Refund.create({ orderId: order._id, amount, currency: order.currency || 'PKR', reason: String(req.body?.reason || '').trim().slice(0, 500) || 'Customer refund requested.', method: req.body?.method === 'PAYMENT_REVERSAL' ? 'PAYMENT_REVERSAL' : 'MANUAL_REPAYMENT', initiatedBy: req.admin._id });
+    await audit(req, 'refund_initiated', true, { orderId: String(order._id), refundId: String(refund._id), amount });
+    return res.status(201).json({ data: refund });
+  } catch (error) { return next(error); }
+});
+
+router.patch('/refunds/:id', requireAdminPermission('refunds.manage'), async (req, res, next) => {
+  try {
+    const state = String(req.body?.state || '');
+    if (!['REFUND_PROCESSING', 'REFUNDED', 'REFUND_FAILED'].includes(state)) return res.status(400).json({ code: 'validation_error', message: 'Invalid refund state.' });
+    const refund = await Refund.findOne({ _id: req.params.id, state: { $in: ['REFUND_PENDING', 'REFUND_PROCESSING'] } });
+    if (!refund) return res.status(409).json({ code: 'conflict', message: 'Refund is already completed or unavailable.' });
+    if (state === 'REFUNDED' && !String(req.body?.reference || '').trim()) return res.status(400).json({ code: 'validation_error', message: 'A real repayment or reversal reference is required to mark a refund completed.' });
+    refund.state = state;
+    refund.reference = String(req.body?.reference || '').trim().slice(0, 160);
+    if (state === 'REFUNDED') { refund.completedBy = req.admin._id; refund.completedAt = new Date(); await Order.findByIdAndUpdate(refund.orderId, { $set: { paymentStatus: 'refunded', paymentLifecycle: 'REFUNDED', updatedAt: new Date() } }); }
+    await refund.save();
+    await audit(req, 'refund_state_updated', true, { refundId: req.params.id, state });
+    return res.json({ data: refund });
+  } catch (error) { return next(error); }
+});
+
+module.exports = router;
