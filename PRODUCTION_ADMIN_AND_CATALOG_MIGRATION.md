@@ -4,6 +4,20 @@ This procedure is for an authorized operator using a Coolify terminal. It does
 not run automatically at application startup. Do not run it against a local or
 production database until the target and backup have been checked.
 
+## 0. Redeploy the backend image first
+
+The error mentioning “restricted to a local MongoDB URI and non-production
+NODE_ENV” comes from the old image. In Coolify, deploy the backend resource from
+the GitHub `main` commit containing this fix, then confirm the container has the
+updated script before running bootstrap:
+
+```sh
+node -e "const s=require('./scripts/create-admin.js'); console.log(typeof s.validateBootstrapEnvironment === 'function' ? 'updated bootstrap present' : 'old bootstrap image')"
+```
+
+If this prints `old bootstrap image`, stop and redeploy the backend resource;
+do not change production `NODE_ENV` to bypass the guard.
+
 ## 1. Provision the first production Super Admin
 
 The existing `backend/scripts/create-admin.js` is the only bootstrap path. It
@@ -18,6 +32,7 @@ production MongoDB service, run interactively:
 cd /app
 NODE_ENV=production \
 ADMIN_DEV_SKIP_MFA=false \
+PRODUCTION_MONGO_PRIVATE_NETWORK=true \
 PRODUCTION_ADMIN_BOOTSTRAP_CONFIRM=YES \
 npm run admin:create
 ```
@@ -33,6 +48,11 @@ The current Admin model has no first-login password-change flag. Therefore the
 operator must enter a strong permanent password during bootstrap. On first login
 the production Admin flow requires TOTP enrollment/verification; the development
 MFA bypass remains disabled.
+
+`PRODUCTION_MONGO_PRIVATE_NETWORK=true` is required for an internal Coolify
+service hostname such as `mongodb`. For an internal private FQDN, set
+`MONGO_PRIVATE_HOST_ALLOWLIST` to the exact hostname in Coolify. Public FQDNs
+and loopback hosts are rejected.
 
 After creation, sign in at `https://controlpanel.fastxhorizon.com`, complete the
 Google Authenticator enrollment, save recovery codes in an approved password

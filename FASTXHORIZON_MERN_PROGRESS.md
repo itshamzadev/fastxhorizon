@@ -257,6 +257,13 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Production Admin creation and catalog import were intentionally not executed. They require explicit operator authorization inside Coolify.
 - Local validation found 23 active Jewellery products with legacy missing `currency` fields; the exporter explicitly normalizes only company-owned Jewellery records to PKR (without changing numeric prices) because all three supplied batches were specified in PKR. No production records were changed.
 
+## Production Super Admin bootstrap correction — 2026-10-27
+
+- Hardened `create-admin.js` with explicit production confirmation, `ADMIN_DEV_SKIP_MFA=false`, `PRODUCTION_MONGO_PRIVATE_NETWORK=true`, private-host validation, and production-only secure interactive password input.
+- Added automated guard tests covering valid private Coolify host, missing confirmation, MFA bypass, public/loopback MongoDB hosts and strong-password requirements.
+- The old Coolify error indicates an old container image; the updated script is present in the repository and requires a backend image rebuild/redeploy before running the command.
+- Backend verification: 8 Jest suites and 44 tests passed. Docker image verification remains pending because the local Docker daemon is unavailable; the migration guide includes an in-container script-version check.
+
 ## Customer frontend folder rename - 2026-10-27
 
 - Renamed the customer application directory from `user website/` to `frontend/` after explicit approval.
