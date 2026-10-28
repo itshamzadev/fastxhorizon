@@ -44,6 +44,9 @@ export const NAV_SECTIONS: NavSection[] = [
     items: [
       { label: 'Users', to: '/dashboard/users', icon: Users },
       { label: 'Products', to: '/dashboard/products', icon: Package },
+      { label: 'CSV Import', to: '/dashboard/products/import', icon: Package },
+      { label: 'Pricing & Approval', to: '/dashboard/products/pricing', icon: CreditCard },
+      { label: 'Import History', to: '/dashboard/products/import-history', icon: BarChart3 },
       { label: 'Orders', to: '/dashboard/orders', icon: ShoppingCart },
       { label: 'Newsletter', to: '/dashboard/newsletter', icon: Mail },
       { label: 'Payments', to: '/dashboard/payments', icon: CreditCard },

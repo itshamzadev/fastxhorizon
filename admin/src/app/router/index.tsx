@@ -67,6 +67,9 @@ const NewsletterPage = lazy(() =>
   import('@/features/newsletter/pages/NewsletterPage').then((m) => ({ default: m.NewsletterPage })),
 )
 const PaymentsPage = lazy(() => import('@/features/payments/pages/PaymentsPage').then((m) => ({ default: m.PaymentsPage })))
+const CsvImportPage = lazy(() => import('@/features/product-import/pages/CsvImportPage').then((m) => ({ default: m.CsvImportPage })))
+const ImportHistoryPage = lazy(() => import('@/features/product-import/pages/ImportHistoryPage').then((m) => ({ default: m.ImportHistoryPage })))
+const PricingApprovalPage = lazy(() => import('@/features/pricing/pages/PricingApprovalPage').then((m) => ({ default: m.PricingApprovalPage })))
 
 function PageFallback() {
   return (
@@ -160,6 +163,21 @@ export const router = createBrowserRouter([
                     <ProductsPage />
                   </Suspense>
                 ),
+              },
+              {
+                path: 'import',
+                element: <Suspense fallback={<PageFallback />}><CsvImportPage /></Suspense>,
+                handle: { crumb: 'CSV Import' },
+              },
+              {
+                path: 'pricing',
+                element: <Suspense fallback={<PageFallback />}><PricingApprovalPage /></Suspense>,
+                handle: { crumb: 'Pricing & Approval' },
+              },
+              {
+                path: 'import-history',
+                element: <Suspense fallback={<PageFallback />}><ImportHistoryPage /></Suspense>,
+                handle: { crumb: 'Import History' },
               },
               {
                 path: ':productId',

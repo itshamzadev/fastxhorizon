@@ -642,3 +642,22 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Confirmed the local catalog contains 753 products. Live API checks returned: `jewellery` = 23 matches; `A9 Pro`, `earbuds`, `headphones` and `perfume` = 0 matches in the current local catalog. These zero results reflect absent matching records, not fabricated fallback data.
 - Updated the Shop test harness to render through a router because the production component now correctly observes URL query changes.
 - Verification: backend 9 suites / 46 tests passed; frontend 24 suites / 43 tests and 17 snapshots passed; frontend production build passed with the existing MediaPipe source-map warning. Browser DevTools/screenshot automation was not available because the existing Chrome process did not expose a debugging endpoint, so browser interaction remains the only unperformed verification.
+
+## YouMart storefront publication audit - 2026-10-28
+
+- Read-only local MongoDB audit found exactly 730 YouMart products (`supplierName: YOURMART`). All 730 have images and are configured `SUPPLIER_BASED` / `AVAILABLE_TO_ORDER`.
+- All 730 are currently `draft` with `pricingStatus: REVIEW_REQUIRED`; therefore 0 are eligible for public publication under the approved-price/status rule. Local price values range from PKR 150 to PKR 11,550, but they remain unapproved draft pricing and were not promoted.
+- YouMart categories: Home & Kitchen 182, Electronics 175, Other Accessories 162, Beauty & Personal Care 121, Fashion & Accessories 44, Kids & Toys 26, Content Creation 20.
+- Existing jewellery catalog remains intact: 23 Jewellery products are active and the local storefront currently has 23 active products total.
+- No local or production records were changed. Production presence was not queried because no production database/VPS/Coolify access was authorized. Safe next step is an authorized Admin price/status review, followed by idempotent production catalog migration only after preview and approval; do not bulk-activate REVIEW_REQUIRED records.
+- Verification: backend 9 suites / 46 tests passed; frontend 24 suites / 43 tests and 17 snapshots passed; frontend build passed with the existing MediaPipe source-map warning. Ordering/payment restrictions remain unchanged.
+
+## Admin CSV import and pricing management - 2026-10-28
+
+- Added authenticated Admin routes `/dashboard/products/import`, `/dashboard/products/pricing` and `/dashboard/products/import-history`, plus sidebar entries alongside the existing Products route.
+- Added `CatalogImport` history persistence and server-side CSV preview/confirmation endpoints. Preview parses quoted Shopify CSV rows, groups image galleries by handle, reports validation counts, and performs no writes. Confirmation is idempotent by `YOURMART:<handle>`, supports new-only/skip-existing/update-existing modes, and records an audit/history result.
+- Added private pricing APIs for paginated review, fixed-profit/percentage-markup/manual calculations, explicit bulk approval and explicit bulk publication. Supplier pricing remains admin-only; regular product editing cannot publish a YouMart item before pricing approval.
+- Existing supplier pricing/publication fields are preserved when refreshing existing supplier records. No 730 YouMart records were recreated, repriced, approved or published, and no 23 jewellery records were changed.
+- Local audit baseline remains: 730 YouMart records in `draft` + `REVIEW_REQUIRED`, 0 eligible for publication; 23 active jewellery products.
+- Verification: Admin build passed; Admin tests passed (7 files, 29 tests); backend tests passed (10 suites, 48 tests), and backend syntax checks passed. No production database, VPS, Coolify or payment settings were touched.
+- Documentation added: `others/docs/ADMIN_CSV_IMPORT_AND_PRICING.md`. Production confirmation is deliberately blocked and requires the approved production catalog migration procedure.

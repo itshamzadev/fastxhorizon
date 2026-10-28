@@ -97,6 +97,27 @@ class HttpClient {
     return this.request<TResponse>('DELETE', path, options)
   }
 
+  async postText<TResponse>(
+    path: string,
+    body: string,
+    options: Omit<RequestOptions, 'body'> & { filename?: string; mode?: string } = {},
+  ): Promise<TResponse> {
+    const url = this.buildUrl(path, options.query)
+    const headers = new Headers({ Accept: 'application/json', 'Content-Type': 'text/csv; charset=utf-8' })
+    if (options.filename) headers.set('X-Source-Filename', options.filename)
+    if (options.mode) headers.set('X-Import-Mode', options.mode)
+    if (readAuthToken()) headers.set('Authorization', `Bearer ${readAuthToken()}`)
+    let response: Response
+    try {
+      response = await fetch(url, { method: 'POST', headers, credentials: 'include', body, signal: options.signal })
+    } catch (error) {
+      throw new NetworkError(error)
+    }
+    const payload = await this.parseBody(response)
+    if (!response.ok) throw apiErrorFromResponse(response.status, payload)
+    return payload as TResponse
+  }
+
   private async request<TResponse>(
     method: string,
     path: string,

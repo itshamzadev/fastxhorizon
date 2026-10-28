@@ -9,6 +9,9 @@ const { publicAdmin } = require('../services/adminSecurity');
 const StorefrontSetting = require('../models/storefrontSetting');
 const NewsletterSubscriber = require('../models/newsletterSubscriber');
 const Refund = require('../models/refund');
+const Category = require('../models/category');
+const CatalogImport = require('../models/catalogImport');
+const { SUPPLIER, safeFilename, buildEntries, makeProductDocument } = require('../services/catalogImport');
 const { SETTING_KEY, DEFAULT_MESSAGE, publicAnnouncement } = require('./storefront');
 
 const router = express.Router();
@@ -55,6 +58,25 @@ function validateVariants(attributes, variants) {
 function productView(product) {
   const id = String(product._id);
   return { id, name: product.name, sku: product.sku || `FXH-${id.slice(-8).toUpperCase()}`, description: product.description || null, shortDescription: product.shortDescription || null, longDescription: product.longDescription || product.description || null, category: product.category, subcategory: product.subcategory || null, categoryPath: product.categoryPath || [], tags: product.tags || [], slug: product.slug || null, price: product.price, currency: product.currency || null, inventory: product.stock || 0, inventoryMode: product.inventoryMode === 'SUPPLIER_BASED' ? 'SUPPLIER_BASED' : (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product.inventoryMode) ? 'AVAILABILITY_BASED' : 'NUMERIC'), availabilityStatus: product.availabilityStatus || (product.stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK'), status: product.status || 'active', image: product.image || null, images: product.images || [], variantsEnabled: Boolean(product.variantsEnabled), variantAttributes: product.variantAttributes || [], variants: product.variants || [], brand: product.brand || null, storeName: product.storeName || 'FASTXHORIZON', supplierName: product.supplierName || null, supplierSKU: product.supplierSKU || null, sourcePrice: product.sourcePrice ?? null, sellingPrice: product.sellingPrice ?? null, draftSellingPrice: product.draftSellingPrice ?? null, pricingStatus: product.pricingStatus || null, featured: Boolean(product.featured), createdAt: product.createdAt, updatedAt: product.updatedAt || product.createdAt };
+}
+
+function pricingView(product) {
+  return {
+    id: String(product._id), name: product.name, image: product.image || null,
+    sku: product.sku || product.supplierSKU || null, category: product.category,
+    supplierName: product.supplierName || null, supplierSKU: product.supplierSKU || null,
+    sourcePrice: product.sourcePrice ?? null, confirmedSupplierCost: product.confirmedSupplierCost ?? null,
+    operationalCostEstimate: product.operationalCostEstimate ?? null, draftSellingPrice: product.draftSellingPrice ?? null,
+    sellingPrice: product.sellingPrice ?? null, targetProfit: product.targetProfit ?? null,
+    estimatedNetProfit: product.estimatedNetProfit ?? null, pricingStatus: product.pricingStatus || 'REVIEW_REQUIRED',
+    status: product.status || 'draft', currency: product.currency || 'PKR', updatedAt: product.updatedAt || product.createdAt,
+  };
+}
+
+function pricingNumber(value, name, { nullable = true } = {}) {
+  if (value === null || value === undefined || value === '') return nullable ? null : NaN;
+  const number = Number(value);
+  return Number.isFinite(number) && number >= 0 ? number : NaN;
 }
 
 function orderStatus(order) {
@@ -162,6 +184,133 @@ router.get('/products', requireAdminPermission('products.read'), async (req, res
   } catch (error) { return next(error); }
 });
 
+// ---------------------------------------------------------------------------
+// Supplier catalog import and pricing approval
+// ---------------------------------------------------------------------------
+
+router.post('/product-imports/preview', express.text({ type: ['text/csv', 'text/plain', 'application/octet-stream'], limit: '10mb' }), requireAdminPermission('products.import'), async (req, res, next) => {
+  try {
+    const { rows, entries } = buildEntries(req.body);
+    const keys = entries.map((entry) => entry.supplierKey);
+    const existing = await Product.find({ supplierKey: { $in: keys } }).select('supplierKey').lean();
+    const existingKeys = new Set(existing.map((item) => item.supplierKey));
+    const valid = entries.filter((entry) => entry.preview.validation === 'valid');
+    const summary = {
+      rows: rows.length, uniqueProducts: entries.length,
+      imageRows: entries.reduce((sum, entry) => sum + entry.item.images.length, 0),
+      newProducts: valid.filter((entry) => !existingKeys.has(entry.supplierKey)).length,
+      existingProducts: existingKeys.size, skippedProducts: 0, failedProducts: 0,
+      invalidRows: entries.length - valid.length,
+      missingPrices: entries.filter((entry) => entry.item.sourcePrice === null).length,
+      missingImages: entries.filter((entry) => entry.item.images.length === 0).length,
+    };
+    return res.json({ data: { supplier: SUPPLIER, filename: safeFilename(req.headers['x-source-filename']), summary, products: entries.slice(0, 1000).map((entry) => entry.preview) } });
+  } catch (error) { return res.status(400).json({ code: 'validation_error', message: error.message }); }
+});
+
+router.post('/product-imports/confirm', express.text({ type: ['text/csv', 'text/plain', 'application/octet-stream'], limit: '10mb' }), requireAdminPermission('products.import'), async (req, res, next) => {
+  try {
+    if (process.env.NODE_ENV === 'production') return res.status(403).json({ code: 'production_restricted', message: 'Supplier CSV imports must be executed through the approved production migration procedure.' });
+    const mode = ['new_only', 'update_existing', 'skip_existing'].includes(String(req.headers['x-import-mode'])) ? String(req.headers['x-import-mode']) : 'new_only';
+    const { rows, entries } = buildEntries(req.body);
+    const keys = entries.map((entry) => entry.supplierKey);
+    const existing = await Product.find({ supplierKey: { $in: keys } }).select('supplierKey').lean();
+    const existingKeys = new Set(existing.map((item) => item.supplierKey));
+    let imported = 0; let skipped = 0; let failed = 0; const errors = [];
+    const categoryCache = new Set();
+    for (const entry of entries) {
+      if (!entry.item.title || !entry.item.images.length || entry.item.sourcePrice === null) { skipped += 1; continue; }
+      if (existingKeys.has(entry.supplierKey) && mode !== 'update_existing') { skipped += 1; continue; }
+      try {
+        const document = makeProductDocument(entry);
+        const parentSlug = entry.category.parent.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        const childSlug = entry.category.child.toLowerCase().replace(/[^a-z0-9]+/g, '-');
+        if (!categoryCache.has(parentSlug)) {
+          await Category.findOneAndUpdate({ slug: parentSlug, parentSlug: null }, { $setOnInsert: { name: entry.category.parent, slug: parentSlug, parentSlug: null, active: true } }, { upsert: true, setDefaultsOnInsert: true });
+          categoryCache.add(parentSlug);
+        }
+        if (!categoryCache.has(`${parentSlug}/${childSlug}`)) {
+          await Category.findOneAndUpdate({ slug: childSlug, parentSlug }, { $setOnInsert: { name: entry.category.child, slug: childSlug, parentSlug, active: true } }, { upsert: true, setDefaultsOnInsert: true });
+          categoryCache.add(`${parentSlug}/${childSlug}`);
+        }
+        const { status, pricingStatus, price, confirmedSupplierCost, operationalCostEstimate, sellingPrice, targetProfit, estimatedNetProfit, draftSellingPrice, lastPriceReviewAt, ...sourceRefreshable } = document;
+        const update = mode === 'update_existing'
+          ? { $set: sourceRefreshable }
+          : { $set: sourceRefreshable, $setOnInsert: { status, pricingStatus, price, confirmedSupplierCost, operationalCostEstimate, sellingPrice, targetProfit, estimatedNetProfit, draftSellingPrice, lastPriceReviewAt } };
+        await Product.findOneAndUpdate({ supplierKey: entry.supplierKey }, update, { upsert: true, new: true, setDefaultsOnInsert: true, runValidators: true });
+        imported += 1;
+      } catch (error) { failed += 1; errors.push({ supplierKey: entry.supplierKey, message: error.message }); }
+    }
+    const history = await CatalogImport.create({ supplier: SUPPLIER, filename: safeFilename(req.headers['x-source-filename']), uploadedBy: req.admin._id, status: failed ? 'FAILED' : 'COMPLETED', mode, summary: { rows: rows.length, uniqueProducts: entries.length, imageRows: entries.reduce((sum, entry) => sum + entry.item.images.length, 0), newProducts: imported, existingProducts: existingKeys.size, skippedProducts: skipped, failedProducts: failed, invalidRows: entries.filter((entry) => entry.preview.validation !== 'valid').length, missingPrices: entries.filter((entry) => entry.item.sourcePrice === null).length, missingImages: entries.filter((entry) => entry.item.images.length === 0).length }, errors: errors.slice(0, 100) });
+    await audit(req, 'supplier_catalog_imported', failed === 0, { importId: String(history._id), supplier: SUPPLIER, imported, skipped, failed, mode });
+    return res.status(201).json({ data: { id: String(history._id), imported, skipped, failed, status: history.status } });
+  } catch (error) { return res.status(400).json({ code: 'validation_error', message: error.message }); }
+});
+
+router.get('/product-imports', requireAdminPermission('products.import'), async (req, res, next) => {
+  try {
+    const { page, pageSize, skip } = pageQuery(req);
+    const [items, total] = await Promise.all([CatalogImport.find().sort({ createdAt: -1 }).skip(skip).limit(pageSize).lean(), CatalogImport.countDocuments()]);
+    return res.json({ data: items.map((item) => ({ id: String(item._id), supplier: item.supplier, filename: item.filename, uploadedBy: String(item.uploadedBy), status: item.status, mode: item.mode, summary: item.summary, createdAt: item.createdAt })), meta: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) } });
+  } catch (error) { return next(error); }
+});
+
+router.get('/pricing/products', requireAdminPermission('products.pricing.read'), async (req, res, next) => {
+  try {
+    const { page, pageSize, skip } = pageQuery(req); const filter = {};
+    if (req.query.pricingStatus && ['REVIEW_REQUIRED', 'APPROVED', 'MANUAL_OVERRIDE'].includes(String(req.query.pricingStatus))) filter.pricingStatus = String(req.query.pricingStatus);
+    if (req.query.supplier) filter.supplierName = String(req.query.supplier).slice(0, 80);
+    const search = String(req.query.search || '').trim().slice(0, 80);
+    if (search) filter.$or = [{ name: { $regex: search, $options: 'i' } }, { supplierSKU: { $regex: search, $options: 'i' } }, { supplierKey: { $regex: search, $options: 'i' } }];
+    const [items, total] = await Promise.all([Product.find(filter).sort({ updatedAt: -1 }).skip(skip).limit(pageSize).lean(), Product.countDocuments(filter)]);
+    return res.json({ data: items.map(pricingView), meta: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) } });
+  } catch (error) { return next(error); }
+});
+
+router.patch('/pricing/products/:id', requireAdminPermission('products.pricing.manage'), async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(404).json({ code: 'not_found', message: 'Product not found.' });
+    const product = await Product.findById(req.params.id); if (!product) return res.status(404).json({ code: 'not_found', message: 'Product not found.' });
+    const body = req.body || {}; const mode = ['fixed_profit', 'percentage_markup', 'manual'].includes(body.mode) ? body.mode : null;
+    if (!mode) return res.status(400).json({ code: 'validation_error', message: 'A valid pricing mode is required.' });
+    const cost = pricingNumber(body.confirmedSupplierCost); const operations = pricingNumber(body.operationalCostEstimate); const targetProfit = pricingNumber(body.targetProfit); const markupPercent = pricingNumber(body.markupPercent); const manualPrice = pricingNumber(body.sellingPrice, 'sellingPrice', { nullable: false });
+    if (cost === undefined || Number.isNaN(cost) || operations === undefined || Number.isNaN(operations)) return res.status(400).json({ code: 'validation_error', message: 'Supplier cost and operational cost must be valid non-negative numbers.' });
+    let sellingPrice = manualPrice; let profit = null;
+    if (mode === 'fixed_profit') { if (cost === null || targetProfit === null || Number.isNaN(targetProfit)) return res.status(400).json({ code: 'validation_error', message: 'Confirmed supplier cost and target profit are required.' }); sellingPrice = cost + (operations || 0) + targetProfit; profit = targetProfit; }
+    if (mode === 'percentage_markup') { if (cost === null || markupPercent === null || Number.isNaN(markupPercent)) return res.status(400).json({ code: 'validation_error', message: 'Confirmed supplier cost and markup percentage are required.' }); sellingPrice = (cost + (operations || 0)) * (1 + markupPercent / 100); profit = sellingPrice - cost - (operations || 0); }
+    if (!Number.isFinite(sellingPrice) || sellingPrice <= 0) return res.status(400).json({ code: 'validation_error', message: 'Selling price must be greater than zero.' });
+    const updated = await Product.findByIdAndUpdate(req.params.id, { $set: { confirmedSupplierCost: cost, operationalCostEstimate: operations, targetProfit: targetProfit ?? null, sellingPrice: Math.round(sellingPrice * 100) / 100, estimatedNetProfit: profit === null ? null : Math.round(profit * 100) / 100, price: Math.round(sellingPrice * 100) / 100, pricingStatus: mode === 'manual' ? 'MANUAL_OVERRIDE' : 'REVIEW_REQUIRED', lastPriceReviewAt: new Date(), updatedAt: new Date() } }, { new: true, runValidators: true }).lean();
+    await audit(req, 'product_pricing_updated', true, { productId: req.params.id, mode, pricingStatus: updated.pricingStatus });
+    return res.json({ data: pricingView(updated) });
+  } catch (error) { return next(error); }
+});
+
+router.post('/pricing/approve', requireAdminPermission('products.pricing.manage'), async (req, res, next) => {
+  try {
+    const ids = Array.isArray(req.body?.ids) ? [...new Set(req.body.ids.map(String))] : [];
+    if (req.body?.confirm !== true || ids.length === 0 || ids.length > 500 || ids.some((id) => !mongoose.Types.ObjectId.isValid(id))) return res.status(400).json({ code: 'validation_error', message: 'Explicit confirmation and up to 500 valid product IDs are required.' });
+    const products = await Product.find({ _id: { $in: ids } }).select('sellingPrice confirmedSupplierCost pricingStatus').lean();
+    const eligible = products.filter((product) => Number(product.sellingPrice) > 0 && (product.pricingStatus === 'MANUAL_OVERRIDE' || Number.isFinite(product.confirmedSupplierCost)));
+    if (eligible.length !== ids.length) return res.status(409).json({ code: 'conflict', message: 'Every selected product needs a valid selling price and confirmed supplier cost, unless manually overridden.', eligible: eligible.map((product) => String(product._id)) });
+    await Product.updateMany({ _id: { $in: ids } }, { $set: { pricingStatus: 'APPROVED', lastPriceReviewAt: new Date(), updatedAt: new Date() } });
+    await audit(req, 'products_pricing_approved', true, { count: ids.length, productIds: ids });
+    return res.json({ data: { approved: ids.length } });
+  } catch (error) { return next(error); }
+});
+
+router.post('/pricing/publish', requireAdminPermission('products.publish'), async (req, res, next) => {
+  try {
+    const ids = Array.isArray(req.body?.ids) ? [...new Set(req.body.ids.map(String))] : [];
+    if (req.body?.confirm !== true || ids.length === 0 || ids.length > 500 || ids.some((id) => !mongoose.Types.ObjectId.isValid(id))) return res.status(400).json({ code: 'validation_error', message: 'Explicit confirmation and up to 500 valid product IDs are required.' });
+    const candidates = await Product.find({ _id: { $in: ids } }).select('name category image sellingPrice pricingStatus status').lean();
+    const eligible = candidates.filter((product) => Number(product.sellingPrice) > 0 && product.name && product.category && product.image && ['APPROVED', 'MANUAL_OVERRIDE'].includes(product.pricingStatus));
+    if (eligible.length !== ids.length) return res.status(409).json({ code: 'conflict', message: 'Only products with approved pricing and complete public information can be published.', eligible: eligible.map((product) => String(product._id)) });
+    await Product.updateMany({ _id: { $in: ids } }, [{ $set: { status: 'active', price: '$sellingPrice', updatedAt: new Date() } }]);
+    await audit(req, 'products_published', true, { count: ids.length, productIds: ids });
+    return res.json({ data: { published: ids.length } });
+  } catch (error) { return next(error); }
+});
+
 router.get('/products/:id', requireAdminPermission('products.read'), async (req, res, next) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(404).json({ code: 'not_found', message: 'Product not found.' });
@@ -186,7 +335,9 @@ router.patch('/products/:id', requireAdminPermission('products.update'), async (
     for (const key of allowed) if (Object.prototype.hasOwnProperty.call(req.body || {}, key)) update[key] = req.body[key];
     if (Object.prototype.hasOwnProperty.call(update, 'variantAttributes') || Object.prototype.hasOwnProperty.call(update, 'variants')) { const variantError = validateVariants(update.variantAttributes || [], update.variants || []); if (variantError) return res.status(400).json({ code: 'validation_error', message: variantError }); }
     if (Object.prototype.hasOwnProperty.call(req.body || {}, 'inventory')) update.stock = Number(req.body.inventory); if (Object.prototype.hasOwnProperty.call(update, 'inventoryMode') && !['NUMERIC', 'AVAILABILITY_BASED', 'SUPPLIER_BASED'].includes(update.inventoryMode)) return res.status(400).json({ code: 'validation_error', message: 'Invalid inventory mode.' }); if (Object.prototype.hasOwnProperty.call(update, 'availabilityStatus') && !['IN_STOCK', 'OUT_OF_STOCK', 'AVAILABLE_TO_ORDER'].includes(update.availabilityStatus)) return res.status(400).json({ code: 'validation_error', message: 'Invalid availability status.' }); if (Object.prototype.hasOwnProperty.call(update, 'price')) update.price = Number(update.price); if (Object.prototype.hasOwnProperty.call(update, 'image') && !validImageValue(String(update.image || '').trim())) return res.status(400).json({ code: 'validation_error', message: 'Invalid product image.' }); if (Object.prototype.hasOwnProperty.call(update, 'stock') && (!Number.isInteger(update.stock) || update.stock < 0)) return res.status(400).json({ code: 'validation_error', message: 'Inventory cannot be negative.' }); if (update.inventoryMode === 'AVAILABILITY_BASED' || update.inventoryMode === 'SUPPLIER_BASED') update.stock = 0; if (update.inventoryMode === 'SUPPLIER_BASED') update.availabilityStatus = 'AVAILABLE_TO_ORDER'; update.updatedAt = new Date();
-    const product = await Product.findByIdAndUpdate(req.params.id, { $set: update }, { new: true, runValidators: true }).lean(); if (!product) return res.status(404).json({ code: 'not_found', message: 'Product not found.' });
+    const current = await Product.findById(req.params.id).select('supplierName pricingStatus sellingPrice').lean(); if (!current) return res.status(404).json({ code: 'not_found', message: 'Product not found.' });
+    if (update.status === 'active' && current.supplierName === 'YOURMART' && !['APPROVED', 'MANUAL_OVERRIDE'].includes(current.pricingStatus) && !['APPROVED', 'MANUAL_OVERRIDE'].includes(req.body?.pricingStatus)) return res.status(409).json({ code: 'pricing_review_required', message: 'Supplier products require approved pricing before publication.' });
+    const product = await Product.findByIdAndUpdate(req.params.id, { $set: update }, { new: true, runValidators: true }).lean();
     await audit(req, 'product_updated', true, { productId: req.params.id, fields: Object.keys(update) }); return res.json({ data: productView(product) });
   } catch (error) { if (error.code === 11000) return res.status(409).json({ code: 'conflict', message: 'A product with that name or SKU already exists.' }); return next(error); }
 });
