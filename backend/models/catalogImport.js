@@ -7,6 +7,10 @@ const CatalogImportSchema = new mongoose.Schema(
     uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', required: true },
     status: { type: String, enum: ['PREVIEWED', 'COMPLETED', 'FAILED'], required: true },
     mode: { type: String, enum: ['new_only', 'update_existing', 'skip_existing'], default: 'new_only' },
+    previewExpiresAt: { type: Date, required: true },
+    confirmedAt: { type: Date, default: null },
+    // Parsed supplier rows are private staging data and are never returned by history APIs.
+    stagedProducts: { type: [mongoose.Schema.Types.Mixed], select: false, default: [] },
     summary: {
       rows: { type: Number, default: 0 },
       uniqueProducts: { type: Number, default: 0 },

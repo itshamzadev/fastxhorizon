@@ -661,3 +661,12 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Local audit baseline remains: 730 YouMart records in `draft` + `REVIEW_REQUIRED`, 0 eligible for publication; 23 active jewellery products.
 - Verification: Admin build passed; Admin tests passed (7 files, 29 tests); backend tests passed (10 suites, 48 tests), and backend syntax checks passed. No production database, VPS, Coolify or payment settings were touched.
 - Documentation added: `others/docs/ADMIN_CSV_IMPORT_AND_PRICING.md`. Production confirmation is deliberately blocked and requires the approved production catalog migration procedure.
+
+## Production-safe Admin CSV confirmation fix - 2026-10-28
+
+- Root cause: `/api/admin/product-imports/confirm` unconditionally returned `403 production_restricted` whenever `NODE_ENV=production`, even for authenticated Admin users with `products.import` permission.
+- Preserved the local-only CLI importer restrictions. The Admin workflow now stages a validated, private preview in MongoDB for 30 minutes, returns a preview ID, and confirms using `{ importId, mode, confirm: true }` rather than resubmitting raw CSV content.
+- Production confirmation now requires an authenticated completed Admin session, `products.import`, an unexpired preview and explicit confirmation. Only the uploader or a Super Admin can confirm; staged supplier data is cleared after processing.
+- Existing approved/manual pricing and publication state remains protected during `update_existing` refreshes. Imported records remain drafts with `REVIEW_REQUIRED`; no automatic approval or publication was added.
+- Improved Admin error handling for validation/conflict responses so expired previews, invalid CSVs and duplicate-safe conflicts show meaningful messages instead of generic “Something went wrong.”
+- No CSV was imported and no production database was modified. Documentation updated in `others/docs/ADMIN_CSV_IMPORT_AND_PRICING.md`.

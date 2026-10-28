@@ -70,9 +70,11 @@ export class NetworkError extends ApiError {
 }
 
 const STATUS_TO_ERROR: Record<number, (message: string) => ApiError> = {
+  400: (m) => new ApiError(m, { status: 400, code: 'validation_error' }),
   401: (m) => new UnauthorizedError(m),
   403: (m) => new ForbiddenError(m),
   404: (m) => new NotFoundError(m),
+  409: (m) => new ApiError(m, { status: 409, code: 'conflict' }),
   422: (m) => new ValidationError({}, m),
 }
 

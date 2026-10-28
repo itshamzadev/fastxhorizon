@@ -15,7 +15,7 @@ The Admin Panel now provides a permission-protected workflow for supplier catalo
 All endpoints require an authenticated Admin session and the named server-side permission. `super_admin` is allowed by the existing RBAC middleware.
 
 - `POST /api/admin/product-imports/preview` (`products.import`) — accepts CSV text, max 10 MB; no database writes.
-- `POST /api/admin/product-imports/confirm` (`products.import`) — accepts CSV text and `X-Import-Mode: new_only|skip_existing|update_existing`; local development only, idempotent by `YOURMART:<handle>`.
+- `POST /api/admin/product-imports/confirm` (`products.import`) — accepts a short-lived preview ID, explicit confirmation and `new_only|skip_existing|update_existing`; works in local or production after authenticated preview, idempotent by `YOURMART:<handle>`.
 - `GET /api/admin/product-imports` (`products.import`) — paginated import history.
 - `GET /api/admin/pricing/products` (`products.pricing.read`) — paginated private pricing view.
 - `PATCH /api/admin/pricing/products/:id` (`products.pricing.manage`) — fixed-profit, percentage-markup or manual price calculation.
@@ -38,4 +38,4 @@ Supplier source price is not treated as confirmed supplier cost. Publication req
 
 ## Operational limitations
 
-The current confirmation endpoint is intentionally blocked in `NODE_ENV=production`; production migration remains the separately documented catalog export/import procedure. CSV files and private pricing reports must remain outside version control. Bulk operations are capped at 500 IDs and require an explicit confirmation payload.
+The Admin workflow is separate from the local-only CLI importer. Production Admin confirmation uses the staged preview record, expires previews after 30 minutes, clears staged supplier data after processing, and requires the same authenticated Admin permission. CSV files and private pricing reports must remain outside version control. Bulk operations are capped at 500 IDs and require an explicit confirmation payload.

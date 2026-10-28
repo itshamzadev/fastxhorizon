@@ -204,15 +204,24 @@ router.post('/product-imports/preview', express.text({ type: ['text/csv', 'text/
       missingPrices: entries.filter((entry) => entry.item.sourcePrice === null).length,
       missingImages: entries.filter((entry) => entry.item.images.length === 0).length,
     };
-    return res.json({ data: { supplier: SUPPLIER, filename: safeFilename(req.headers['x-source-filename']), summary, products: entries.slice(0, 1000).map((entry) => entry.preview) } });
-  } catch (error) { return res.status(400).json({ code: 'validation_error', message: error.message }); }
+    const stagedBytes = Buffer.byteLength(JSON.stringify(entries), 'utf8');
+    if (stagedBytes > 12 * 1024 * 1024) return res.status(400).json({ code: 'validation_error', message: 'CSV preview is too large to stage securely. Split the file into smaller imports.' });
+    const preview = await CatalogImport.create({ supplier: SUPPLIER, filename: safeFilename(req.headers['x-source-filename']), uploadedBy: req.admin._id, status: 'PREVIEWED', previewExpiresAt: new Date(Date.now() + 30 * 60 * 1000), summary, stagedProducts: entries });
+    return res.json({ data: { id: String(preview._id), expiresAt: preview.previewExpiresAt, supplier: SUPPLIER, filename: preview.filename, summary, products: entries.slice(0, 1000).map((entry) => entry.preview) } });
+  } catch (error) { return res.status(400).json({ code: 'validation_error', message: error.message || 'The CSV could not be validated.' }); }
 });
 
-router.post('/product-imports/confirm', express.text({ type: ['text/csv', 'text/plain', 'application/octet-stream'], limit: '10mb' }), requireAdminPermission('products.import'), async (req, res, next) => {
+router.post('/product-imports/confirm', requireAdminPermission('products.import'), async (req, res, next) => {
   try {
-    if (process.env.NODE_ENV === 'production') return res.status(403).json({ code: 'production_restricted', message: 'Supplier CSV imports must be executed through the approved production migration procedure.' });
-    const mode = ['new_only', 'update_existing', 'skip_existing'].includes(String(req.headers['x-import-mode'])) ? String(req.headers['x-import-mode']) : 'new_only';
-    const { rows, entries } = buildEntries(req.body);
+    const importId = String(req.body?.importId || '');
+    if (!mongoose.Types.ObjectId.isValid(importId) || req.body?.confirm !== true) return res.status(400).json({ code: 'validation_error', message: 'A valid preview and explicit confirmation are required.' });
+    const history = await CatalogImport.findOne({ _id: importId, status: 'PREVIEWED' }).select('+stagedProducts');
+    if (!history) return res.status(404).json({ code: 'not_found', message: 'Import preview not found or already completed.' });
+    if (history.previewExpiresAt <= new Date()) return res.status(409).json({ code: 'conflict', message: 'Import preview expired. Upload the CSV again to create a fresh preview.' });
+    if (String(history.uploadedBy) !== String(req.admin._id) && req.admin.role !== 'super_admin') return res.status(403).json({ code: 'forbidden', message: 'Only the uploading administrator or a Super Admin can confirm this import.' });
+    const mode = ['new_only', 'update_existing', 'skip_existing'].includes(String(req.body?.mode)) ? String(req.body.mode) : 'new_only';
+    const entries = history.stagedProducts;
+    const rows = history.summary.rows;
     const keys = entries.map((entry) => entry.supplierKey);
     const existing = await Product.find({ supplierKey: { $in: keys } }).select('supplierKey').lean();
     const existingKeys = new Set(existing.map((item) => item.supplierKey));
@@ -241,9 +250,9 @@ router.post('/product-imports/confirm', express.text({ type: ['text/csv', 'text/
         imported += 1;
       } catch (error) { failed += 1; errors.push({ supplierKey: entry.supplierKey, message: error.message }); }
     }
-    const history = await CatalogImport.create({ supplier: SUPPLIER, filename: safeFilename(req.headers['x-source-filename']), uploadedBy: req.admin._id, status: failed ? 'FAILED' : 'COMPLETED', mode, summary: { rows: rows.length, uniqueProducts: entries.length, imageRows: entries.reduce((sum, entry) => sum + entry.item.images.length, 0), newProducts: imported, existingProducts: existingKeys.size, skippedProducts: skipped, failedProducts: failed, invalidRows: entries.filter((entry) => entry.preview.validation !== 'valid').length, missingPrices: entries.filter((entry) => entry.item.sourcePrice === null).length, missingImages: entries.filter((entry) => entry.item.images.length === 0).length }, errors: errors.slice(0, 100) });
-    await audit(req, 'supplier_catalog_imported', failed === 0, { importId: String(history._id), supplier: SUPPLIER, imported, skipped, failed, mode });
-    return res.status(201).json({ data: { id: String(history._id), imported, skipped, failed, status: history.status } });
+    const completed = await CatalogImport.findByIdAndUpdate(history._id, { $set: { status: failed ? 'FAILED' : 'COMPLETED', mode, confirmedAt: new Date(), summary: { rows, uniqueProducts: entries.length, imageRows: entries.reduce((sum, entry) => sum + entry.item.images.length, 0), newProducts: imported, existingProducts: existingKeys.size, skippedProducts: skipped, failedProducts: failed, invalidRows: entries.filter((entry) => entry.preview.validation !== 'valid').length, missingPrices: entries.filter((entry) => entry.item.sourcePrice === null).length, missingImages: entries.filter((entry) => entry.item.images.length === 0).length }, errors: errors.slice(0, 100), stagedProducts: [] } }, { new: true });
+    await audit(req, 'supplier_catalog_imported', failed === 0, { importId: String(completed._id), supplier: SUPPLIER, imported, skipped, failed, mode });
+    return res.status(201).json({ data: { id: String(completed._id), imported, skipped, failed, status: completed.status } });
   } catch (error) { return res.status(400).json({ code: 'validation_error', message: error.message }); }
 });
 
