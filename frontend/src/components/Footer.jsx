@@ -67,23 +67,23 @@ function Footer() {
       .finally(() => setSubmitting(false));
   };
 
-  const linkSx = { color: '#64748B', '&:hover': { color: '#2563EB' } };
+  const linkSx = { color: '#D8D1C6', '&:hover': { color: '#C5A47E' } };
 
   return (
-    <Box component="footer" sx={{ background: '#F8FAFC', color: '#172554', mt: 8, borderTop: '1px solid #E2E8F0' }}>
+    <Box component="footer" sx={{ background: '#292D32', color: '#F4F0E9', mt: 8, borderTop: '4px solid #C5A47E' }}>
       <Container maxWidth="xl" sx={{ py: { xs: 6, md: 8 } }}>
         <Grid container spacing={5}>
           <Grid item xs={12} sm={6} md={4}>
             <MuiLink component={RouterLink} to="/" aria-label="FastXHorizon home" sx={{ display: 'inline-flex', lineHeight: 0, mb: 2 }}>
               <Box component="img" src="/fastxhorizon.png" alt="FastXHorizon" sx={{ display: 'block', width: { xs: 190, sm: 220 }, maxWidth: '70vw', height: 'auto' }} />
             </MuiLink>
-            <Typography variant="body2" sx={{ color: '#64748B', maxWidth: 360 }}>
+            <Typography variant="body2" sx={{ color: '#D8D1C6', maxWidth: 360 }}>
               A trusted multi-category marketplace for thoughtful tech, everyday essentials and products that move life forward.
             </Typography>
             {socialLinks.length > 0 && (
               <Stack direction="row" spacing={1.5} sx={{ mt: 3 }}>
                 {socialLinks.map(link => (
-                  <IconButton key={link.label} component="a" href={link.href} target="_blank" rel="noopener noreferrer" color="primary" size="small" aria-label={link.label} sx={{ color: '#123B98', border: '1px solid #E2E8F0', bgcolor: '#FFFFFF', '&:hover': { bgcolor: '#EFF6FF', color: '#2563EB' } }}>
+                  <IconButton key={link.label} component="a" href={link.href} target="_blank" rel="noopener noreferrer" color="primary" size="small" aria-label={link.label} sx={{ color: '#292D32', border: '1px solid #C5A47E', bgcolor: '#F4F0E9', '&:hover': { bgcolor: '#E6F0EA', color: '#256B58' } }}>
                     {link.icon}
                   </IconButton>
                 ))}
@@ -92,22 +92,22 @@ function Footer() {
           </Grid>
 
           <Grid item xs={12} sm={6} md={2.5}>
-            <Typography variant="subtitle1" sx={{ color: '#0F172A', fontWeight: 700, mb: 2 }}>Explore</Typography>
+            <Typography variant="subtitle1" sx={{ color: '#C5A47E', fontWeight: 700, mb: 2 }}>Explore</Typography>
             <Stack spacing={1.2}>
               {quickLinks.map(link => <MuiLink key={link.to} component={RouterLink} to={link.to} color="inherit" underline="none" sx={linkSx}>{link.label}</MuiLink>)}
             </Stack>
           </Grid>
 
           <Grid item xs={12} sm={6} md={2.5}>
-            <Typography variant="subtitle1" sx={{ color: '#0F172A', fontWeight: 700, mb: 2 }}>Customer Care</Typography>
+            <Typography variant="subtitle1" sx={{ color: '#C5A47E', fontWeight: 700, mb: 2 }}>Customer Care</Typography>
             <Stack spacing={1.2}>
               {helpLinks.map(link => <MuiLink key={link.to} component={RouterLink} to={link.to} color="inherit" underline="none" sx={linkSx}>{link.label}</MuiLink>)}
             </Stack>
           </Grid>
 
           <Grid item xs={12} sm={6} md={3}>
-            <Typography variant="subtitle1" sx={{ color: '#0F172A', fontWeight: 700, mb: 2 }}>Stay Connected</Typography>
-            <Typography variant="body2" sx={{ color: '#64748B', mb: 2 }}>
+            <Typography variant="subtitle1" sx={{ color: '#C5A47E', fontWeight: 700, mb: 2 }}>Stay Connected</Typography>
+              <Typography variant="body2" sx={{ color: '#D8D1C6', mb: 2 }}>
               Receive product updates, useful buying guidance and selected offers from FastXHorizon.
             </Typography>
             <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', gap: 1, alignItems: 'stretch' }}>
@@ -122,10 +122,10 @@ function Footer() {
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }}>
           <Typography variant="body2" sx={{ color: '#64748B' }}>© {new Date().getFullYear()} FASTXHORIZON (PRIVATE) LIMITED. All rights reserved.</Typography>
           <Stack direction="row" spacing={2} sx={{ color: '#64748B', display: { xs: 'none', sm: 'flex' } }}>
-            {policyLinks.map(link => <MuiLink key={link.to} component={RouterLink} to={link.to} color="inherit" underline="none" sx={{ '&:hover': { color: '#2563EB' } }}>{link.label}</MuiLink>)}
+            {policyLinks.map(link => <MuiLink key={link.to} component={RouterLink} to={link.to} color="inherit" underline="none" sx={{ '&:hover': { color: '#C5A47E' } }}>{link.label}</MuiLink>)}
           </Stack>
           <Stack direction="row" spacing={1} sx={{ display: { xs: 'flex', sm: 'none' } }}>
-            {policyLinks.map(link => <Tooltip key={link.to} title={link.label} enterTouchDelay={0} leaveTouchDelay={2500}><IconButton component={RouterLink} to={link.to} size="small" aria-label={link.label} sx={{ color: '#123B98', bgcolor: '#FFFFFF', border: '1px solid #E2E8F0', '&:hover': { bgcolor: '#EFF6FF' } }}>{link.icon}</IconButton></Tooltip>)}
+            {policyLinks.map(link => <Tooltip key={link.to} title={link.label} enterTouchDelay={0} leaveTouchDelay={2500}><IconButton component={RouterLink} to={link.to} size="small" aria-label={link.label} sx={{ color: '#292D32', bgcolor: '#F4F0E9', border: '1px solid #C5A47E', '&:hover': { bgcolor: '#E6F0EA', color: '#256B58' } }}>{link.icon}</IconButton></Tooltip>)}
           </Stack>
         </Stack>
       </Container>

@@ -525,3 +525,120 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Preserved the upper-right real cart action with improved glass-like contrast and focus/hover states.
 - Customer tests: 25 suites passed, 44 tests passed, 18 snapshots passed.
 - Customer production build passed; existing MediaPipe source-map and Browserslist warnings remain.
+# YouMart import preparation — 2026-10-28
+
+- Added a local-only Shopify/YouMart CSV importer at `backend/scripts/import-yourmart-csv.js`. It supports quoted multiline CSV, handle grouping, gallery images, HTML sanitization, idempotent `YOURMART:<handle>` upserts, category mapping and dry-run reporting.
+- Added supplier/pricing metadata to products. Unconfirmed source prices are retained as source data and calculated prices are marked `REVIEW_REQUIRED`; existing imported selling prices/status are not overwritten on reruns.
+- Added `SUPPLIER_BASED` inventory and `AVAILABLE_TO_ORDER` storefront semantics. Supplier cost/profit fields are excluded from the public product response.
+- Added a server-side global ordering lock. Checkout now rejects order creation while `ordersEnabled` is not explicitly true, with `Online ordering is temporarily unavailable.` The local payment configuration defaults to all payment methods disabled for this not-accepting-orders phase.
+- Updated customer product/checkout display for supplier availability and ordering-disabled state.
+- Added parser/pricing tests: `backend/__tests__/yourmartImporter.spec.js` (2/2 passed).
+
+Blocker: no YouMart CSV file is present in the workspace, so exact row/product/image counts and the local database import were not executed. Provide the CSV path and run `npm --prefix backend run yourmart:dry-run -- --csv="<path>"`; after reviewing the report, import with `LOCAL_IMPORT_CONFIRM=YES npm --prefix backend run yourmart:import -- --csv="<path>"`. The importer refuses non-loopback MongoDB URIs and production mode.
+
+## YouMart import completed — 2026-10-28
+
+- Source: local `others/yourmart.csv`; 4,396 CSV rows grouped into 730 unique Shopify handles.
+- Imported/upserted: 730 products; skipped: 0; failed: 0; duplicate handles: 0.
+- Images: 3,945 unique product image URLs preserved across the 730 galleries. Missing images and SKUs: 0.
+- Source price range: PKR 115–9,788; average source price PKR 1,034.87. Source prices remain in `sourcePrice`; calculated draft prices remain in `draftSellingPrice`; `pricingStatus=REVIEW_REQUIRED`, `confirmedSupplierCost=null`, and `sellingPrice=null` until Admin review.
+- Categories created/reused: Electronics, Home & Kitchen, Beauty & Personal Care, Fashion & Accessories, Kids & Toys, Content Creation, Other Accessories, plus their mapped subcategories (19 created during import). Existing top-level Jewellery and its 23 products remain preserved.
+- Imported products use `storeName=FASTXHORIZON`, `supplierName=YOURMART`, `inventoryMode=SUPPLIER_BASED`, `availabilityStatus=AVAILABLE_TO_ORDER`, and `status=draft` pending pricing review. They are therefore visible to authorized Admin catalog views but intentionally not customer-published yet.
+- Local payment/order policy verified and set to: Automatic disabled, Manual disabled, COD disabled, online ordering disabled. No orders were created.
+- First import attempt created only missing category records and hit a MongoDB `$set`/`$setOnInsert` path conflict; the importer was corrected and rerun successfully. No product records were created by the failed attempt.
+- The CSV and generated supplier report are ignored by Git; they were not committed or pushed. Production systems were not accessed.
+
+## Product detail and variant foundation — 2026-10-28
+
+- Reworked the customer product detail page with responsive gallery, thumbnails, previous/next controls, image fallback, breadcrumb, SKU, real PKR pricing, genuine review state, availability, wishlist and ordering-disabled messaging.
+- Added sanitized text sections for Description, Specifications, Reviews and Shipping & Returns without delivery promises or invented specifications.
+- Added backward-compatible product variant schema: configurable attributes, real combinations, option values, per-variant SKU/price/compare-at price/images/inventory mode/availability and enabled state.
+- Added backend Admin product create/update validation and response support for variants, including duplicate combination/SKU rejection. Admin product form supports an optional validated JSON variant configuration for actual product data; CSV imports do not infer or create variants.
+- Product page uses only saved variant data, disables unavailable combinations, updates price/SKU/images/availability, and never creates variants for existing jewellery or YouMart products automatically.
+- Online ordering remains disabled server-side and the product page disables Add to Cart while the global setting is off. Wishlist remains available.
+- Verification: backend 9 suites/46 tests passed; Admin TypeScript/Vite build passed; customer production build passed with the existing MediaPipe source-map warning only. Backend startup build requires `MONGO_URI` in the shell and was not run against production.
+
+## Product detail V2 visual refinement — 2026-10-28
+
+- Refined `frontend/src/pages/ProductDetails.jsx` into a cleaner Apple-inspired two-column presentation with controlled 21–32px title sizing, tighter image surface, visible thumbnail strip, restrained separators and improved hierarchy.
+- Added accessible image zoom/lightbox with close control, keyboard-focusable gallery image, arrows and thumbnail controls.
+- Long descriptions remain below the main layout in tabs; the right column now shows only a 3-line summary. Empty SKU/review values are hidden or honestly labeled.
+- Preserved real variant selection, supplier availability, wishlist behavior and the global ordering-disabled state. No fake discounts, ratings, stock quantities or delivery promises were added.
+- Verification: customer production build passed with the existing MediaPipe source-map warning; ProductDetails snapshot test passed. Local customer, Admin and backend health endpoints remain HTTP 200.
+
+## Product detail V3 colorful premium styling — 2026-10-28
+
+- Added the requested FastXHorizon color atmosphere: deep navy typography, royal-blue actions/tabs, electric-cyan status accent, amber-compatible restrained palette, ice-blue gallery surface and soft background glows.
+- Tightened the gallery presentation with rounded ice-blue surface, floating navigation controls, active blue thumbnails and subtle thumbnail hover feedback while preserving original image aspect ratios and lightbox zoom.
+- Replaced repetitive large information alerts with one compact availability/order status section. Supplier products show `Available to Order` and the neutral supplier-confirmation/ordering-paused message; global ordering and payment restrictions remain unchanged.
+- Styled price highlight, eyebrow label, tab indicator, focus/hover transitions and responsive gutters without changing product data, prices, variants or backend behavior.
+- Verification: customer production build passed with the existing MediaPipe source-map warning; ProductDetails snapshot test passed. No database or production systems were modified.
+
+## Product detail V6 balanced premium styling — 2026-10-28
+
+- Rebalanced V5's dark-blue treatment into a soft lavender, cool-grey and clean-white atmosphere using `#F1F0FA`, `#E8EDF3`, `#FFFFFF`, charcoal typography and restrained `#2359CE` accents.
+- Kept the gallery visually clear with a neutral photo stage and desktop thumbnail rail, while reducing large dark/blue surfaces.
+- Changed the information panel to a light editorial surface with moderate shadow, blue price treatment, warm amber status detail and readable charcoal content.
+- Restyled variants, availability, wishlist actions and lower content tabs without changing their behavior or product data.
+- Verification: customer build passed with the existing MediaPipe source-map warning; ProductDetails snapshot test passed. No MongoDB, production or global header/footer changes were made.
+
+## Product detail V5 dark navy redesign — 2026-10-28
+
+- Shifted the Product Details page from white-heavy V4 to a navy-dominant `#07162F`/`#0D2550` composition with controlled rich-blue, electric-blue and cyan accents.
+- Added a distinct midnight information panel with white typography, cyan category eyebrow, prominent PKR price treatment, dark variant selectors, compact availability status and dark action area.
+- Preserved a light inner gallery photo stage for image clarity while adding dark page framing, translucent gallery controls, blue active thumbnails and the image counter/lightbox.
+- Reworked the below-fold details surface into a dark blue section with cyan tab indicator and readable light text.
+- No product data, price, image, variant, wishlist, payment or ordering logic was changed. Frontend build and ProductDetails snapshot passed; existing MediaPipe source-map warning remains.
+
+## Product detail V4 composition rebuild — 2026-10-28
+
+- Rebuilt the main product composition into distinct editorial gallery and commerce-panel areas rather than one oversized enclosing surface.
+- Added a desktop vertical thumbnail rail with active signature-blue selection, mobile horizontal strip, floating image counter, layered ice/periwinkle gallery stage, and preserved zoom/lightbox/navigation.
+- Simplified the breadcrumb so it does not repeat the full product title and retained controlled title/price hierarchy, real SKU/reviews, true variants and wishlist.
+- Kept supplier availability and ordering status compact and truthful; no payment/order restriction was changed.
+- Preserved product data, images, pricing, variants and existing header/footer. Frontend production build and ProductDetails snapshot passed; the existing MediaPipe source-map warning remains. No database or production changes were made.
+
+## Customer website solid premium color redesign - 2026-10-28
+
+- Applied a consistent FastXHorizon marketplace palette across the customer frontend: charcoal `#292D32`, ivory `#F4F0E9`, sand gold `#C5A47E`, terracotta `#B65C43`, emerald `#256B58` and royal blue `#2456A6`.
+- Updated the shared MUI theme, global body and heading styles, header controls, sticky announcement bar, footer, homepage hero and promotional surfaces, shop banner, product cards and product-detail gallery atmosphere.
+- Preserved the official logo, search, authentication, wishlist, cart, product data, PKR formatting, supplier availability and ordering/payment restrictions. No backend, Admin Panel, MongoDB or production systems were modified for this redesign.
+- Replaced the most visible legacy blue/pink gradients with solid brand surfaces and improved fallback/icon contrast while keeping product photography unobscured.
+- Updated four affected Jest snapshots to reflect the intentional theme and existing ordering-disabled notice changes.
+- Verification: customer production build passed with the existing MediaPipe source-map warning. Customer test suite passed: 24 suites, 43 tests, 17 snapshots passed (4 updated). `git diff --check` passed apart from normal Windows line-ending warnings. Local servers remain running on customer `http://localhost:3000`, Admin `http://localhost:5173` and API `http://localhost:5000`.
+
+## Product card size and grid refinement - 2026-10-28
+
+- Centralized customer product collection layout through the reusable `product-grid` class used by homepage featured/recommended collections, Shop, Wishlist and the shared listing component.
+- Responsive counts are now exactly 2 columns below 768px, 3 columns from 768px, 2 columns from 1024px, 3 from 1200px, 5 from 1536px and 7 from 1920px+, matching the requested one-fewer desktop-column behavior while preserving every product.
+- Increased card minimum heights moderately and reduced card rounding to 8px outer, 6px image surface and 6px information panel. Mobile cards remain equal-width with no horizontal overflow.
+- Verification: customer build passed with the existing MediaPipe source-map warning. Customer tests passed: 24 suites, 43 tests and 17 snapshots (3 snapshots updated for intentional markup changes). No backend, Admin Panel, database or production changes were made.
+
+## Product grid collapse fix - 2026-10-28
+
+- Root cause: the shared `product-grid` class was placed on MUI `Grid container` elements. MUI's generated `.MuiGrid-container` flex rules could override the plain CSS Grid declaration, while child items retained flex sizing and collapsed into narrow intrinsic-width columns.
+- Fixed only the shared grid scope in `frontend/src/App.css` with explicit grid display, full width, responsive `minmax(0, 1fr)` templates, and block/zero-padding child sizing. Product card radius remains 8px outer and 6px for image/content surfaces.
+- Responsive result: 2 columns below 768px, 3 columns at 768px, 2 at 1024px, 3 at 1200px, 5 at 1536px and 7 at 1920px+, with no products removed.
+- Verification: customer build passed with the existing MediaPipe source-map warning; 24 test suites, 43 tests and 17 snapshots passed. Local customer endpoint returned HTTP 200 at `http://localhost:3000`. Browser screenshot capture was unavailable because the existing Chrome process does not expose a debugging endpoint in this environment. No backend, Admin Panel, database or production changes were made.
+
+## Product card overlay transparency refinement - 2026-10-28
+
+- Updated only the shared `frontend/src/components/ProductCard.jsx` information overlay from opaque charcoal to `rgba(25,28,33,0.58)`.
+- Added a restrained 2px backdrop blur to improve image visibility while preserving title, price, availability, icon contrast, card dimensions, grid columns and border radii.
+- Verification: customer build passed with the existing MediaPipe source-map warning; 24 test suites, 43 tests and 17 snapshots passed. No backend, Admin Panel, database or production changes were made.
+
+## Customer product search completion - 2026-10-28
+
+- Root causes fixed: the backend search route only searched name/description and returned unbounded raw records; the Shop page ignored the `?search=` query; the header dropdown showed only a few results without loading/empty/view-all states or keyboard selection.
+- Backend `backend/routes/search.js` now performs bounded, case-insensitive multi-term matching across public name, descriptions, category paths, brand, SKU, product type and tags; restricts results to active products; ranks matches; paginates responses; limits query/response size; and returns a public projection without supplier pricing or private metadata.
+- Customer header search now debounces requests, shows up to six real thumbnails/titles/PKR prices, highlights matches, supports loading/empty states, View all results, Escape/outside close, Arrow navigation and Enter selection.
+- `frontend/src/pages/Shop.jsx` now loads actual backend search results for `?search=`, displays the query heading/count context through the result grid and preserves existing sorting/filtering/card behavior.
+- Verification: local API `GET /api/search?q=jewellery&limit=6` returned real catalogue products and an unmatched query returned an honest empty response. Backend tests: 9 suites / 46 tests passed. Frontend tests: 24 suites / 43 tests passed. Frontend build passed with the existing MediaPipe source-map warning. No product data, Admin Panel, database records or production systems were modified.
+
+## Search end-to-end debug and repair - 2026-10-28
+
+- Confirmed local frontend API resolution is `http://127.0.0.1:5000/api` in development and backend route registration is `/api/search`.
+- Fixed same-path query navigation in Shop by using router location changes, fixed stale autocomplete results with request sequencing, added explicit API failure state with Retry, and preserved real response parsing for `{ products, total, page, pageSize, totalPages }`.
+- Confirmed the local catalog contains 753 products. Live API checks returned: `jewellery` = 23 matches; `A9 Pro`, `earbuds`, `headphones` and `perfume` = 0 matches in the current local catalog. These zero results reflect absent matching records, not fabricated fallback data.
+- Updated the Shop test harness to render through a router because the production component now correctly observes URL query changes.
+- Verification: backend 9 suites / 46 tests passed; frontend 24 suites / 43 tests and 17 snapshots passed; frontend production build passed with the existing MediaPipe source-map warning. Browser DevTools/screenshot automation was not available because the existing Chrome process did not expose a debugging endpoint, so browser interaction remains the only unperformed verification.

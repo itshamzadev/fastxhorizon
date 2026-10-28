@@ -17,6 +17,7 @@ describe('Search API', () => {
     app = express();
     app.use(bodyParser.json());
     app.use('/api/search', searchRouter);
+    Product.find.mockReset();
   });
 
   it('200 → returns products matching the query', async () => {
@@ -24,18 +25,14 @@ describe('Search API', () => {
       { _id: '1', name: 'FooBar', description: 'Test product', price: 10 },
       { _id: '2', name: 'BarBaz', description: 'Another test', price: 20 },
     ];
-    Product.find.mockResolvedValue(fakeProducts);
+    Product.find.mockReturnValue({ select: () => ({ limit: () => ({ lean: jest.fn().mockResolvedValue(fakeProducts) }) }) });
 
     const res = await request(app).get('/api/search?q=bar');
 
     expect(res.status).toBe(200);
-    expect(Product.find).toHaveBeenCalledWith({
-      $or: [
-        { name: { $regex: 'bar', $options: 'i' } },
-        { description: { $regex: 'bar', $options: 'i' } },
-      ],
-    });
-    expect(res.body).toEqual(fakeProducts);
+    expect(Product.find).toHaveBeenCalledWith(expect.objectContaining({ status: 'active', $and: expect.any(Array) }));
+    expect(res.body.products).toHaveLength(2);
+    expect(res.body.total).toBe(2);
   });
 
   it('200 → returns all products when no query is provided', async () => {
@@ -43,22 +40,17 @@ describe('Search API', () => {
       { _id: 'a', name: 'Alpha', description: 'Desc A', price: 5 },
       { _id: 'b', name: 'Beta', description: 'Desc B', price: 15 },
     ];
-    Product.find.mockResolvedValue(allProducts);
+    Product.find.mockReturnValue({ select: () => ({ limit: () => ({ lean: jest.fn().mockResolvedValue(allProducts) }) }) });
 
     const res = await request(app).get('/api/search');
 
     expect(res.status).toBe(200);
-    expect(Product.find).toHaveBeenCalledWith({
-      $or: [
-        { name: { $regex: undefined, $options: 'i' } },
-        { description: { $regex: undefined, $options: 'i' } },
-      ],
-    });
-    expect(res.body).toEqual(allProducts);
+    expect(Product.find).not.toHaveBeenCalled();
+    expect(res.body).toEqual({ products: [], total: 0, page: 1, pageSize: 12, totalPages: 0, query: '' });
   });
 
   it('500 → internal server error', async () => {
-    Product.find.mockRejectedValue(new Error('DB error'));
+    Product.find.mockReturnValue({ select: () => ({ limit: () => ({ lean: jest.fn().mockRejectedValue(new Error('DB error')) }) }) });
 
     const res = await request(app).get('/api/search?q=test');
     expect(res.status).toBe(500);

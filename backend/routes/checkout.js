@@ -157,6 +157,9 @@ router.post('/create-order', async (req, res) => {
     const enabled = paymentMethod === 'automatic' ? config?.automaticEnabled : paymentMethod === 'cod' ? config?.codEnabled : config?.manualEnabled;
     const method = paymentMethod === 'manual' ? (config?.manualMethods || []).find(item => item.key === req.body?.methodKey && item.enabled) : null;
     if (!enabled || (paymentMethod === 'manual' && !method)) return res.status(400).json({ error: 'Selected payment type is currently unavailable.' });
+    if (config?.ordersEnabled !== true) {
+      return res.status(503).json({ error: config?.orderingDisabledMessage || 'Online ordering is temporarily unavailable.' });
+    }
     if (paymentMethod === 'automatic') return res.status(400).json({ error: 'Automatic payment is not operational yet.' });
     if (paymentMethod === 'manual' && (!req.body?.paymentValues || !req.body?.paymentEvidence)) return res.status(400).json({ error: 'Manual payment details are required.' });
     if (paymentMethod === 'manual') {

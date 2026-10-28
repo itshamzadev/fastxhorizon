@@ -3,7 +3,7 @@
 exports[`Footer snapshot matches the rendered markup 1`] = `
 <DocumentFragment>
   <footer
-    class="MuiBox-root css-p0gxaz"
+    class="MuiBox-root css-21xisc"
   >
     <div
       class="MuiContainer-root MuiContainer-maxWidthXl css-1fvyq0v-MuiContainer-root"
@@ -26,7 +26,7 @@ exports[`Footer snapshot matches the rendered markup 1`] = `
             />
           </a>
           <p
-            class="MuiTypography-root MuiTypography-body2 css-19276im-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body2 css-1y33e53-MuiTypography-root"
           >
             A trusted multi-category marketplace for thoughtful tech, everyday essentials and products that move life forward.
           </p>
@@ -35,7 +35,7 @@ exports[`Footer snapshot matches the rendered markup 1`] = `
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-2.5 css-ege0n6-MuiGrid-root"
         >
           <h6
-            class="MuiTypography-root MuiTypography-subtitle1 css-czr7mf-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-subtitle1 css-b1tlqp-MuiTypography-root"
           >
             Explore
           </h6>
@@ -43,31 +43,31 @@ exports[`Footer snapshot matches the rendered markup 1`] = `
             class="MuiStack-root css-1l9qugs-MuiStack-root"
           >
             <a
-              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-b7n5ix-MuiTypography-root-MuiLink-root"
+              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-yeaeka-MuiTypography-root-MuiLink-root"
               href="/"
             >
               Home
             </a>
             <a
-              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-b7n5ix-MuiTypography-root-MuiLink-root"
+              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-yeaeka-MuiTypography-root-MuiLink-root"
               href="/shop"
             >
               Shop
             </a>
             <a
-              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-b7n5ix-MuiTypography-root-MuiLink-root"
+              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-yeaeka-MuiTypography-root-MuiLink-root"
               href="/about"
             >
               About
             </a>
             <a
-              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-b7n5ix-MuiTypography-root-MuiLink-root"
+              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-yeaeka-MuiTypography-root-MuiLink-root"
               href="/support"
             >
               Support
             </a>
             <a
-              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-b7n5ix-MuiTypography-root-MuiLink-root"
+              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-yeaeka-MuiTypography-root-MuiLink-root"
               href="/cart"
             >
               Cart
@@ -78,7 +78,7 @@ exports[`Footer snapshot matches the rendered markup 1`] = `
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-2.5 css-ege0n6-MuiGrid-root"
         >
           <h6
-            class="MuiTypography-root MuiTypography-subtitle1 css-czr7mf-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-subtitle1 css-b1tlqp-MuiTypography-root"
           >
             Customer Care
           </h6>
@@ -86,31 +86,31 @@ exports[`Footer snapshot matches the rendered markup 1`] = `
             class="MuiStack-root css-1l9qugs-MuiStack-root"
           >
             <a
-              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-b7n5ix-MuiTypography-root-MuiLink-root"
+              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-yeaeka-MuiTypography-root-MuiLink-root"
               href="/shipping-returns"
             >
               Shipping & Returns
             </a>
             <a
-              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-b7n5ix-MuiTypography-root-MuiLink-root"
+              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-yeaeka-MuiTypography-root-MuiLink-root"
               href="/terms"
             >
               Terms & Conditions
             </a>
             <a
-              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-b7n5ix-MuiTypography-root-MuiLink-root"
+              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-yeaeka-MuiTypography-root-MuiLink-root"
               href="/privacy"
             >
               Privacy Policy
             </a>
             <a
-              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-b7n5ix-MuiTypography-root-MuiLink-root"
+              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-yeaeka-MuiTypography-root-MuiLink-root"
               href="/support#faq"
             >
               FAQ
             </a>
             <a
-              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-b7n5ix-MuiTypography-root-MuiLink-root"
+              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-yeaeka-MuiTypography-root-MuiLink-root"
               href="/support#contact"
             >
               Contact Us
@@ -121,12 +121,12 @@ exports[`Footer snapshot matches the rendered markup 1`] = `
           class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 MuiGrid-grid-md-3 css-10voxkt-MuiGrid-root"
         >
           <h6
-            class="MuiTypography-root MuiTypography-subtitle1 css-czr7mf-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-subtitle1 css-b1tlqp-MuiTypography-root"
           >
             Stay Connected
           </h6>
           <p
-            class="MuiTypography-root MuiTypography-body2 css-6ly42x-MuiTypography-root"
+            class="MuiTypography-root MuiTypography-body2 css-jp1qa-MuiTypography-root"
           >
             Receive product updates, useful buying guidance and selected offers from FastXHorizon.
           </p>
@@ -212,25 +212,25 @@ exports[`Footer snapshot matches the rendered markup 1`] = `
           class="MuiStack-root css-15crltr-MuiStack-root"
         >
           <a
-            class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-ioaxke-MuiTypography-root-MuiLink-root"
+            class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-q63d5u-MuiTypography-root-MuiLink-root"
             href="/privacy"
           >
             Privacy
           </a>
           <a
-            class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-ioaxke-MuiTypography-root-MuiLink-root"
+            class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-q63d5u-MuiTypography-root-MuiLink-root"
             href="/terms"
           >
             Terms
           </a>
           <a
-            class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-ioaxke-MuiTypography-root-MuiLink-root"
+            class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-q63d5u-MuiTypography-root-MuiLink-root"
             href="/shipping-returns"
           >
             Shipping & Returns
           </a>
           <a
-            class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-ioaxke-MuiTypography-root-MuiLink-root"
+            class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-q63d5u-MuiTypography-root-MuiLink-root"
             href="/support#contact"
           >
             Contact
@@ -241,7 +241,7 @@ exports[`Footer snapshot matches the rendered markup 1`] = `
         >
           <a
             aria-label="Privacy"
-            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1ja84ae-MuiButtonBase-root-MuiIconButton-root"
+            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-z0qyrg-MuiButtonBase-root-MuiIconButton-root"
             data-mui-internal-clone-element="true"
             href="/privacy"
             tabindex="0"
@@ -263,7 +263,7 @@ exports[`Footer snapshot matches the rendered markup 1`] = `
           </a>
           <a
             aria-label="Terms"
-            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1ja84ae-MuiButtonBase-root-MuiIconButton-root"
+            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-z0qyrg-MuiButtonBase-root-MuiIconButton-root"
             data-mui-internal-clone-element="true"
             href="/terms"
             tabindex="0"
@@ -285,7 +285,7 @@ exports[`Footer snapshot matches the rendered markup 1`] = `
           </a>
           <a
             aria-label="Shipping & Returns"
-            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1ja84ae-MuiButtonBase-root-MuiIconButton-root"
+            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-z0qyrg-MuiButtonBase-root-MuiIconButton-root"
             data-mui-internal-clone-element="true"
             href="/shipping-returns"
             tabindex="0"
@@ -307,7 +307,7 @@ exports[`Footer snapshot matches the rendered markup 1`] = `
           </a>
           <a
             aria-label="Contact"
-            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-1ja84ae-MuiButtonBase-root-MuiIconButton-root"
+            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeSmall css-z0qyrg-MuiButtonBase-root-MuiIconButton-root"
             data-mui-internal-clone-element="true"
             href="/support#contact"
             tabindex="0"

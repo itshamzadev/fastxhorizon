@@ -53,7 +53,7 @@ function AnnouncementBar() {
         width: '100%',
         overflow: 'hidden',
         position: 'relative',
-        background: 'linear-gradient(90deg, #123B98 0%, #2563EB 52%, #123B98 100%)',
+        background: '#256B58',
         color: '#FFFFFF',
         minHeight: 38,
         display: 'flex',

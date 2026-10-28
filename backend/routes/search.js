@@ -2,6 +2,46 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/product');
 
+const MAX_QUERY_LENGTH = 100;
+const MAX_PAGE_SIZE = 24;
+const MAX_MATCHES_FOR_RANKING = 200;
+const PUBLIC_FIELDS = 'name description shortDescription category subcategory categoryPath productType tags slug image images price currency brand sku storeName stock inventoryMode availabilityStatus rating numReviews createdAt';
+const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+const normalizeQuery = value => String(value || '').trim().slice(0, MAX_QUERY_LENGTH);
+const searchableFields = ['name', 'description', 'shortDescription', 'category', 'subcategory', 'categoryPath', 'productType', 'tags', 'brand', 'sku'];
+
+const publicProduct = product => ({
+  id: product._id,
+  name: product.name,
+  description: product.description || '',
+  shortDescription: product.shortDescription || product.description || '',
+  category: product.category,
+  subcategory: product.subcategory || '',
+  categoryPath: product.categoryPath || [],
+  productType: product.productType || '',
+  tags: product.tags || [],
+  slug: product.slug,
+  image: product.image || (Array.isArray(product.images) ? product.images[0] : ''),
+  images: Array.isArray(product.images) ? product.images : [],
+  price: product.price,
+  currency: product.currency || 'PKR',
+  brand: product.brand || '',
+  sku: product.sku || '',
+  storeName: product.storeName || 'FASTXHORIZON',
+  stock: product.stock,
+  inventoryMode: product.inventoryMode,
+  availabilityStatus: product.availabilityStatus,
+  rating: product.rating || 0,
+  numReviews: product.numReviews || 0,
+  createdAt: product.createdAt,
+});
+
+const scoreProduct = (product, terms) => {
+  const name = String(product.name || '').toLowerCase();
+  const haystack = searchableFields.map(field => Array.isArray(product[field]) ? product[field].join(' ') : String(product[field] || '')).join(' ').toLowerCase();
+  return terms.reduce((score, term) => score + (name === term ? 100 : 0) + (name.includes(term) ? 25 : 0) + (haystack.includes(term) ? 5 : 0), 0);
+};
+
 /**
  * @swagger
  * /api/search:
@@ -64,13 +104,28 @@ const Product = require('../models/product');
  */
 router.get('/', async (req, res) => {
   try {
-    const query = req.query.q;
+    const query = normalizeQuery(req.query.q);
+    const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
+    const requestedLimit = Number.parseInt(req.query.limit, 10) || 12;
+    const limit = Math.min(MAX_PAGE_SIZE, Math.max(1, requestedLimit));
+    if (!query) return res.json({ products: [], total: 0, page, pageSize: limit, totalPages: 0, query: '' });
 
-    const products = await Product.find({
-      $or: [{ name: { $regex: query, $options: 'i' } }, { description: { $regex: query, $options: 'i' } }],
-    });
-
-    res.json(products);
+    const terms = query.toLowerCase().split(/\s+/).filter(Boolean).map(escapeRegex);
+    const filter = {
+      status: 'active',
+      $and: terms.map(term => ({ $or: searchableFields.map(field => ({ [field]: { $regex: term, $options: 'i' } })) })),
+    };
+    const queryBuilder = Product.find(filter);
+    const matches = typeof queryBuilder.select === 'function'
+      ? await queryBuilder.select(PUBLIC_FIELDS).limit(MAX_MATCHES_FOR_RANKING).lean()
+      : await queryBuilder;
+    const ranked = matches
+      .map(product => ({ product, score: scoreProduct(product, terms) }))
+      .sort((a, b) => b.score - a.score || new Date(b.product.createdAt || 0) - new Date(a.product.createdAt || 0))
+      .map(entry => entry.product);
+    const total = ranked.length;
+    const start = (page - 1) * limit;
+    res.json({ products: ranked.slice(start, start + limit).map(publicProduct), total, page, pageSize: limit, totalPages: Math.ceil(total / limit), query });
   } catch (error) {
     console.error('Error searching products:', error);
     res.status(500).json({ error: 'An error occurred during the search.' });

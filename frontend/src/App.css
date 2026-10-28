@@ -5,7 +5,7 @@ body {
   font-family: 'Poppins', sans-serif !important;
   margin: 0;
   padding: 0;
-  background-color: #f5f5f5;
+  background-color: #F4F0E9;
 }
 
 .container {
@@ -17,7 +17,7 @@ body {
 h1,
 h2,
 h3 {
-  color: #333;
+  color: #292D32;
 }
 
 h1,
@@ -39,7 +39,7 @@ button {
 
 /* Navigation Bar */
 .navbar {
-  background-color: #2874f0;
+  background-color: #292D32;
   color: white;
   padding: 15px;
 }
@@ -72,9 +72,41 @@ button {
 
 /* Shop Page */
 .product-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: 20px;
+  display: grid !important;
+  width: 100% !important;
+  margin: 0 !important;
+  grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
+  gap: 16px;
+}
+
+.product-grid > .MuiGrid-item {
+  display: block !important;
+  min-width: 0;
+  width: auto !important;
+  max-width: none !important;
+  flex-basis: auto !important;
+  padding: 0 !important;
+  margin: 0 !important;
+}
+
+@media (min-width: 768px) {
+  .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 18px; }
+}
+
+@media (min-width: 1024px) {
+  .product-grid { grid-template-columns: repeat(2, minmax(0, 1fr)) !important; }
+}
+
+@media (min-width: 1200px) {
+  .product-grid { grid-template-columns: repeat(3, minmax(0, 1fr)) !important; gap: 20px; }
+}
+
+@media (min-width: 1536px) {
+  .product-grid { grid-template-columns: repeat(5, minmax(0, 1fr)) !important; }
+}
+
+@media (min-width: 1920px) {
+  .product-grid { grid-template-columns: repeat(7, minmax(0, 1fr)) !important; }
 }
 
 .product-card {

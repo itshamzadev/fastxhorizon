@@ -82,7 +82,7 @@ function detectGpuTier() {
   return 'high';
 }
 
-const ACCENT_GRADIENT = 'linear-gradient(120deg, #38bdf8 0%, #2874f0 45%, #f50057 100%)';
+const ACCENT_GRADIENT = '#C5A47E';
 
 const normalizeProduct = p => {
   const canonical = p._id || p.id;
@@ -405,7 +405,7 @@ function Home({ products, randomProducts, addToCart, error, loading, randomLoadi
           mb: 5,
           minHeight: heroHeight,
           color: 'white',
-          background: 'radial-gradient(120% 120% at 80% 0%, #16234a 0%, #0b1124 55%, #070a17 100%)',
+          background: '#292D32',
         }}
       >
         {/* Procedural 3D backdrop (capable GPUs only) */}
@@ -635,7 +635,7 @@ function Home({ products, randomProducts, addToCart, error, loading, randomLoadi
             No published products are available yet.
           </Alert>
         ) : (
-          <Grid container spacing={{ xs: 1.25, sm: 1.5, md: 2 }} sx={{ '& > .MuiGrid-item': { minWidth: 0, width: '100%', '@media (min-width:1920px)': { flexBasis: '12.5%', maxWidth: '12.5%' } } }}>
+          <Grid container className="product-grid" spacing={0}>
             {featuredProducts.map((p, idx) => (
               <Grid item key={p._id} xs={6} sm={6} md={4} lg={3} xl={2} className={animatedCards.includes(idx) ? 'product-card-animated' : ''}>
                 <ProductCard product={p} addToCart={addToCart} />
@@ -655,14 +655,14 @@ function Home({ products, randomProducts, addToCart, error, loading, randomLoadi
             position: 'relative',
             overflow: 'hidden',
             color: 'white',
-            background: 'linear-gradient(115deg, #2563eb 0%, #1e3a8a 44%, #131c3f 74%, #0b1124 100%)',
+            background: '#256B58',
             boxShadow: '0 30px 70px rgba(15,23,42,0.25)',
           }}
         >
           {/* Crisp, contained accents — a soft top-right sheen + a fading dot grid (no blurry splotches). */}
           <Box
             aria-hidden="true"
-            sx={{ position: 'absolute', inset: 0, background: 'radial-gradient(55% 120% at 100% 0%, rgba(56,189,248,0.30), transparent 55%)' }}
+            sx={{ position: 'absolute', inset: 0, background: 'rgba(197,164,126,0.14)' }}
           />
           <Box
             aria-hidden="true"
@@ -751,7 +751,7 @@ function Home({ products, randomProducts, addToCart, error, loading, randomLoadi
               View all products
             </Button>
           </Stack>
-          <Grid container spacing={{ xs: 1.25, sm: 1.5, md: 2 }} sx={{ '& > .MuiGrid-item': { minWidth: 0, width: '100%', '@media (min-width:1920px)': { flexBasis: '12.5%', maxWidth: '12.5%' } } }}>
+          <Grid container className="product-grid" spacing={0}>
             {newArrivals.map(product => (
               <Grid item key={product.id} xs={6} sm={6} md={4} lg={3} xl={2}>
                 <ProductCard product={product} addToCart={addToCart} />
@@ -833,7 +833,7 @@ function Home({ products, randomProducts, addToCart, error, loading, randomLoadi
             <RecommendedEmpty onExplore={handleExplore} />
           ) : (
             <>
-              <Grid container spacing={{ xs: 1.25, sm: 1.5, md: 2 }} sx={{ '& > .MuiGrid-item': { minWidth: 0, width: '100%', '@media (min-width:1920px)': { flexBasis: '12.5%', maxWidth: '12.5%' } } }}>
+              <Grid container className="product-grid" spacing={0}>
                 {recToShow.map(rec => (
                   <Grid item key={rec.id} xs={6} sm={6} md={4} lg={3} xl={2}>
                     <ProductCard product={rec} addToCart={addToCart} />
@@ -903,7 +903,7 @@ function Home({ products, randomProducts, addToCart, error, loading, randomLoadi
             borderRadius: 6,
             position: 'relative',
             overflow: 'hidden',
-            background: 'radial-gradient(120% 140% at 100% 0%, #1e40af 0%, #0f172a 60%)',
+            background: '#B65C43',
             color: 'white',
           }}
         >

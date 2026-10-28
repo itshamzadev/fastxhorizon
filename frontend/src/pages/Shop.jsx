@@ -24,6 +24,8 @@ import FilterAltIcon from '@mui/icons-material/FilterAlt';
 import ProductCard from '../components/ProductCard';
 import '../App.css';
 import { useNotifier } from '../context/NotificationProvider';
+import { apiClient } from '../services/apiClient';
+import { useLocation } from 'react-router-dom';
 
 const itemsPerPage = 6;
 
@@ -33,7 +35,13 @@ function Shop({ products, addToCart, loading, error }) {
   const [page, setPage] = React.useState(1);
   const [animatedCards, setAnimatedCards] = React.useState([]);
   const [sortOption, setSortOption] = React.useState('featured');
+  const [searchQuery, setSearchQuery] = React.useState('');
+  const [searchProducts, setSearchProducts] = React.useState(null);
+  const [searchTotal, setSearchTotal] = React.useState(null);
+  const [searchLoading, setSearchLoading] = React.useState(false);
+  const [searchError, setSearchError] = React.useState(null);
   const { notify } = useNotifier();
+  const location = useLocation();
 
   const capitalizeCategory = React.useCallback(category => (category ? category.charAt(0).toUpperCase() + category.slice(1) : ''), []);
 
@@ -49,8 +57,10 @@ function Shop({ products, addToCart, loading, error }) {
   }, [products, capitalizeCategory]);
 
   React.useEffect(() => {
-    const params = new URLSearchParams(window.location.search);
+    const params = new URLSearchParams(location.search);
     const categoryParam = params.get('category');
+    const queryParam = (params.get('search') || '').trim();
+    setSearchQuery(queryParam);
     if (categoryParam) {
       const legacyCategory = /^(women|women\/jewellery)$/i.test(categoryParam) ? 'Jewellery' : categoryParam;
       const formatted = capitalizeCategory(legacyCategory);
@@ -59,10 +69,23 @@ function Shop({ products, addToCart, loading, error }) {
         setPage(1);
       }
     }
-  }, [uniqueCategories, capitalizeCategory]);
+  }, [location.search, uniqueCategories, capitalizeCategory]);
+
+  React.useEffect(() => {
+    let active = true;
+    if (!searchQuery) { setSearchProducts(null); setSearchTotal(null); setSearchError(null); setSearchLoading(false); return undefined; }
+    setSearchLoading(true);
+    setSearchError(null);
+    apiClient.get('search', { params: { q: searchQuery, limit: 24 } })
+      .then(({ data }) => { if (active) { setSearchProducts(Array.isArray(data) ? data : (data?.products || [])); setSearchTotal(Array.isArray(data) ? data.length : (data?.total || 0)); } })
+      .catch(searchRequestError => { if (active) { setSearchProducts([]); setSearchTotal(0); setSearchError(searchRequestError); } })
+      .finally(() => { if (active) setSearchLoading(false); });
+    return () => { active = false; };
+  }, [searchQuery]);
 
   const filteredProducts = React.useMemo(() => {
-    const base = categoryFilter === 'all' ? products : products.filter(product => capitalizeCategory(product.category) === categoryFilter || (Array.isArray(product.categoryPath) && product.categoryPath.includes(categoryFilter)));
+    const sourceProducts = searchProducts || products;
+    const base = categoryFilter === 'all' ? sourceProducts : sourceProducts.filter(product => capitalizeCategory(product.category) === categoryFilter || (Array.isArray(product.categoryPath) && product.categoryPath.includes(categoryFilter)));
 
     const sorted = [...base].sort((a, b) => {
       switch (sortOption) {
@@ -80,13 +103,13 @@ function Shop({ products, addToCart, loading, error }) {
     });
 
     if (viewFilter === 'inStock') {
-      return sorted.filter(product => ['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode) ? product.availabilityStatus === 'IN_STOCK' : typeof product.stock === 'number' && product.stock > 0);
+      return sorted.filter(product => product?.inventoryMode === 'SUPPLIER_BASED' ? product.availabilityStatus === 'AVAILABLE_TO_ORDER' : (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode) ? product.availabilityStatus === 'IN_STOCK' : typeof product.stock === 'number' && product.stock > 0));
     }
     if (viewFilter === 'featured') {
       return sorted.filter(product => product.isFeatured || (product.rating || 0) >= 4.5);
     }
     return sorted;
-  }, [products, categoryFilter, sortOption, viewFilter, capitalizeCategory]);
+  }, [products, searchProducts, categoryFilter, sortOption, viewFilter, capitalizeCategory]);
 
   const pageCount = Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
   const startIndex = (page - 1) * itemsPerPage;
@@ -130,7 +153,7 @@ function Shop({ products, addToCart, loading, error }) {
     return () => clearTimeout(timer);
   }, [productsToShow]);
 
-  if (loading) {
+  if (loading || searchLoading) {
     return (
       <Box
         sx={{
@@ -155,7 +178,7 @@ function Shop({ products, addToCart, loading, error }) {
     <Container maxWidth="xl" sx={{ pb: 8 }}>
       <Paper
         elevation={0}
-        sx={{ p: { xs: 3, md: 5 }, borderRadius: 4, mb: 4, background: 'linear-gradient(120deg, rgba(40,116,240,0.12) 0%, rgba(63,81,181,0.08) 100%)' }}
+        sx={{ p: { xs: 3, md: 5 }, borderRadius: 4, mb: 4, background: '#E8E1D8', border: '1px solid #C5A47E' }}
       >
         <Stack direction={{ xs: 'column', md: 'row' }} spacing={2} justifyContent="space-between" alignItems={{ xs: 'flex-start', md: 'center' }}>
           <Box>
@@ -190,9 +213,10 @@ function Shop({ products, addToCart, loading, error }) {
         </Stack>
       </Paper>
 
-      {error && (
+      {searchQuery && <Typography variant="h5" sx={{ mb: 2 }}>Search results for “{searchQuery}” <Typography component="span" variant="body1" color="text.secondary">({searchTotal ?? 0} products)</Typography></Typography>}
+      {(error || searchError) && (
         <Alert severity="error" sx={{ mb: 3 }}>
-          {error.message || 'Unable to load products right now. Please try again shortly.'}
+          {(searchError || error)?.message || 'Unable to load products right now. Please try again shortly.'}
         </Alert>
       )}
 
@@ -223,7 +247,7 @@ function Shop({ products, addToCart, loading, error }) {
         </FormControl>
       </Paper>
 
-      <Grid container spacing={{ xs: 1.25, sm: 1.5, md: 2 }} sx={{ '& > .MuiGrid-item': { minWidth: 0, width: '100%', '@media (min-width:1920px)': { flexBasis: '12.5%', maxWidth: '12.5%' } } }}>
+      <Grid container className="product-grid" spacing={0}>
         {productsToShow.map((product, index) => (
           <Grid item key={product.id} xs={6} sm={6} md={4} lg={3} xl={2} className={animatedCards.includes(index) ? 'product-card-animated' : ''}>
             <ProductCard product={product} addToCart={addToCart} />

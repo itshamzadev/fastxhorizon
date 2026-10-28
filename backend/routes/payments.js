@@ -11,7 +11,7 @@ const STATES = new Set(['PENDING_SUBMISSION', 'PENDING_VERIFICATION', 'VERIFIED'
 const DEFAULT_MIMES = new Set(['image/png', 'image/jpeg', 'image/webp', 'application/pdf']);
 
 async function getConfig() {
-  return PaymentConfiguration.findOneAndUpdate({ key: 'v1' }, { $setOnInsert: { key: 'v1', automaticEnabled: false, manualEnabled: true, codEnabled: false, manualMethods: [] } }, { upsert: true, new: true, setDefaultsOnInsert: true }).lean();
+  return PaymentConfiguration.findOneAndUpdate({ key: 'v1' }, { $setOnInsert: { key: 'v1', automaticEnabled: false, manualEnabled: false, codEnabled: false, ordersEnabled: false, manualMethods: [] } }, { upsert: true, new: true, setDefaultsOnInsert: true }).lean();
 }
 
 function publicMethod(method) {
@@ -19,7 +19,7 @@ function publicMethod(method) {
 }
 
 function publicConfig(config) {
-  return { automatic: { enabled: Boolean(config.automaticEnabled) }, manual: { enabled: Boolean(config.manualEnabled), methods: (config.manualMethods || []).filter(method => method.enabled).sort((a, b) => a.order - b.order).map(publicMethod) }, cod: { enabled: Boolean(config.codEnabled) } };
+  return { ordersEnabled: config.ordersEnabled === true, orderingDisabledMessage: config.orderingDisabledMessage || 'Online ordering is temporarily unavailable.', automatic: { enabled: Boolean(config.automaticEnabled) }, manual: { enabled: Boolean(config.manualEnabled), methods: (config.manualMethods || []).filter(method => method.enabled).sort((a, b) => a.order - b.order).map(publicMethod) }, cod: { enabled: Boolean(config.codEnabled) } };
 }
 
 function validateFields(method, values, evidence) {
@@ -89,7 +89,7 @@ admin.put('/config', requireAdminPermission('payments.manage'), async (req, res,
     const body = req.body || {};
     if (typeof body.automaticEnabled !== 'boolean' || typeof body.manualEnabled !== 'boolean' || typeof body.codEnabled !== 'boolean' || !Array.isArray(body.manualMethods) || body.manualMethods.length > 20) return res.status(400).json({ code: 'validation_error', message: 'Invalid payment configuration.' });
     for (const method of body.manualMethods) { if (!/^[a-z0-9][a-z0-9_-]{1,39}$/.test(method.key || '') || !method.name || !Array.isArray(method.fields) || method.fields.length > 30) return res.status(400).json({ code: 'validation_error', message: 'Invalid manual payment method or fields.' }); for (const field of method.fields) if (!/^[a-zA-Z][a-zA-Z0-9_-]{0,39}$/.test(field.id || '') || !['text', 'textarea', 'number', 'select', 'radio', 'checkbox', 'file'].includes(field.type)) return res.status(400).json({ code: 'validation_error', message: 'Invalid dynamic payment field.' }); }
-    const saved = await PaymentConfiguration.findOneAndUpdate({ key: 'v1' }, { $set: { automaticEnabled: body.automaticEnabled, manualEnabled: body.manualEnabled, codEnabled: body.codEnabled, manualMethods: body.manualMethods } }, { new: true, upsert: true, runValidators: true });
+    const saved = await PaymentConfiguration.findOneAndUpdate({ key: 'v1' }, { $set: { automaticEnabled: body.automaticEnabled, manualEnabled: body.manualEnabled, codEnabled: body.codEnabled, ordersEnabled: body.ordersEnabled === true, orderingDisabledMessage: body.orderingDisabledMessage || 'Online ordering is temporarily unavailable.', manualMethods: body.manualMethods } }, { new: true, upsert: true, runValidators: true });
     await AdminAuditLog.create({ adminId: req.admin._id, email: req.admin.email, action: 'payment_configuration_updated', success: true, ip: req.ip, metadata: { methodCount: body.manualMethods.length } });
     return res.json({ data: saved });
   } catch (error) { return next(error); }

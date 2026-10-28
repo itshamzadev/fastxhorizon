@@ -70,10 +70,11 @@ export const createProductSchema = z.object({
     .int('Inventory must be a whole number')
     .min(0, 'Inventory cannot be negative')
     .max(1_000_000),
-  inventoryMode: z.enum(['NUMERIC', 'AVAILABILITY_BASED']).optional(),
-  availabilityStatus: z.enum(['IN_STOCK', 'OUT_OF_STOCK']).optional(),
+  inventoryMode: z.enum(['NUMERIC', 'AVAILABILITY_BASED', 'SUPPLIER_BASED']).optional(),
+  availabilityStatus: z.enum(['IN_STOCK', 'OUT_OF_STOCK', 'AVAILABLE_TO_ORDER']).optional(),
   image: z.string().trim().max(3_000_000, 'Image is too large').optional(),
   status: z.enum(PRODUCT_STATUSES).optional(),
+  variantJson: z.string().max(100_000, 'Variant configuration is too large').optional(),
 })
 
 export const updateProductSchema = createProductSchema.partial()

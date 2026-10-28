@@ -30,18 +30,18 @@ import { addWishlistItem, getCustomerToken, getGuestWishlistIds, getWishlist, me
 const theme = createTheme({
   palette: {
     primary: {
-      main: '#2874f0',
+      main: '#2456A6',
     },
     secondary: {
-      main: '#f50057',
+      main: '#B65C43',
     },
     background: {
-      default: '#f4f7fb',
-      paper: '#ffffff',
+      default: '#F4F0E9',
+      paper: '#FFFFFF',
     },
     text: {
-      primary: '#1f2933',
-      secondary: '#4b5563',
+      primary: '#292D32',
+      secondary: '#59636B',
     },
   },
   typography: {
@@ -74,7 +74,7 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 18,
-          boxShadow: '0 16px 30px rgba(40, 116, 240, 0.08)',
+          boxShadow: '0 12px 28px rgba(41, 45, 50, 0.10)',
         },
       },
     },
@@ -82,14 +82,15 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: 18,
-          boxShadow: '0 18px 42px rgba(15, 23, 42, 0.08)',
+          boxShadow: '0 16px 34px rgba(41, 45, 50, 0.10)',
         },
       },
     },
     MuiCssBaseline: {
       styleOverrides: {
         body: {
-          backgroundColor: '#f4f7fb',
+          backgroundColor: '#F4F0E9',
+          color: '#292D32',
         },
       },
     },

@@ -4,6 +4,25 @@ const {
     removeProductFromPinecone,
 } = require('../services/pineconeSync');
 
+const VariantAttributeSchema = new mongoose.Schema({
+    name: { type: String, required: true, trim: true, maxlength: 40 },
+    type: { type: String, enum: ['color', 'size', 'unit', 'volume', 'weight', 'capacity', 'pack_size', 'storage', 'material', 'other'], default: 'other' },
+    values: { type: [String], default: [] },
+}, { _id: false });
+
+const ProductVariantSchema = new mongoose.Schema({
+    key: { type: String, required: true, trim: true, maxlength: 300 },
+    options: { type: mongoose.Schema.Types.Mixed, default: {} },
+    sku: { type: String, trim: true, uppercase: true, default: '' },
+    price: { type: Number, required: true, min: 0 },
+    compareAtPrice: { type: Number, min: 0, default: null },
+    images: { type: [String], default: [] },
+    inventoryMode: { type: String, enum: ['NUMERIC', 'AVAILABILITY_BASED', 'SUPPLIER_BASED'], default: 'NUMERIC' },
+    stock: { type: Number, min: 0, default: 0 },
+    availabilityStatus: { type: String, enum: ['IN_STOCK', 'OUT_OF_STOCK', 'AVAILABLE_TO_ORDER'], default: 'OUT_OF_STOCK' },
+    enabled: { type: Boolean, default: true },
+}, { _id: true });
+
 const productSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -36,14 +55,32 @@ const productSchema = new mongoose.Schema({
         type: String,
         default: '',
     },
+    images: { type: [String], default: [] },
+    variantsEnabled: { type: Boolean, default: false },
+    variantAttributes: { type: [VariantAttributeSchema], default: [] },
+    variants: { type: [ProductVariantSchema], default: [] },
     sku: { type: String, trim: true, uppercase: true, sparse: true, unique: true },
     brand: String,
     stock: {
         type: Number,
         default: 0,
     },
-    inventoryMode: { type: String, enum: ['NUMERIC', 'AVAILABILITY_BASED', 'AVAILABILITY'], default: 'NUMERIC' },
-    availabilityStatus: { type: String, enum: ['IN_STOCK', 'OUT_OF_STOCK'], default: 'OUT_OF_STOCK' },
+    inventoryMode: { type: String, enum: ['NUMERIC', 'AVAILABILITY_BASED', 'AVAILABILITY', 'SUPPLIER_BASED'], default: 'NUMERIC' },
+    availabilityStatus: { type: String, enum: ['IN_STOCK', 'OUT_OF_STOCK', 'AVAILABLE_TO_ORDER'], default: 'OUT_OF_STOCK' },
+    supplierKey: { type: String, trim: true, sparse: true, unique: true },
+    supplierName: { type: String, trim: true, default: '' },
+    supplierSKU: { type: String, trim: true, default: '' },
+    sourceHandle: { type: String, trim: true, default: '' },
+    sourceUrl: { type: String, trim: true, default: '' },
+    sourcePrice: { type: Number, min: 0, default: null },
+    confirmedSupplierCost: { type: Number, min: 0, default: null },
+    operationalCostEstimate: { type: Number, min: 0, default: null },
+    sellingPrice: { type: Number, min: 0, default: null },
+    draftSellingPrice: { type: Number, min: 0, default: null },
+    targetProfit: { type: Number, min: 0, default: null },
+    estimatedNetProfit: { type: Number, default: null },
+    pricingStatus: { type: String, enum: ['REVIEW_REQUIRED', 'APPROVED', 'MANUAL_OVERRIDE'], default: 'REVIEW_REQUIRED' },
+    lastPriceReviewAt: { type: Date, default: null },
     status: { type: String, enum: ['active', 'draft', 'archived'], default: 'active' },
     featured: { type: Boolean, default: false },
     rating: {

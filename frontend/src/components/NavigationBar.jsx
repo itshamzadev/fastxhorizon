@@ -17,12 +17,12 @@ import AnnouncementBar from './AnnouncementBar';
 import { useWishlist } from '../context/WishlistContext';
 
 const controlSx = {
-  color: '#123B98',
+  color: '#292D32',
   width: { xs: 36, sm: 40 },
   height: { xs: 36, sm: 40 },
   flex: '0 0 auto',
-  '&:hover': { bgcolor: '#EFF6FF', color: '#2563EB' },
-  '&:focus-visible': { outline: '2px solid #2563EB', outlineOffset: 2 },
+  '&:hover': { bgcolor: '#E6F0EA', color: '#256B58' },
+  '&:focus-visible': { outline: '2px solid #C5A47E', outlineOffset: 2 },
 };
 
 function NavigationBar({ cartItemCount }) {
@@ -30,10 +30,13 @@ function NavigationBar({ cartItemCount }) {
   const [searchQuery, setSearchQuery] = React.useState('');
   const [searchResults, setSearchResults] = React.useState([]);
   const [loading, setLoading] = React.useState(false);
+  const [searchError, setSearchError] = React.useState('');
+  const [suggestionIndex, setSuggestionIndex] = React.useState(-1);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
   const searchBarRef = React.useRef(null);
   const searchInputRef = React.useRef(null);
   const searchResultsRef = React.useRef(null);
+  const searchRequestRef = React.useRef(0);
   const location = useLocation();
   const navigate = useNavigate();
   const { notify } = useNotifier();
@@ -51,19 +54,26 @@ function NavigationBar({ cartItemCount }) {
       if (query.trim() === '') {
         setSearchResults([]);
         setLoading(false);
+        setSearchError('');
         return;
       }
+      const requestId = ++searchRequestRef.current;
       setLoading(true);
+      setSearchError('');
       try {
-        const response = await apiClient.get('search', { params: { q: query } });
-        setSearchResults(response.data);
-        if (Array.isArray(response.data) && response.data.length === 0) notify({ severity: 'info', message: 'No products matched your search yet.' });
+        const response = await apiClient.get('search', { params: { q: query, limit: 6 } });
+        if (requestId !== searchRequestRef.current) return;
+        const products = Array.isArray(response.data) ? response.data : (response.data?.products || []);
+        setSearchResults(products);
+        setSuggestionIndex(-1);
       } catch (error) {
+        if (requestId !== searchRequestRef.current) return;
         console.error('Error fetching search results:', error);
         setSearchResults([]);
+        setSearchError('Search is unavailable. Check your connection and try again.');
         notify({ severity: 'error', message: 'Search is unavailable right now.' });
       } finally {
-        setLoading(false);
+        if (requestId === searchRequestRef.current) setLoading(false);
       }
     }, 320),
     [notify]
@@ -76,11 +86,14 @@ function NavigationBar({ cartItemCount }) {
     debouncedSearch.cancel();
     setSearchResults([]);
     setLoading(false);
+    setSearchError('');
+    setSuggestionIndex(-1);
   }, [debouncedSearch]);
 
   const openSearch = () => {
     setSearchOpen(true);
     window.setTimeout(() => searchInputRef.current?.focus(), 50);
+    if (searchQuery.trim() && !searchResults.length) debouncedSearch(searchQuery);
   };
 
   React.useEffect(() => {
@@ -101,12 +114,28 @@ function NavigationBar({ cartItemCount }) {
     };
   }, [closeSearch, searchOpen]);
 
-  React.useEffect(() => setSearchResults([]), [location.pathname]);
+  React.useEffect(() => { setSearchResults([]); setSearchError(''); setSuggestionIndex(-1); }, [location.pathname]);
 
   const handleSearchChange = event => {
     const value = event.target.value;
     setSearchQuery(value);
+    setSuggestionIndex(-1);
     debouncedSearch(value);
+  };
+
+  const handleSearchKeyDown = event => {
+    if (event.key === 'ArrowDown' || event.key === 'ArrowUp') {
+      event.preventDefault();
+      if (!searchResults.length) return;
+      setSuggestionIndex(current => event.key === 'ArrowDown'
+        ? Math.min(current + 1, searchResults.length - 1)
+        : Math.max(current - 1, -1));
+    }
+    if (event.key === 'Enter' && suggestionIndex >= 0 && searchResults[suggestionIndex]) {
+      event.preventDefault();
+      const id = searchResults[suggestionIndex]?._id || searchResults[suggestionIndex]?.id;
+      if (id) { navigate(`/product/${id}`); closeSearch(); }
+    }
   };
 
   const handleSearchSubmit = event => {
@@ -131,8 +160,8 @@ function NavigationBar({ cartItemCount }) {
   };
 
   return (
-    <Box component="div" sx={{ position: 'sticky', top: 0, zIndex: theme => theme.zIndex.appBar, width: '100%', bgcolor: '#FFFFFF' }}>
-      <AppBar position="static" elevation={0} sx={{ backgroundColor: '#FFFFFF', color: '#123B98', borderRadius: 0, borderBottom: '1px solid #E2E8F0', boxShadow: '0 2px 10px rgba(15, 23, 42, 0.06)', '& .logo-link': { textDecoration: 'none', display: 'inline-flex', alignItems: 'center', lineHeight: 0 }, '& .logo-image': { display: 'block', width: { xs: 145, sm: 175, md: 205 }, maxWidth: '38vw', height: 'auto' } }}>
+    <Box component="div" sx={{ position: 'sticky', top: 0, zIndex: theme => theme.zIndex.appBar, width: '100%', bgcolor: '#F4F0E9' }}>
+      <AppBar position="static" elevation={0} sx={{ backgroundColor: '#F4F0E9', color: '#292D32', borderRadius: 0, borderBottom: '1px solid #D8D1C6', boxShadow: '0 3px 12px rgba(41,45,50,.08)', '& .logo-link': { textDecoration: 'none', display: 'inline-flex', alignItems: 'center', lineHeight: 0 }, '& .logo-image': { display: 'block', width: { xs: 145, sm: 175, md: 205 }, maxWidth: '38vw', height: 'auto' } }}>
         <Toolbar sx={{ py: { xs: 1, md: 1.5 }, gap: { xs: 0.25, sm: 0.75, md: 1 } }}>
           <Box sx={{ flexGrow: 1, minWidth: 0 }}>
             <Link to="/" className="logo-link" aria-label="FastXHorizon home"><Box component="img" className="logo-image" src="/fastxhorizon.png" alt="FastXHorizon" /></Link>
@@ -140,10 +169,10 @@ function NavigationBar({ cartItemCount }) {
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0, sm: 0.25 }, minWidth: 0 }}>
             <Box ref={searchBarRef} component="form" onSubmit={handleSearchSubmit} sx={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: searchOpen ? { xs: 'min(210px, calc(100vw - 156px))', sm: 280, md: 330 } : { xs: 36, sm: 40 }, height: { xs: 36, sm: 40 }, overflow: 'visible', borderRadius: 999, bgcolor: searchOpen ? '#F1F5FF' : 'transparent', transition: 'width 300ms ease, background-color 250ms ease, box-shadow 250ms ease', transformOrigin: 'right center', '&:focus-within': { bgcolor: '#EFF6FF', boxShadow: '0 0 0 2px rgba(37,99,235,0.18)' }, '@media (prefers-reduced-motion: reduce)': { transition: 'none' } }}>
-              {searchOpen && <InputBase inputRef={searchInputRef} placeholder="Search gadgets, accessories..." inputProps={{ 'aria-label': 'Search products' }} value={searchQuery} onChange={handleSearchChange} sx={{ flex: 1, minWidth: 0, ml: 1.25, color: '#0F172A', '& input::placeholder': { color: '#64748B', opacity: 1 } }} />}
-              {loading && <CircularProgress size={17} sx={{ color: '#2563EB', mr: 0.5 }} />}
+              {searchOpen && <InputBase inputRef={searchInputRef} onKeyDown={handleSearchKeyDown} placeholder="Search products..." inputProps={{ 'aria-label': 'Search products', role: 'combobox', 'aria-expanded': Boolean(searchQuery.trim()), 'aria-autocomplete': 'list' }} value={searchQuery} onChange={handleSearchChange} sx={{ flex: 1, minWidth: 0, ml: 1.25, color: '#0F172A', '& input::placeholder': { color: '#64748B', opacity: 1 } }} />}
+              {loading && <CircularProgress size={17} sx={{ color: '#256B58', mr: 0.5 }} />}
               <Tooltip title={searchOpen ? 'Close search' : 'Search'} arrow placement="bottom"><IconButton aria-label={searchOpen ? 'Close search' : 'Search products'} onClick={searchOpen ? closeSearch : openSearch} sx={controlSx}>{searchOpen ? <CloseIcon fontSize="small" /> : <SearchIcon fontSize="small" />}</IconButton></Tooltip>
-              {searchOpen && searchResults.length > 0 && <Box ref={searchResultsRef} sx={{ position: 'absolute', top: 48, right: 0, width: { xs: 'min(320px, calc(100vw - 24px))', sm: 360 }, zIndex: theme => theme.zIndex.modal - 1, backgroundColor: 'white', borderRadius: 3, boxShadow: '0 22px 48px rgba(15,23,42,0.18)', border: '1px solid rgba(148,163,184,0.18)' }}><SearchResults results={searchResults} onResultClick={() => { closeSearch(); }} setSearchResults={setSearchResults} /></Box>}
+              {searchOpen && searchQuery.trim() && <Box ref={searchResultsRef} sx={{ position: 'absolute', top: 48, right: 0, width: { xs: 'min(320px, calc(100vw - 24px))', sm: 360 }, zIndex: theme => theme.zIndex.modal - 1, backgroundColor: 'white', borderRadius: 2, boxShadow: '0 22px 48px rgba(15,23,42,0.18)', border: '1px solid rgba(148,163,184,0.18)' }}><SearchResults results={searchResults} loading={loading} error={searchError} query={searchQuery} onRetry={() => debouncedSearch(searchQuery)} onResultClick={() => { closeSearch(); }} onViewAll={() => { navigate(`/shop?search=${encodeURIComponent(searchQuery.trim())}`); closeSearch(); }} setSearchResults={setSearchResults} /></Box>}
             </Box>
 
             {!isLoggedIn ? <>

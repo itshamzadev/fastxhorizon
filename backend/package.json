@@ -18,6 +18,8 @@
     "catalog:export-local": "node scripts/export-local-catalog.js",
     "catalog:validate": "node scripts/validate-catalog-export.js",
     "catalog:import": "node scripts/import-catalog-export.js",
+    "yourmart:dry-run": "node scripts/import-yourmart-csv.js",
+    "yourmart:import": "node scripts/import-yourmart-csv.js --import",
     "seed": "node seed/productSeeds.js dev",
     "dev": "nodemon index.js",
     "weaviate-upsert": "node scripts/weaviate-upsert.js",

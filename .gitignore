@@ -26,3 +26,6 @@ others/docs/*.backup*
 *.sqlite
 *.db
 *.bak
+**/*yourmart*.csv
+**/*supplier*.csv
+others/docs/yourmart-*

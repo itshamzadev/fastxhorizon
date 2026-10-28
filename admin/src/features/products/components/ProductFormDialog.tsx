@@ -35,8 +35,9 @@ interface FormValues {
   inventory: string
   status: string
   image: string
-  inventoryMode: 'NUMERIC' | 'AVAILABILITY_BASED'
-  availabilityStatus: 'IN_STOCK' | 'OUT_OF_STOCK'
+  inventoryMode: 'NUMERIC' | 'AVAILABILITY_BASED' | 'SUPPLIER_BASED'
+  availabilityStatus: 'IN_STOCK' | 'OUT_OF_STOCK' | 'AVAILABLE_TO_ORDER'
+  variantJson: string
 }
 
 /** Create/edit product dialog with shared-schema validation. */
@@ -59,6 +60,7 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
     image: '',
     inventoryMode: 'NUMERIC',
     availabilityStatus: 'OUT_OF_STOCK',
+    variantJson: '',
   })
 
   useEffect(() => {
@@ -73,6 +75,7 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
       image: product?.image ?? '',
       inventoryMode: product?.inventoryMode ?? 'NUMERIC',
       availabilityStatus: product?.availabilityStatus ?? 'OUT_OF_STOCK',
+      variantJson: product?.variants?.length ? JSON.stringify({ attributes: product.variantAttributes || [], variants: product.variants }, null, 2) : '',
     })
     form.setErrors({})
     setServerError(null)
@@ -91,12 +94,18 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
     }
 
     try {
+      let variantPayload: Record<string, unknown> = {}
+      if (form.values.variantJson.trim()) {
+        const parsed = JSON.parse(form.values.variantJson) as { attributes?: unknown[]; variants?: unknown[] }
+        variantPayload = { variantsEnabled: true, variantAttributes: parsed.attributes || [], variants: parsed.variants || [] }
+      }
+      const payload = { ...result.data, ...variantPayload }
       if (isEdit && product) {
-        await updateProduct.mutateAsync({ id: product.id, input: result.data })
-        toast.success('Changes saved', `${result.data.name} was updated.`)
+        await updateProduct.mutateAsync({ id: product.id, input: payload })
+        toast.success('Changes saved', `${payload.name} was updated.`)
       } else {
-        await createProduct.mutateAsync(result.data as CreateProductPayload)
-        toast.success('Product created', `${result.data.name} is now in the catalog.`)
+        await createProduct.mutateAsync(payload as CreateProductPayload)
+        toast.success('Product created', `${payload.name} is now in the catalog.`)
       }
       onClose()
     } catch (error) {
@@ -104,7 +113,7 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
       if (fields && Object.keys(fields).length > 0) {
         form.setErrors(fields)
       } else {
-        setServerError(getUserMessage(error))
+        setServerError(error instanceof SyntaxError ? 'Variant JSON is invalid.' : getUserMessage(error))
       }
     }
   }
@@ -213,12 +222,12 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
         {form.values.inventoryMode === 'NUMERIC' ? <Field id="product-inventory" label="Inventory quantity" required error={form.errors.inventory}>
           <Input id="product-inventory" type="number" min="0" step="1" value={form.values.inventory} invalid={Boolean(form.errors.inventory)} onChange={(event) => { form.setField('inventory', event.target.value); form.clearError('inventory') }} />
         </Field> : <Field id="product-availability" label="Availability status" required>
-          <Select id="product-availability" options={[{ value: 'IN_STOCK', label: 'In Stock' }, { value: 'OUT_OF_STOCK', label: 'Out of Stock' }]} value={form.values.availabilityStatus} onChange={(event) => form.setField('availabilityStatus', event.target.value as FormValues['availabilityStatus'])} />
+          <Select id="product-availability" options={form.values.inventoryMode === 'SUPPLIER_BASED' ? [{ value: 'AVAILABLE_TO_ORDER', label: 'Available to order' }, { value: 'OUT_OF_STOCK', label: 'Out of stock' }] : [{ value: 'IN_STOCK', label: 'In Stock' }, { value: 'OUT_OF_STOCK', label: 'Out of Stock' }]} value={form.values.availabilityStatus} onChange={(event) => form.setField('availabilityStatus', event.target.value as FormValues['availabilityStatus'])} />
         </Field>}
       </div>
 
       <Field id="product-inventory-mode" label="Inventory mode" hint="Use numeric quantities for stocked products, or availability status when quantity is not known.">
-        <Select id="product-inventory-mode" options={[{ value: 'NUMERIC', label: 'Quantity-based inventory' }, { value: 'AVAILABILITY_BASED', label: 'Availability-based inventory' }]} value={form.values.inventoryMode} onChange={(event) => form.setField('inventoryMode', event.target.value as FormValues['inventoryMode'])} />
+        <Select id="product-inventory-mode" options={[{ value: 'NUMERIC', label: 'Quantity-based inventory' }, { value: 'AVAILABILITY_BASED', label: 'Availability-based inventory' }, { value: 'SUPPLIER_BASED', label: 'Supplier-based availability' }]} value={form.values.inventoryMode} onChange={(event) => { const mode = event.target.value as FormValues['inventoryMode']; form.setField('inventoryMode', mode); if (mode === 'SUPPLIER_BASED') form.setField('availabilityStatus', 'AVAILABLE_TO_ORDER') }} />
       </Field>
 
       <Field id="product-status" label="Status" required>
@@ -228,6 +237,10 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
           value={form.values.status}
           onChange={(event) => form.setField('status', event.target.value)}
         />
+      </Field>
+
+      <Field id="product-variants" label="Variants (optional JSON)" hint={'Use {"attributes":[{"name":"Color","type":"color","values":["Black","White"]}],"variants":[{"key":"Color=Black","options":{"Color":"Black"},"sku":"SKU-BLK","price":1290,"inventoryMode":"NUMERIC","stock":5,"availabilityStatus":"IN_STOCK"}]}'}>
+        <Textarea id="product-variants" value={form.values.variantJson} onChange={(event) => form.setField('variantJson', event.target.value)} />
       </Field>
 
       <Field id="product-image" label="Product image" hint="Upload an image up to 2 MB, or paste an image URL.">

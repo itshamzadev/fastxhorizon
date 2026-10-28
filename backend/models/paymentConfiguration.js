@@ -30,6 +30,8 @@ const schema = new mongoose.Schema({
   automaticEnabled: { type: Boolean, default: false },
   manualEnabled: { type: Boolean, default: true },
   codEnabled: { type: Boolean, default: false },
+  ordersEnabled: { type: Boolean, default: false },
+  orderingDisabledMessage: { type: String, default: 'Online ordering is temporarily unavailable.', maxlength: 240 },
   manualMethods: { type: [MethodSchema], default: [] },
 }, { timestamps: true });
 

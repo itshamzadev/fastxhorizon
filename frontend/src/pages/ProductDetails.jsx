@@ -19,6 +19,11 @@ import {
   Rating,
   Stack,
   Typography,
+  IconButton,
+  Tab,
+  Tabs,
+  Dialog,
+  DialogContent,
 } from '@mui/material';
 import CloudOffIcon from '@mui/icons-material/CloudOff';
 import RefreshIcon from '@mui/icons-material/Refresh';
@@ -26,7 +31,11 @@ import OpenInNewIcon from '@mui/icons-material/OpenInNew';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import { formatPrice } from '../utils/currency';
 import { apiClient, withRetry } from '../services/apiClient';
-import { useNotifier } from '../context/NotificationProvider';
+import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
+import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
+import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
+import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
+import { useWishlist } from '../context/WishlistContext';
 
 function SimilarProductsError({ onRetry }) {
   const [showDetails, setShowDetails] = React.useState(false);
@@ -99,11 +108,15 @@ function ProductDetails({ addToCart }) {
   const [product, setProduct] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [userRating, setUserRating] = useState(0);
   const [recommended, setRecommended] = useState([]);
   const [recLoading, setRecLoading] = useState(true);
   const [similarError, setSimilarError] = useState(false);
-  const { notify } = useNotifier();
+  const [galleryIndex, setGalleryIndex] = useState(0);
+  const [selectedOptions, setSelectedOptions] = useState({});
+  const [ordersEnabled, setOrdersEnabled] = useState(false);
+  const [tab, setTab] = useState(0);
+  const [zoomOpen, setZoomOpen] = useState(false);
+  const { wishlist, toggleWishlist, wishlistPending } = useWishlist();
 
   const normalizeProduct = useCallback(prod => {
     if (!prod || typeof prod !== 'object') return null;
@@ -182,7 +195,6 @@ function ProductDetails({ addToCart }) {
         throw new Error('Product not found');
       }
       setProduct(normalized);
-      setUserRating(normalized.rating || 0);
       recordVisit(normalized);
       fetchRecommended();
     } catch (err) {
@@ -213,6 +225,12 @@ function ProductDetails({ addToCart }) {
     fetchProduct();
   }, [fetchProduct]);
 
+  useEffect(() => {
+    apiClient.get('payments/config').then(({ data }) => setOrdersEnabled(data?.ordersEnabled === true)).catch(() => setOrdersEnabled(false));
+  }, []);
+
+  useEffect(() => { setGalleryIndex(0); setSelectedOptions({}); }, [product?.id]);
+
   const formatCategory = value => {
     if (typeof value !== 'string' || !value.length) {
       return 'Uncategorized';
@@ -220,30 +238,20 @@ function ProductDetails({ addToCart }) {
     return value.charAt(0).toUpperCase() + value.slice(1);
   };
 
-  const handleAddToCart = useCallback(() => {
-    if (product) {
-      addToCart(product);
-    }
-  }, [addToCart, product]);
-
-  const handleRatingChange = async (_e, newRating) => {
-    setUserRating(newRating);
-    try {
-      await apiClient.put(`products/${id}/rating`, { rating: newRating });
-      setProduct(prev => {
-        if (!prev) return prev;
-        return {
-          ...prev,
-          rating: newRating,
-          numReviews: (prev.numReviews || 0) + 1,
-        };
-      });
-      notify({ severity: 'success', message: 'Thanks for the feedback!' });
-    } catch (err) {
-      console.error('Error updating rating:', err);
-      notify({ severity: 'error', message: 'Could not update your rating right now.' });
-    }
-  };
+  const images = (product?.images?.length ? product.images : [product?.image]).filter(Boolean);
+  const variants = Array.isArray(product?.variants) ? product.variants : [];
+  const variantAttributes = Array.isArray(product?.variantAttributes) ? product.variantAttributes : [];
+  const selectionComplete = variantAttributes.length > 0 && variantAttributes.every(attribute => selectedOptions[attribute.name]);
+  const selectedVariant = selectionComplete ? (variants.find(variant => Object.entries(selectedOptions).every(([key, value]) => variant.options?.[key] === value)) || null) : null;
+  const displayedPrice = selectedVariant?.price ?? product?.price;
+  const displayedSku = selectedVariant?.sku || product?.sku;
+  const displayedImages = selectedVariant?.images?.length ? selectedVariant.images : images;
+  const supplierProduct = product?.inventoryMode === 'SUPPLIER_BASED';
+  const supplierVariant = selectedVariant?.inventoryMode === 'SUPPLIER_BASED';
+  const productAvailable = supplierProduct ? product.availabilityStatus === 'AVAILABLE_TO_ORDER' : (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode) ? product.availabilityStatus === 'IN_STOCK' : Number(product?.stock) > 0);
+  const variantAvailable = selectedVariant ? (selectedVariant.inventoryMode === 'SUPPLIER_BASED' ? selectedVariant.availabilityStatus === 'AVAILABLE_TO_ORDER' : (selectedVariant.inventoryMode === 'AVAILABILITY_BASED' ? selectedVariant.availabilityStatus === 'IN_STOCK' : Number(selectedVariant.stock) > 0)) : productAvailable;
+  const isWishlisted = wishlist.some(item => String(item?._id || item?.id) === String(product?.id));
+  const handleAddToCart = useCallback(() => { if (product && ordersEnabled && variantAvailable) addToCart({ ...product, price: displayedPrice, sku: displayedSku, image: displayedImages[0] || product.image, selectedVariantId: selectedVariant?.id, selectedVariant }); }, [addToCart, displayedImages, displayedPrice, displayedSku, ordersEnabled, product, selectedVariant, variantAvailable]);
 
   if (loading) {
     return (
@@ -277,54 +285,56 @@ function ProductDetails({ addToCart }) {
   }
 
   return (
-    <Container maxWidth="md" sx={{ mt: 4, pb: 6 }}>
-      <Paper elevation={3} sx={{ p: 3 }}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} md={6}>
-            <img src={product.image} alt={product.name} style={{ width: '100%', maxHeight: '400px', objectFit: 'contain' }} />
+    <Box sx={{ minHeight: '100vh', color: '#292D32', background: '#F4F0E9', py: { xs: 2, md: 4 } }}>
+    <Container maxWidth="xl" sx={{ pb: 8 }}>
+      <Typography variant="body2" sx={{ mb: 2, color: '#667085' }}>
+        Home / {formatCategory(product.category)} / Product
+      </Typography>
+      <Box sx={{ position: 'relative', pb: { xs: 2, md: 4 }, borderBottom: '1px solid #D7DEE8' }}>
+        <Grid container spacing={{ xs: 3, md: 6 }}>
+          <Grid item xs={12} md={7}>
+            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 1, md: 1.5 }, alignItems: 'stretch' }}>
+            <Box sx={{ position: 'relative', flex: 1, bgcolor: '#E8EDF3', border: '1px solid #C5A47E', borderRadius: { xs: 3, md: 5 }, minHeight: { xs: 290, md: 470 }, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', boxShadow: '0 18px 45px rgba(41,45,50,.10)' }}>
+              {displayedImages.length ? <Box component="button" type="button" onClick={() => setZoomOpen(true)} aria-label="Open enlarged product image" sx={{ display: 'block', border: 0, p: { xs: 1, md: 2 }, bgcolor: 'transparent', cursor: 'zoom-in', width: '100%' }}><Box component="img" src={displayedImages[galleryIndex % displayedImages.length]} alt={product.name} sx={{ display: 'block', mx: 'auto', width: '100%', height: { xs: 285, md: 465 }, objectFit: 'contain', transition: 'transform .25s ease', '&:hover': { transform: 'scale(1.035)' } }} /></Box> : <Typography color="text.secondary">Image unavailable</Typography>}
+              {displayedImages.length > 0 && <Box sx={{ position: 'absolute', right: 14, bottom: 14, px: 1, py: .45, borderRadius: 2, bgcolor: 'rgba(7,26,61,.82)', color: '#fff', fontSize: 12, fontWeight: 700 }}>{galleryIndex + 1} / {displayedImages.length}</Box>}
+              {displayedImages.length > 1 && <>
+                <IconButton aria-label="Previous product image" onClick={() => setGalleryIndex(index => (index - 1 + displayedImages.length) % displayedImages.length)} sx={{ position: 'absolute', left: 14, top: '50%', bgcolor: '#FFFFFF', color: '#0B1735', boxShadow: '0 8px 20px rgba(11,23,53,.14)', '&:hover': { bgcolor: '#155EEF', color: '#fff', transform: 'translateX(-2px)' } }}>‹</IconButton>
+                <IconButton aria-label="Next product image" onClick={() => setGalleryIndex(index => (index + 1) % displayedImages.length)} sx={{ position: 'absolute', right: 14, top: '50%', bgcolor: '#FFFFFF', color: '#0B1735', boxShadow: '0 8px 20px rgba(11,23,53,.14)', '&:hover': { bgcolor: '#155EEF', color: '#fff', transform: 'translateX(2px)' } }}>›</IconButton>
+              </>}
+            </Box>
+            <Stack direction={{ xs: 'row', md: 'column' }} spacing={1} sx={{ mt: { xs: 1.25, md: 0 }, overflowX: { xs: 'auto', md: 'visible' }, overflowY: { xs: 'visible', md: 'auto' }, pb: .5, flex: { md: '0 0 68px' }, maxHeight: { md: 470 }, scrollbarWidth: 'thin' }}>
+              {displayedImages.map((image, index) => <Box key={`${image}-${index}`} component="button" type="button" onClick={() => setGalleryIndex(index)} aria-label={`View product image ${index + 1}`} sx={{ border: index === galleryIndex ? '2px solid #155EEF' : '1px solid #DCE6F4', borderRadius: 2.5, p: .35, bgcolor: '#fff', flex: '0 0 64px', cursor: 'pointer', transition: 'transform .2s ease, box-shadow .2s ease', '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 6px 14px rgba(21,94,239,.16)' } }}><Box component="img" src={image} alt="" sx={{ width: 58, height: 58, objectFit: 'cover', borderRadius: 1.5 }} /></Box>)}
+            </Stack>
+            </Box>
           </Grid>
 
-          <Grid item xs={12} md={6}>
-            <Typography variant="h4" gutterBottom>
-              {product.name}
-            </Typography>
-            <Typography variant="h6" color="text.secondary" gutterBottom>
-              Brand: {product.brand || 'Fusion Electronics'}
-            </Typography>
-            <Typography variant="h6" color="text.secondary" gutterBottom>
-              Category: {formatCategory(product.category)}
-            </Typography>
-            <Typography variant="h6" color="primary" gutterBottom>
-              {formatPrice(product.price)}
-            </Typography>
-            <Typography variant="body1" gutterBottom>
-              {product.description}
-            </Typography>
+          <Grid item xs={12} md={5} sx={{ bgcolor: 'rgba(255,255,255,.86)', border: '1px solid #D7DEE8', borderRadius: { xs: 3, md: 4 }, p: { xs: 2.5, md: 3.5 }, boxShadow: '0 16px 38px rgba(32,42,60,.10)' }}>
+            <Typography variant="overline" sx={{ color: '#2359CE', letterSpacing: '.14em', fontWeight: 800 }}>{formatCategory(product.category)} · {product.storeName || 'FASTXHORIZON'}</Typography>
+            <Typography component="h1" sx={{ color: '#202A3C', fontSize: { xs: '1.45rem', sm: '1.7rem', md: '2rem' }, fontWeight: 750, lineHeight: 1.2, letterSpacing: '-.02em', mb: 1, display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{product.name}</Typography>
+            {displayedSku && <Typography variant="body2" sx={{ color: '#667085', mb: 1 }}>SKU: {displayedSku}</Typography>}
+            <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>{product.numReviews > 0 ? <><Rating value={product.rating || 0} precision={.1} readOnly size="small" /><Typography variant="body2" sx={{ color: '#667085' }}>{Number(product.rating || 0).toFixed(1)} ({product.numReviews})</Typography></> : <Typography variant="body2" sx={{ color: '#667085' }}>No reviews yet</Typography>}</Stack>
+            <Box sx={{ mb: 1.5, pb: 1.5, borderBottom: '1px solid #D7DEE8' }}><Typography variant="caption" sx={{ display: 'block', color: '#667085', letterSpacing: '.12em', textTransform: 'uppercase' }}>Price</Typography><Typography variant="h4" sx={{ color: '#2359CE', fontSize: { xs: '1.65rem', md: '2rem' }, fontWeight: 850 }}>{formatPrice(displayedPrice)}</Typography></Box>
+            <Typography sx={{ color: '#4B5567', mb: 2, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.55 }}>{product.shortDescription || product.description}</Typography>
 
-            <Box sx={{ display: 'flex', alignItems: 'center', my: 1 }}>
-              <Typography variant="body2" color="text.secondary" sx={{ mr: 1 }}>
-                In Stock:
-              </Typography>
-              <Chip
-                label={['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode) ? (product.availabilityStatus === 'IN_STOCK' ? 'In Stock' : 'Out of Stock') : (product.stock > 0 ? 'In Stock' : 'Out of Stock')}
-                color={['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode) ? (product.availabilityStatus === 'IN_STOCK' ? 'success' : 'error') : (product.stock > 0 ? 'success' : 'error')}
-                sx={{ maxWidth: '200px' }}
-              />
-            </Box>
+            {product.variantsEnabled && variantAttributes.length > 0 && <Stack spacing={2} sx={{ mb: 2 }}>{variantAttributes.filter(attribute => attribute.values?.length).map(attribute => <Box key={attribute.name}><Typography variant="subtitle2" sx={{ color: '#202A3C', mb: .75 }}>{attribute.name}: <b style={{ color: '#2359CE' }}>{selectedOptions[attribute.name] || 'Select'}</b></Typography><Stack direction="row" spacing={1} flexWrap="wrap">{attribute.values.map(value => { const candidate = { ...selectedOptions, [attribute.name]: value }; const available = variants.some(variant => variant.enabled !== false && Object.entries(candidate).every(([key, option]) => variant.options?.[key] === option)); return <Button key={value} size="small" variant={selectedOptions[attribute.name] === value ? 'contained' : 'outlined'} disabled={!available} onClick={() => { setSelectedOptions(current => ({ ...current, [attribute.name]: value })); setGalleryIndex(0); }} sx={{ color: selectedOptions[attribute.name] === value ? '#fff' : '#344054', borderColor: '#B8C5D8', '&:hover': { borderColor: '#2359CE', bgcolor: '#F1F0FA' }, '&.Mui-disabled': { color: '#AAB4C3', borderColor: '#E0E5ED' } }}>{value}</Button> })}</Stack></Box>)}</Stack>}
 
-            <Box sx={{ display: 'flex', alignItems: 'center', mt: 1, mb: 2 }}>
-              <Rating value={userRating} precision={0.5} onChange={handleRatingChange} sx={{ mr: 1 }} />
-              <Typography variant="body2" color="text.secondary">
-                ({product.numReviews || 0} Reviews)
-              </Typography>
-            </Box>
-
-            <Button variant="contained" color="primary" onClick={handleAddToCart} sx={{ mt: 2 }}>
-              Add to Cart
-            </Button>
+            <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}><Typography variant="body2" sx={{ color: '#667085' }}>Availability:</Typography><Chip label={selectedVariant?.inventoryMode === 'SUPPLIER_BASED' || supplierProduct ? (variantAvailable ? 'Available to Order' : 'Out of Stock') : (variantAvailable ? 'In Stock' : 'Out of Stock')} color={variantAvailable ? 'success' : 'error'} size="small" sx={{ color: '#FFFFFF' }} /></Box>
+            <Box sx={{ mb: 2, px: 1.5, py: 1.1, borderLeft: '3px solid #F4B86A', bgcolor: '#F1F0FA', borderRadius: 1.5 }}><Typography variant="body2" sx={{ color: '#202A3C', fontWeight: 750 }}>{supplierProduct || supplierVariant ? 'Available to Order' : (variantAvailable ? 'In Stock' : 'Out of Stock')}</Typography><Typography variant="caption" sx={{ color: '#667085' }}>{supplierProduct || supplierVariant ? 'Subject to supplier confirmation. Ordering is currently paused.' : (!ordersEnabled ? 'Online ordering is temporarily unavailable.' : 'Availability confirmed by FastXHORIZON.')}</Typography></Box>
+            <Stack direction="row" spacing={1} sx={{ mb: 1 }}><Button variant="contained" startIcon={<ShoppingCartRoundedIcon />} onClick={handleAddToCart} disabled={!ordersEnabled || !variantAvailable || (product.variantsEnabled && variantAttributes.length > 0 && !selectedVariant)} sx={{ bgcolor: '#2359CE', '&:hover': { bgcolor: '#1745A6' } }}>Add to Cart</Button><IconButton aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'} aria-pressed={isWishlisted} disabled={wishlistPending.has(String(product.id))} onClick={() => toggleWishlist(product)} sx={{ color: isWishlisted ? '#D98A28' : '#2359CE', border: '1px solid #B8C5D8', '&:hover': { bgcolor: '#F1F0FA' } }}>{isWishlisted ? <FavoriteRoundedIcon /> : <FavoriteBorderRoundedIcon />}</IconButton></Stack>
           </Grid>
         </Grid>
-      </Paper>
+      </Box>
+
+      <Dialog open={zoomOpen} onClose={() => setZoomOpen(false)} maxWidth="lg" fullWidth aria-labelledby="product-image-dialog-title"><IconButton onClick={() => setZoomOpen(false)} aria-label="Close enlarged image" sx={{ position: 'absolute', right: 8, top: 8, zIndex: 1, bgcolor: 'rgba(255,255,255,.9)' }}><CloseRoundedIcon /></IconButton><DialogContent id="product-image-dialog-title" sx={{ p: { xs: 1, md: 3 }, bgcolor: '#F8FAFC', textAlign: 'center' }}>{displayedImages.length > 0 && <Box component="img" src={displayedImages[galleryIndex % displayedImages.length]} alt={`${product.name} enlarged`} sx={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain' }} />}</DialogContent></Dialog>
+
+      <Box sx={{ mt: 4, p: { xs: 2, md: 3 }, borderRadius: 4, bgcolor: 'rgba(255,255,255,.72)', border: '1px solid #D7DEE8', boxShadow: '0 12px 32px rgba(32,42,60,.07)' }}><Tabs value={tab} onChange={(_event, value) => setTab(value)} variant="scrollable" sx={{ '& .MuiTabs-indicator': { backgroundColor: '#2359CE', height: 3, borderRadius: 2 }, '& .MuiTab-root': { color: '#667085', '&.Mui-selected': { color: '#2359CE', fontWeight: 800 } } }}><Tab label="Description" /><Tab label="Specifications" /><Tab label="Reviews" /><Tab label="Shipping & Returns" /></Tabs>
+        <Box sx={{ p: { xs: 1, md: 2 }, mt: 1, color: '#344054', borderTop: '1px solid #E0E5ED' }}>
+          {tab === 0 && <Typography sx={{ whiteSpace: 'pre-line', lineHeight: 1.8 }}>{product.longDescription || product.description || 'No description available.'}</Typography>}
+          {tab === 1 && <Stack spacing={1}><Typography><b style={{ color: '#2359CE' }}>SKU:</b> {displayedSku || 'Not specified'}</Typography><Typography><b style={{ color: '#2359CE' }}>Category:</b> {formatCategory(product.category)}</Typography>{product.brand && <Typography><b style={{ color: '#2359CE' }}>Brand:</b> {product.brand}</Typography>}</Stack>}
+          {tab === 2 && <Box><Rating value={product.numReviews ? product.rating || 0 : 0} readOnly /><Typography sx={{ color: '#667085', mt: 1 }}>{product.numReviews ? `${product.numReviews} genuine review(s)` : 'No reviews yet.'}</Typography></Box>}
+          {tab === 3 && <Typography sx={{ color: '#667085' }}>Shipping and return details will be communicated after your order is confirmed. No delivery time is promised.</Typography>}
+        </Box>
+      </Box>
 
       <Box sx={{ mt: 5 }}>
         <Typography variant="h5" gutterBottom>
@@ -365,7 +375,7 @@ function ProductDetails({ addToCart }) {
           </Grid>
         )}
       </Box>
-    </Container>
+    </Container></Box>
   );
 }
 

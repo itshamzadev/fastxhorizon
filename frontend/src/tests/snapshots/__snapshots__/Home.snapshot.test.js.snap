@@ -10,7 +10,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
       class="home-aurora MuiBox-root css-0"
     />
     <div
-      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 css-1s9873g-MuiPaper-root"
+      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 css-601br2-MuiPaper-root"
     >
       <div
         aria-hidden="true"
@@ -50,7 +50,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
             >
               Gear that upgrades every 
               <span
-                class="MuiBox-root css-759tda"
+                class="MuiBox-root css-1cbsxus"
               >
                 moment
               </span>
@@ -65,7 +65,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
               class="MuiStack-root css-br5rt4-MuiStack-root"
             >
               <a
-                class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary css-14y7gqm-MuiButtonBase-root-MuiButton-root"
+                class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary css-17ts0jo-MuiButtonBase-root-MuiButton-root"
                 href="/shop"
                 tabindex="0"
               >
@@ -236,7 +236,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
                 class="MuiStack-root css-12f6rge-MuiStack-root"
               >
                 <div
-                  class="MuiBox-root css-1ijcprm"
+                  class="MuiBox-root css-7eoo6s"
                 >
                   <svg
                     aria-hidden="true"
@@ -260,7 +260,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
                 class="MuiStack-root css-12f6rge-MuiStack-root"
               >
                 <div
-                  class="MuiBox-root css-1ijcprm"
+                  class="MuiBox-root css-7eoo6s"
                 >
                   <svg
                     aria-hidden="true"
@@ -284,7 +284,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
                 class="MuiStack-root css-12f6rge-MuiStack-root"
               >
                 <div
-                  class="MuiBox-root css-1ijcprm"
+                  class="MuiBox-root css-7eoo6s"
                 >
                   <svg
                     aria-hidden="true"
@@ -326,7 +326,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
               class="MuiStack-root css-10kbc59-MuiStack-root"
             >
               <div
-                class="MuiBox-root css-1tswe26"
+                class="MuiBox-root css-12w2efv"
               >
                 <svg
                   aria-hidden="true"
@@ -363,7 +363,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
               class="MuiStack-root css-10kbc59-MuiStack-root"
             >
               <div
-                class="MuiBox-root css-1tswe26"
+                class="MuiBox-root css-12w2efv"
               >
                 <svg
                   aria-hidden="true"
@@ -400,7 +400,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
               class="MuiStack-root css-10kbc59-MuiStack-root"
             >
               <div
-                class="MuiBox-root css-1tswe26"
+                class="MuiBox-root css-12w2efv"
               >
                 <svg
                   aria-hidden="true"
@@ -437,7 +437,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
               class="MuiStack-root css-10kbc59-MuiStack-root"
             >
               <div
-                class="MuiBox-root css-1tswe26"
+                class="MuiBox-root css-12w2efv"
               >
                 <svg
                   aria-hidden="true"
@@ -485,15 +485,15 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
         </p>
       </div>
       <div
-        class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1.25 MuiGrid-spacing-sm-1.5 MuiGrid-spacing-md-2 css-59mjqi-MuiGrid-root"
+        class="MuiGrid-root MuiGrid-container product-grid css-11lq3yg-MuiGrid-root"
       />
       <div
-        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 css-k3uyo2-MuiPaper-root"
+        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 css-nfxcmo-MuiPaper-root"
         data-reveal="true"
       >
         <div
           aria-hidden="true"
-          class="MuiBox-root css-uppnoe"
+          class="MuiBox-root css-15m82lp"
         />
         <div
           aria-hidden="true"
@@ -616,7 +616,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
           </a>
         </div>
         <div
-          class="MuiGrid-root MuiGrid-container MuiGrid-spacing-xs-1.25 MuiGrid-spacing-sm-1.5 MuiGrid-spacing-md-2 css-59mjqi-MuiGrid-root"
+          class="MuiGrid-root MuiGrid-container product-grid css-11lq3yg-MuiGrid-root"
         />
       </div>
       <div
@@ -753,7 +753,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
                 class="MuiStack-root css-5gq4xp-MuiStack-root"
               >
                 <div
-                  class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-r4yvxi-MuiAvatar-root"
+                  class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-xgb87l-MuiAvatar-root"
                 >
                   R
                 </div>
@@ -800,7 +800,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
                 class="MuiStack-root css-5gq4xp-MuiStack-root"
               >
                 <div
-                  class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-r4yvxi-MuiAvatar-root"
+                  class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-xgb87l-MuiAvatar-root"
                 >
                   M
                 </div>
@@ -847,7 +847,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
                 class="MuiStack-root css-5gq4xp-MuiStack-root"
               >
                 <div
-                  class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-r4yvxi-MuiAvatar-root"
+                  class="MuiAvatar-root MuiAvatar-circular MuiAvatar-colorDefault css-xgb87l-MuiAvatar-root"
                 >
                   D
                 </div>
@@ -871,7 +871,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
         </div>
       </div>
       <div
-        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 css-15hkupb-MuiPaper-root"
+        class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 css-14q1yjz-MuiPaper-root"
         data-reveal="true"
       >
         <div
@@ -1004,7 +1004,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
                 </div>
               </div>
               <button
-                class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary css-hiastx-MuiButtonBase-root-MuiButton-root"
+                class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary css-1o1h8zd-MuiButtonBase-root-MuiButton-root"
                 tabindex="0"
                 type="submit"
               >
@@ -2033,7 +2033,7 @@ exports[`Home snapshot matches the rendered markup (loaded, empty products) 1`] 
           class="MuiStack-root css-67e3wp-MuiStack-root"
         >
           <a
-            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary css-1vlhm5z-MuiButtonBase-root-MuiButton-root"
+            class="MuiButtonBase-root MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary MuiButton-root MuiButton-contained MuiButton-containedPrimary MuiButton-sizeLarge MuiButton-containedSizeLarge MuiButton-colorPrimary css-tl2wqf-MuiButtonBase-root-MuiButton-root"
             href="/shop"
             tabindex="0"
           >
