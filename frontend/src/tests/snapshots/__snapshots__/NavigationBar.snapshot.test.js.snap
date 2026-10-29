@@ -54,7 +54,7 @@ exports[`NavigationBar snapshot matches the rendered markup 1`] = `
         >
           <button
             aria-label="Open navigation menu"
-            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium luxury-mobile-menu css-1f7c6zi-MuiButtonBase-root-MuiIconButton-root"
+            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium luxury-mobile-menu css-11n1i3z-MuiButtonBase-root-MuiIconButton-root"
             tabindex="0"
             type="button"
           >

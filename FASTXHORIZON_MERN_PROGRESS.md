@@ -687,3 +687,20 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Fixed narrow-mobile hero heading wrapping, reduced header crowding by moving secondary actions into the mobile navigation access pattern, constrained product-grid widths, and truncated oversized filter chips to prevent layout overflow.
 - Verified real jewellery records render with PKR prices, store identity, availability state and existing product-card styling. Search, wishlist/account/cart routes and ordering restrictions were not changed.
 - Final frontend production build passed. Full test run after the last snapshot update is represented by 24 suites / 43 tests / 17 snapshots passing; the only non-blocking output is existing React Router act/future-flag and Browserslist freshness warnings. Screenshots are retained locally under `qa-screenshots/`; they are not source assets and were not committed.
+
+## Luxury UI Creative Direction V2 - 2026-10-29
+
+- Replaced the previous homepage composition with a distinct campaign-led editorial experience in `frontend/src/pages/HomePremium.jsx`: cinematic jewellery hero, asymmetric category exploration, an emerald collection band, a dark curated product edit, layered editorial storytelling, and a restrained trust section.
+- Added the V2 composition styles in `frontend/src/App.css` with deliberate charcoal/ivory/sand-gold/terracotta contrast, varied section rhythm, responsive editorial layouts and reduced-motion-safe transitions. Existing real product/category APIs and the approved shared ProductCard remain in use.
+- Added the local textile editorial image to the collection band using the existing asset manifest; no product photography was replaced and no stock image is presented as an item for sale.
+- Fixed narrow viewport polish found during browser QA: the introduction headline now wraps within 390px, the mobile menu control remains available, and the collection-band image avoids horizontal overflow.
+- Verification: local backend connected to `mongodb://127.0.0.1:27017/fastxhorizon_local` and frontend served at `http://localhost:3000`. Chrome screenshots were captured and inspected at 390px, 768px, 1440px and 1920px under `qa-screenshots/v2/`. Frontend tests passed: 24 suites, 43 tests, 17 snapshots. Frontend production build passed. Existing React Router act/future-flag, Browserslist freshness and optional Pinecone-key warnings remain non-blocking.
+- No Admin Panel, backend business logic, MongoDB records, payments, checkout, ordering or production infrastructure were changed. No push or deployment was performed.
+
+## Marketplace identity correction - 2026-10-29
+
+- Replaced the jewellery-led V2 hero with a category-neutral marketplace campaign using locally stored `marketplace-tech.jpg`, an Unsplash-licensed editorial assortment of technology and lifestyle objects. Source and licensing details are recorded in `frontend/public/editorial/ASSET_MANIFEST.md`.
+- Reworked homepage copy and labels from jewellery/material language to general marketplace language: `Everything, considered.`, `Explore the marketplace`, `Explore Categories`, `For every part of your day`, and `A marketplace made to be explored.`
+- Removed textile/material-study imagery from the active homepage composition. Category cards still derive their names, counts and product imagery from real published catalog data, so future categories can enter without another structural redesign.
+- Preserved the approved product-card component, real API integrations, logo/header/footer, search, authentication, wishlist, disabled checkout/payments/order creation and all product publication rules. No Admin, backend, MongoDB or production changes were made.
+- Browser screenshots were captured and inspected at 390px, 768px, 1440px and 1920px under `qa-screenshots/marketplace-v2/`. Frontend tests passed: 24 suites, 43 tests, 17 snapshots. Frontend production build passed. Remaining output is limited to existing React test act/router warnings and the stale Browserslist database notice.

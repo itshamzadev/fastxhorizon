@@ -298,7 +298,7 @@ button {
 .luxury-nav-link { color: var(--fxh-charcoal); text-decoration: none; font-size: 12px; letter-spacing: .08em; text-transform: uppercase; position: relative; }
 .luxury-nav-link::after { content: ''; position: absolute; left: 0; right: 100%; bottom: -7px; height: 1px; background: var(--fxh-gold); transition: right .2s ease; }
 .luxury-nav-link:hover::after, .luxury-nav-link:focus-visible::after { right: 0; }
-.luxury-mobile-menu { display: none !important; }
+.luxury-mobile-menu { display: inline-flex !important; }
 .luxury-collapsed-control { display: inline-flex; }
 .luxury-mobile-drawer { background: var(--fxh-soft-white) !important; }
 
@@ -308,11 +308,16 @@ button {
   .luxury-hero { min-height: auto; }
   .luxury-hero__visual { min-height: 420px; }
 }
+@media (min-width: 900px) {
+  .luxury-mobile-menu { display: none !important; }
+}
 @media (max-width: 599px) {
   html, body, #root { max-width: 100%; overflow-x: hidden; }
   .luxury-collapsed-control { display: none !important; }
   .luxury-home__content { padding-left: 16px; padding-right: 16px; }
   .luxury-home__content, .luxury-hero__inner { width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; }
+  .luxury-header-actions { position: absolute; top: 50%; right: 4px; display: flex !important; gap: 2px !important; transform: translateY(-50%); }
+  .luxury-mobile-menu { display: inline-flex !important; }
   .luxury-hero__inner { padding-left: 20px; padding-right: 20px; }
   .luxury-hero__title { max-width: 100%; font-size: clamp(42px, 13vw, 56px) !important; letter-spacing: -.045em; }
   .luxury-hero__visual { min-height: 360px; }
@@ -326,4 +331,89 @@ button {
 }
 @media (prefers-reduced-motion: reduce) {
   .luxury-hero__visual img, .luxury-category-card img { transition: none; }
+}
+
+/* ---------- Luxury Creative Direction V2 ---------- */
+.luxury-home--v2 { background: var(--fxh-ivory); }
+.luxury-campaign-hero { min-height: min(860px, 88svh); position: relative; overflow: hidden; background: var(--fxh-charcoal); color: var(--fxh-ivory); }
+.luxury-campaign-hero__image { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center 46%; filter: saturate(.82) contrast(1.03); transform: scale(1.015); }
+.luxury-campaign-hero__veil { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(41,45,50,.94) 0%, rgba(41,45,50,.72) 35%, rgba(41,45,50,.12) 72%, rgba(41,45,50,.18) 100%), linear-gradient(0deg, rgba(41,45,50,.52), transparent 38%); }
+.luxury-campaign-hero__inner { min-height: inherit; position: relative; display: flex; align-items: center; padding-top: clamp(90px, 12vw, 160px); padding-bottom: clamp(46px, 7vw, 84px); }
+.luxury-campaign-hero__index { position: absolute; top: clamp(32px, 5vw, 72px); left: 24px; display: flex; align-items: center; gap: 12px; color: rgba(244,240,233,.78); font-size: 10px; letter-spacing: .18em; text-transform: uppercase; }
+.luxury-campaign-hero__index span { display: block; width: 54px; height: 1px; background: var(--fxh-gold); }
+.luxury-campaign-hero__copy { max-width: 620px; padding-left: clamp(0px, 5vw, 78px); }
+.luxury-campaign-hero__copy h1 { color: var(--fxh-ivory); font-family: 'Cormorant Garamond', Georgia, serif !important; font-size: clamp(60px, 9vw, 136px) !important; font-weight: 500 !important; letter-spacing: -.06em; line-height: .78 !important; margin: 0 0 32px !important; }
+.luxury-campaign-hero__copy h1 em { color: var(--fxh-gold); font-style: italic; }
+.luxury-campaign-hero__description { max-width: 360px; color: rgba(244,240,233,.82); font-size: clamp(15px, 1.4vw, 19px) !important; line-height: 1.65 !important; margin-bottom: 28px !important; }
+.luxury-campaign-hero__footer { position: absolute; left: 24px; right: 24px; bottom: 26px; display: flex; justify-content: space-between; color: rgba(244,240,233,.66); font-size: 10px; letter-spacing: .15em; text-transform: uppercase; }
+.luxury-introduction { max-width: 760px; padding: clamp(78px, 13vw, 180px) 0 clamp(82px, 12vw, 160px) clamp(0px, 7vw, 110px); }
+.luxury-introduction h2 { color: var(--fxh-charcoal); font-family: 'Cormorant Garamond', Georgia, serif !important; font-size: clamp(44px, 6vw, 84px) !important; font-weight: 500 !important; letter-spacing: -.055em; line-height: .86 !important; margin: 0 0 28px !important; }
+.luxury-introduction h2 em { color: var(--fxh-terracotta); font-style: italic; }
+.luxury-introduction > p:not(.luxury-eyebrow) { max-width: 460px; color: var(--fxh-muted); line-height: 1.8; margin: 0 0 24px; }
+.luxury-intro { margin-bottom: clamp(28px, 5vw, 58px); }
+.luxury-intro--dark .luxury-section-title, .luxury-intro--dark .luxury-section-copy { color: var(--fxh-ivory); }
+.luxury-category-editorial { padding-bottom: clamp(82px, 12vw, 160px); }
+.luxury-category-grid { align-items: stretch; }
+.luxury-category-card--1 { margin-top: clamp(28px, 7vw, 94px); }
+.luxury-category-card--2 { margin-top: clamp(12px, 3vw, 44px); }
+.luxury-category-card--1, .luxury-category-card--2 { height: clamp(220px, 31vw, 430px); }
+.luxury-category-card--0 { height: clamp(300px, 42vw, 560px); }
+.luxury-collection-band { min-height: clamp(500px, 65vw, 820px); position: relative; overflow: hidden; padding: clamp(42px, 7vw, 100px); display: flex; flex-direction: column; justify-content: flex-end; background: var(--fxh-emerald); color: var(--fxh-ivory); }
+.luxury-collection-band__image { position: absolute; inset: 0 0 0 43%; width: 57%; height: 100%; object-fit: cover; opacity: .4; mix-blend-mode: multiply; }
+.luxury-collection-band::after { content: ''; position: absolute; width: 48vw; height: 48vw; right: -18vw; top: -22vw; border: 1px solid rgba(244,240,233,.34); border-radius: 50%; }
+.luxury-collection-band > * { position: relative; z-index: 1; }
+.luxury-collection-band > .luxury-collection-band__image { position: absolute; z-index: 0; }
+.luxury-collection-band__label { position: absolute !important; top: 42px; left: 42px; color: rgba(244,240,233,.8); font-size: 10px; letter-spacing: .16em; line-height: 1.8; }
+.luxury-collection-band__words { position: absolute !important; top: 48px; right: 50px; display: flex; flex-direction: column; align-items: flex-end; color: rgba(244,240,233,.5); font-size: 11px; letter-spacing: .3em; line-height: 2.2; }
+.luxury-collection-band h2 { font-family: 'Cormorant Garamond', Georgia, serif !important; font-size: clamp(54px, 8vw, 118px) !important; font-weight: 500 !important; letter-spacing: -.06em; line-height: .78 !important; margin: 0 0 34px !important; }
+.luxury-collection-band h2 em { color: var(--fxh-gold); font-style: italic; }
+.luxury-button--outline-light { align-self: flex-start; color: var(--fxh-ivory) !important; border: 1px solid rgba(244,240,233,.6) !important; border-radius: 0 !important; }
+.luxury-button--outline-light:hover { background: var(--fxh-ivory) !important; color: var(--fxh-charcoal) !important; }
+.luxury-product-edit { margin: clamp(82px, 12vw, 170px) calc(clamp(16px, 5vw, 78px) * -1); padding: clamp(58px, 8vw, 110px) clamp(16px, 5vw, 78px); background: var(--fxh-charcoal); }
+.luxury-product-edit .product-grid { margin-top: 10px !important; }
+.luxury-text-link--light { color: var(--fxh-ivory) !important; border-color: var(--fxh-gold); }
+.luxury-story-grid { display: grid; grid-template-columns: 1.05fr .95fr .72fr; min-height: 640px; margin-top: clamp(82px, 12vw, 170px); background: var(--fxh-stone); }
+.luxury-story-grid__portrait, .luxury-story-grid__detail { position: relative; overflow: hidden; min-height: 420px; }
+.luxury-story-grid__portrait img, .luxury-story-grid__detail img { display: block; width: 100%; height: 100%; object-fit: cover; }
+.luxury-story-grid__portrait span, .luxury-story-grid__detail p { position: absolute; left: 22px; bottom: 20px; color: #fff; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; text-shadow: 0 1px 5px rgba(0,0,0,.45); }
+.luxury-story-grid__copy { display: flex; flex-direction: column; justify-content: center; padding: clamp(32px, 5vw, 76px); }
+.luxury-story-grid__copy h2 { max-width: 400px; color: var(--fxh-charcoal); font-family: 'Cormorant Garamond', Georgia, serif !important; font-size: clamp(42px, 5vw, 72px) !important; font-weight: 500 !important; letter-spacing: -.05em; line-height: .88 !important; margin: 0 0 22px !important; }
+.luxury-story-grid__copy > p:not(.luxury-eyebrow) { max-width: 340px; color: var(--fxh-muted); line-height: 1.8; margin-bottom: 28px; }
+.luxury-story-grid__detail { background: var(--fxh-charcoal); }
+.luxury-story-grid__detail p { margin: 0; }
+.luxury-more-edit { padding: clamp(82px, 12vw, 170px) 0; }
+.luxury-trust--v2 { display: grid; grid-template-columns: 1fr 1fr; gap: clamp(28px, 8vw, 140px); align-items: end; }
+.luxury-trust--v2 h2 { max-width: 560px; }
+.luxury-trust--v2 > div:last-child { padding-bottom: 10px; }
+
+@media (max-width: 899px) {
+  .luxury-campaign-hero { min-height: 760px; }
+  .luxury-campaign-hero__copy { padding-left: 0; }
+  .luxury-campaign-hero__copy h1 { font-size: clamp(60px, 13vw, 100px) !important; }
+  .luxury-story-grid { grid-template-columns: 1fr 1fr; }
+  .luxury-story-grid__portrait { grid-row: span 2; }
+  .luxury-story-grid__detail { min-height: 300px; }
+  .luxury-trust--v2 { grid-template-columns: 1fr; }
+}
+
+@media (max-width: 599px) {
+  .luxury-campaign-hero { min-height: 700px; }
+  .luxury-campaign-hero__inner { padding-top: 110px; padding-bottom: 54px; }
+  .luxury-campaign-hero__copy h1 { font-size: clamp(54px, 16vw, 72px) !important; line-height: .82 !important; }
+  .luxury-campaign-hero__description { max-width: 280px; }
+  .luxury-campaign-hero__index { left: 20px; font-size: 9px; }
+  .luxury-campaign-hero__footer { left: 20px; right: 20px; font-size: 8px; }
+  .luxury-introduction { padding-left: 0; padding-top: 78px; padding-bottom: 82px; }
+  .luxury-introduction { width: 100%; box-sizing: border-box; }
+  .luxury-introduction h2 { max-width: 100%; font-size: clamp(36px, 11vw, 48px) !important; letter-spacing: -.065em; overflow-wrap: anywhere; word-break: break-word; }
+  .luxury-collection-band { min-height: 520px; padding: 28px; }
+  .luxury-collection-band__image { left: 0; right: auto; width: 100%; opacity: .24; }
+  .luxury-collection-band__label { top: 28px; left: 28px; }
+  .luxury-collection-band__words { top: 28px; right: 28px; font-size: 9px; }
+  .luxury-collection-band h2 { font-size: clamp(52px, 16vw, 76px) !important; }
+  .luxury-product-edit { margin-left: -16px; margin-right: -16px; padding-left: 16px; padding-right: 16px; }
+  .luxury-story-grid { display: flex; flex-direction: column; }
+  .luxury-story-grid__portrait, .luxury-story-grid__detail { min-height: 330px; }
+  .luxury-story-grid__copy { min-height: 360px; padding: 38px 24px; }
+  .luxury-more-edit { padding-top: 82px; padding-bottom: 100px; }
 }
