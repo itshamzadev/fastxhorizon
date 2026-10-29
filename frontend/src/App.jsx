@@ -3,7 +3,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Box, Container, CssBaseline } from '@mui/material';
 import { createTheme, ThemeProvider } from '@mui/material/styles';
 import NavigationBar from './components/NavigationBar';
-import Home from './pages/Home';
+import Home from './pages/HomePremium';
 import Shop from './pages/Shop';
 import Cart from './pages/Cart';
 import Checkout from './pages/Checkout';
@@ -45,12 +45,14 @@ const theme = createTheme({
     },
   },
   typography: {
-    fontFamily: 'Poppins, sans-serif',
+    fontFamily: 'Manrope, Arial, sans-serif',
     h3: {
       fontWeight: 700,
+      fontFamily: 'Cormorant Garamond, Georgia, serif',
     },
     h4: {
       fontWeight: 700,
+      fontFamily: 'Cormorant Garamond, Georgia, serif',
     },
     button: {
       fontWeight: 600,

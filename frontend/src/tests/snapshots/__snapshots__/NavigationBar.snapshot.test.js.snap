@@ -6,13 +6,13 @@ exports[`NavigationBar snapshot matches the rendered markup 1`] = `
     class="MuiBox-root css-1iplcxk"
   >
     <header
-      class="MuiPaper-root MuiPaper-elevation MuiPaper-elevation0 MuiAppBar-root MuiAppBar-colorPrimary MuiAppBar-positionStatic css-1lcc1la-MuiPaper-root-MuiAppBar-root"
+      class="MuiPaper-root MuiPaper-elevation MuiPaper-elevation0 MuiAppBar-root MuiAppBar-colorPrimary MuiAppBar-positionStatic css-pf08de-MuiPaper-root-MuiAppBar-root"
     >
       <div
         class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular css-dhvvgf-MuiToolbar-root"
       >
         <div
-          class="MuiBox-root css-15ync0s"
+          class="MuiBox-root css-38k7fh"
         >
           <a
             aria-label="FastXHorizon home"
@@ -25,10 +25,54 @@ exports[`NavigationBar snapshot matches the rendered markup 1`] = `
               src="/fastxhorizon.png"
             />
           </a>
+          <nav
+            aria-label="Primary navigation"
+            class="luxury-desktop-nav MuiBox-root css-0"
+          >
+            <a
+              class="luxury-nav-link"
+              href="/"
+            >
+              Discover
+            </a>
+            <a
+              class="luxury-nav-link"
+              href="/shop"
+            >
+              Collections
+            </a>
+            <a
+              class="luxury-nav-link"
+              href="/about"
+            >
+              About
+            </a>
+          </nav>
         </div>
         <div
           class="MuiBox-root css-tnjfdo"
         >
+          <button
+            aria-label="Open navigation menu"
+            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium luxury-mobile-menu css-1ljmerd-MuiButtonBase-root-MuiIconButton-root"
+            tabindex="0"
+            type="button"
+          >
+            <svg
+              aria-hidden="true"
+              class="MuiSvgIcon-root MuiSvgIcon-fontSizeSmall css-ptiqhd-MuiSvgIcon-root"
+              data-testid="MenuRoundedIcon"
+              focusable="false"
+              viewBox="0 0 24 24"
+            >
+              <path
+                d="M4 18h16c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1s.45 1 1 1m0-5h16c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1s.45 1 1 1M3 7c0 .55.45 1 1 1h16c.55 0 1-.45 1-1s-.45-1-1-1H4c-.55 0-1 .45-1 1"
+              />
+            </svg>
+            <span
+              class="MuiTouchRipple-root css-8je8zh-MuiTouchRipple-root"
+            />
+          </button>
           <form
             class="MuiBox-root css-bi2r4x"
           >

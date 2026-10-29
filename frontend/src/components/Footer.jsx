@@ -78,7 +78,7 @@ function Footer() {
               <Box component="img" src="/fastxhorizon.png" alt="FastXHorizon" sx={{ display: 'block', width: { xs: 190, sm: 220 }, maxWidth: '70vw', height: 'auto' }} />
             </MuiLink>
             <Typography variant="body2" sx={{ color: '#D8D1C6', maxWidth: 360 }}>
-              A trusted multi-category marketplace for thoughtful tech, everyday essentials and products that move life forward.
+              A multi-category marketplace for thoughtfully presented tech, jewellery, accessories and everyday essentials.
             </Typography>
             {socialLinks.length > 0 && (
               <Stack direction="row" spacing={1.5} sx={{ mt: 3 }}>
@@ -108,7 +108,7 @@ function Footer() {
           <Grid item xs={12} sm={6} md={3}>
             <Typography variant="subtitle1" sx={{ color: '#C5A47E', fontWeight: 700, mb: 2 }}>Stay Connected</Typography>
               <Typography variant="body2" sx={{ color: '#D8D1C6', mb: 2 }}>
-              Receive product updates, useful buying guidance and selected offers from FastXHorizon.
+              Receive product updates and occasional marketplace news from FastXHorizon.
             </Typography>
             <Box component="form" onSubmit={handleSubmit} sx={{ display: 'flex', gap: 1, alignItems: 'stretch' }}>
               <TextField type="email" value={email} onChange={event => setEmail(event.target.value)} placeholder="your@email.com" size="small" variant="outlined" disabled={submitting} inputProps={{ 'aria-label': 'Email for newsletter' }} sx={{ flexGrow: 1, minWidth: 0, bgcolor: '#FFFFFF', borderRadius: 1 }} />

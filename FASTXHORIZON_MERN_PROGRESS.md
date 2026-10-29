@@ -670,3 +670,12 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Existing approved/manual pricing and publication state remains protected during `update_existing` refreshes. Imported records remain drafts with `REVIEW_REQUIRED`; no automatic approval or publication was added.
 - Improved Admin error handling for validation/conflict responses so expired previews, invalid CSVs and duplicate-safe conflicts show meaningful messages instead of generic “Something went wrong.”
 - No CSV was imported and no production database was modified. Documentation updated in `others/docs/ADMIN_CSV_IMPORT_AND_PRICING.md`.
+
+## Customer storefront luxury marketplace redesign - 2026-10-29
+
+- Replaced the legacy customer homepage presentation with a real-data editorial storefront in `frontend/src/pages/HomePremium.jsx`. Hero, category exploration, curated discovery, editorial storytelling and trust messaging use the existing public product/category data; no products, prices, reviews, stock or discounts were fabricated.
+- Refined the shared customer shell: Manrope UI typography with Cormorant Garamond display accents, ivory/charcoal/sand-gold design tokens, a compact desktop category navigation, accessible mobile drawer, and truthful FastXHorizon footer/newsletter copy. Existing search, authentication, wishlist, cart, routing and ordering restrictions were preserved.
+- Added locally stored editorial support imagery under `frontend/public/editorial/` with source/licensing notes in `frontend/public/editorial/ASSET_MANIFEST.md`. Existing product imagery remains authoritative for product cards and catalog content.
+- Preserved the approved shared product-card behavior and styling, including the 2-column narrow-mobile grid, dense desktop grid, 8px card radius, 6px image radius and `rgba(25,28,33,0.58)` information overlay.
+- Updated affected Home, Footer and NavigationBar snapshots. Verification: targeted Home/Footer/NavigationBar tests passed (4 suites, 6 tests, 3 snapshots); frontend production build passed. Existing React Router act/future-flag and Browserslist freshness warnings remain non-blocking.
+- Local HTTP checks were attempted for `http://localhost:3000` and `http://localhost:5000/api/health`, but both services were not running in this execution environment. Browser screenshot verification was therefore not claimed. No backend, Admin Panel, MongoDB records or production infrastructure were modified.

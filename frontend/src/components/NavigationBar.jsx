@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { AppBar, Toolbar, IconButton, Badge, InputBase, Box, CircularProgress, Tooltip } from '@mui/material';
+import { AppBar, Toolbar, IconButton, Badge, InputBase, Box, CircularProgress, Tooltip, Drawer, List, ListItemButton, ListItemText, Divider, Typography } from '@mui/material';
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LogoutIcon from '@mui/icons-material/Logout';
@@ -7,6 +7,7 @@ import LoginIcon from '@mui/icons-material/Login';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import CloseIcon from '@mui/icons-material/Close';
 import AccountCircleIcon from '@mui/icons-material/AccountCircle';
+import MenuRoundedIcon from '@mui/icons-material/MenuRounded';
 import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded';
 import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { debounce } from 'lodash';
@@ -33,6 +34,7 @@ function NavigationBar({ cartItemCount }) {
   const [searchError, setSearchError] = React.useState('');
   const [suggestionIndex, setSuggestionIndex] = React.useState(-1);
   const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = React.useState(false);
   const searchBarRef = React.useRef(null);
   const searchInputRef = React.useRef(null);
   const searchResultsRef = React.useRef(null);
@@ -161,13 +163,15 @@ function NavigationBar({ cartItemCount }) {
 
   return (
     <Box component="div" sx={{ position: 'sticky', top: 0, zIndex: theme => theme.zIndex.appBar, width: '100%', bgcolor: '#F4F0E9' }}>
-      <AppBar position="static" elevation={0} sx={{ backgroundColor: '#F4F0E9', color: '#292D32', borderRadius: 0, borderBottom: '1px solid #D8D1C6', boxShadow: '0 3px 12px rgba(41,45,50,.08)', '& .logo-link': { textDecoration: 'none', display: 'inline-flex', alignItems: 'center', lineHeight: 0 }, '& .logo-image': { display: 'block', width: { xs: 145, sm: 175, md: 205 }, maxWidth: '38vw', height: 'auto' } }}>
+      <AppBar position="static" elevation={0} sx={{ backgroundColor: '#FBF9F5', color: '#292D32', borderRadius: 0, borderBottom: '1px solid rgba(41,45,50,.12)', boxShadow: '0 8px 24px rgba(41,45,50,.06)', '& .logo-link': { textDecoration: 'none', display: 'inline-flex', alignItems: 'center', lineHeight: 0 }, '& .logo-image': { display: 'block', width: { xs: 145, sm: 175, md: 205 }, maxWidth: '38vw', height: 'auto' } }}>
         <Toolbar sx={{ py: { xs: 1, md: 1.5 }, gap: { xs: 0.25, sm: 0.75, md: 1 } }}>
-          <Box sx={{ flexGrow: 1, minWidth: 0 }}>
+          <Box sx={{ flexGrow: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 3 }}>
             <Link to="/" className="logo-link" aria-label="FastXHorizon home"><Box component="img" className="logo-image" src="/fastxhorizon.png" alt="FastXHorizon" /></Link>
+            <Box className="luxury-desktop-nav" component="nav" aria-label="Primary navigation"><Link to="/" className="luxury-nav-link">Discover</Link><Link to="/shop" className="luxury-nav-link">Collections</Link><Link to="/about" className="luxury-nav-link">About</Link></Box>
           </Box>
 
           <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0, sm: 0.25 }, minWidth: 0 }}>
+            <IconButton className="luxury-mobile-menu" aria-label="Open navigation menu" onClick={() => setMobileMenuOpen(true)} sx={controlSx}><MenuRoundedIcon fontSize="small" /></IconButton>
             <Box ref={searchBarRef} component="form" onSubmit={handleSearchSubmit} sx={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: searchOpen ? { xs: 'min(210px, calc(100vw - 156px))', sm: 280, md: 330 } : { xs: 36, sm: 40 }, height: { xs: 36, sm: 40 }, overflow: 'visible', borderRadius: 999, bgcolor: searchOpen ? '#F1F5FF' : 'transparent', transition: 'width 300ms ease, background-color 250ms ease, box-shadow 250ms ease', transformOrigin: 'right center', '&:focus-within': { bgcolor: '#EFF6FF', boxShadow: '0 0 0 2px rgba(37,99,235,0.18)' }, '@media (prefers-reduced-motion: reduce)': { transition: 'none' } }}>
               {searchOpen && <InputBase inputRef={searchInputRef} onKeyDown={handleSearchKeyDown} placeholder="Search products..." inputProps={{ 'aria-label': 'Search products', role: 'combobox', 'aria-expanded': Boolean(searchQuery.trim()), 'aria-autocomplete': 'list' }} value={searchQuery} onChange={handleSearchChange} sx={{ flex: 1, minWidth: 0, ml: 1.25, color: '#0F172A', '& input::placeholder': { color: '#64748B', opacity: 1 } }} />}
               {loading && <CircularProgress size={17} sx={{ color: '#256B58', mr: 0.5 }} />}
@@ -189,6 +193,9 @@ function NavigationBar({ cartItemCount }) {
         </Toolbar>
       </AppBar>
       <AnnouncementBar />
+      <Drawer anchor="right" open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} PaperProps={{ className: 'luxury-mobile-drawer' }}>
+        <Box sx={{ width: 280, p: 2 }} role="presentation"><Typography variant="overline" sx={{ letterSpacing: '.16em', color: '#717171' }}>FASTXHORIZON</Typography><Divider sx={{ my: 2 }} /><List onClick={() => setMobileMenuOpen(false)}><ListItemButton component={Link} to="/"><ListItemText primary="Discover" /></ListItemButton><ListItemButton component={Link} to="/shop"><ListItemText primary="Collections" /></ListItemButton><ListItemButton component={Link} to="/about"><ListItemText primary="About" /></ListItemButton><ListItemButton component={Link} to="/support"><ListItemText primary="Support" /></ListItemButton></List></Box>
+      </Drawer>
     </Box>
   );
 }

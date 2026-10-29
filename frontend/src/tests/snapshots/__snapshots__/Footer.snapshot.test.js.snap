@@ -28,7 +28,7 @@ exports[`Footer snapshot matches the rendered markup 1`] = `
           <p
             class="MuiTypography-root MuiTypography-body2 css-1y33e53-MuiTypography-root"
           >
-            A trusted multi-category marketplace for thoughtful tech, everyday essentials and products that move life forward.
+            A multi-category marketplace for thoughtfully presented tech, jewellery, accessories and everyday essentials.
           </p>
         </div>
         <div
@@ -128,7 +128,7 @@ exports[`Footer snapshot matches the rendered markup 1`] = `
           <p
             class="MuiTypography-root MuiTypography-body2 css-jp1qa-MuiTypography-root"
           >
-            Receive product updates, useful buying guidance and selected offers from FastXHorizon.
+            Receive product updates and occasional marketplace news from FastXHorizon.
           </p>
           <form
             class="MuiBox-root css-4ok4xj"
