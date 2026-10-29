@@ -22,9 +22,10 @@ function Login() {
       const token = response.data.token;
       sessionStorage.setItem('MERNEcommerceToken', token);
       notify({ severity: 'success', message: 'Welcome back! Redirecting…' });
-      setTimeout(() => {
-        window.location.href = '/';
-      }, 400);
+      const params = new URLSearchParams(window.location.search);
+      const returnTo = params.get('returnTo');
+      const safeReturn = returnTo && returnTo.startsWith('/') && !returnTo.startsWith('//') ? returnTo : '/';
+      setTimeout(() => { window.location.href = safeReturn; }, 400);
     } catch (err) {
       if (err.response?.data?.errors) {
         // Format the error messages for display
@@ -47,7 +48,7 @@ function Login() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 6, mb: 8 }}>
+    <Container maxWidth="sm" className="luxury-page luxury-auth" sx={{ mt: 6, mb: 8 }}>
       <Paper elevation={3} sx={{ p: { xs: 4, md: 5 }, borderRadius: 3 }}>
         <Stack spacing={1} sx={{ mb: 3 }}>
           <Typography variant="h4" align="center" fontWeight={700}>

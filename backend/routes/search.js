@@ -113,6 +113,8 @@ router.get('/', async (req, res) => {
     const terms = query.toLowerCase().split(/\s+/).filter(Boolean).map(escapeRegex);
     const filter = {
       status: 'active',
+      price: { $gt: 0 },
+      $or: [{ image: { $type: 'string', $ne: '' } }, { images: { $elemMatch: { $type: 'string', $ne: '' } } }],
       $and: terms.map(term => ({ $or: searchableFields.map(field => ({ [field]: { $regex: term, $options: 'i' } })) })),
     };
     const queryBuilder = Product.find(filter);

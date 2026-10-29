@@ -3,7 +3,7 @@
 exports[`Login snapshot matches the rendered markup 1`] = `
 <DocumentFragment>
   <div
-    class="MuiContainer-root MuiContainer-maxWidthSm css-1t14gj0-MuiContainer-root"
+    class="MuiContainer-root MuiContainer-maxWidthSm luxury-page luxury-auth css-1t14gj0-MuiContainer-root"
   >
     <div
       class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation3 css-dvjkzz-MuiPaper-root"

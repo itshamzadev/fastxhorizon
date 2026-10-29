@@ -5,10 +5,6 @@ import {
   AlertTitle,
   Box,
   Button,
-  Card,
-  CardActionArea,
-  CardContent,
-  CardMedia,
   Chip,
   CircularProgress,
   Collapse,
@@ -36,6 +32,7 @@ import FavoriteRoundedIcon from '@mui/icons-material/FavoriteRounded';
 import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { useWishlist } from '../context/WishlistContext';
+import ProductCard from '../components/ProductCard';
 
 function SimilarProductsError({ onRetry }) {
   const [showDetails, setShowDetails] = React.useState(false);
@@ -226,7 +223,7 @@ function ProductDetails({ addToCart }) {
   }, [fetchProduct]);
 
   useEffect(() => {
-    apiClient.get('payments/config').then(({ data }) => setOrdersEnabled(data?.ordersEnabled === true)).catch(() => setOrdersEnabled(false));
+    apiClient.get('payments/config').then(({ data }) => setOrdersEnabled(data?.data?.ordersEnabled === true || data?.ordersEnabled === true)).catch(() => setOrdersEnabled(false));
   }, []);
 
   useEffect(() => { setGalleryIndex(0); setSelectedOptions({}); }, [product?.id]);
@@ -285,16 +282,16 @@ function ProductDetails({ addToCart }) {
   }
 
   return (
-    <Box sx={{ minHeight: '100vh', color: '#292D32', background: '#F4F0E9', py: { xs: 2, md: 4 } }}>
+    <Box className="product-details-v7 product-details-v8" sx={{ minHeight: '100vh', color: '#292D32', background: '#F4F0E9', py: { xs: 2, md: 4 } }}>
     <Container maxWidth="xl" sx={{ pb: 8 }}>
-      <Typography variant="body2" sx={{ mb: 2, color: '#667085' }}>
+      <Typography className="product-details-v8__breadcrumb" variant="body2" sx={{ mb: 2, color: '#667085' }}>
         Home / {formatCategory(product.category)} / Product
       </Typography>
-      <Box sx={{ position: 'relative', pb: { xs: 2, md: 4 }, borderBottom: '1px solid #D7DEE8' }}>
+      <Box className="product-details-v7__main product-details-v8__showcase" sx={{ position: 'relative', pb: { xs: 2, md: 4 }, borderBottom: '1px solid #D7DEE8' }}>
         <Grid container spacing={{ xs: 3, md: 6 }}>
-          <Grid item xs={12} md={7}>
-            <Box sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 1, md: 1.5 }, alignItems: 'stretch' }}>
-            <Box sx={{ position: 'relative', flex: 1, bgcolor: '#E8EDF3', border: '1px solid #C5A47E', borderRadius: { xs: 3, md: 5 }, minHeight: { xs: 290, md: 470 }, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', boxShadow: '0 18px 45px rgba(41,45,50,.10)' }}>
+          <Grid item xs={12} md={7} className="product-details-v7__gallery-column product-details-v8__gallery-column">
+            <Box className="product-details-v7__gallery-layout product-details-v8__gallery-layout" sx={{ display: 'flex', flexDirection: { xs: 'column', md: 'row' }, gap: { xs: 1, md: 1.5 }, alignItems: 'stretch' }}>
+            <Box className="product-details-v7__gallery-stage product-details-v8__gallery-stage" sx={{ position: 'relative', flex: 1, bgcolor: '#E8EDF3', border: '1px solid #C5A47E', borderRadius: { xs: 3, md: 5 }, minHeight: { xs: 290, md: 470 }, display: 'flex', alignItems: 'center', justifyContent: 'center', overflow: 'hidden', boxShadow: '0 18px 45px rgba(41,45,50,.10)' }}>
               {displayedImages.length ? <Box component="button" type="button" onClick={() => setZoomOpen(true)} aria-label="Open enlarged product image" sx={{ display: 'block', border: 0, p: { xs: 1, md: 2 }, bgcolor: 'transparent', cursor: 'zoom-in', width: '100%' }}><Box component="img" src={displayedImages[galleryIndex % displayedImages.length]} alt={product.name} sx={{ display: 'block', mx: 'auto', width: '100%', height: { xs: 285, md: 465 }, objectFit: 'contain', transition: 'transform .25s ease', '&:hover': { transform: 'scale(1.035)' } }} /></Box> : <Typography color="text.secondary">Image unavailable</Typography>}
               {displayedImages.length > 0 && <Box sx={{ position: 'absolute', right: 14, bottom: 14, px: 1, py: .45, borderRadius: 2, bgcolor: 'rgba(7,26,61,.82)', color: '#fff', fontSize: 12, fontWeight: 700 }}>{galleryIndex + 1} / {displayedImages.length}</Box>}
               {displayedImages.length > 1 && <>
@@ -308,7 +305,7 @@ function ProductDetails({ addToCart }) {
             </Box>
           </Grid>
 
-          <Grid item xs={12} md={5} sx={{ bgcolor: 'rgba(255,255,255,.86)', border: '1px solid #D7DEE8', borderRadius: { xs: 3, md: 4 }, p: { xs: 2.5, md: 3.5 }, boxShadow: '0 16px 38px rgba(32,42,60,.10)' }}>
+          <Grid item xs={12} md={5} className="product-details-v7__info-column product-details-v8__info-column" sx={{ bgcolor: 'rgba(255,255,255,.86)', border: '1px solid #D7DEE8', borderRadius: { xs: 3, md: 4 }, p: { xs: 2.5, md: 3.5 }, boxShadow: '0 16px 38px rgba(32,42,60,.10)' }}>
             <Typography variant="overline" sx={{ color: '#2359CE', letterSpacing: '.14em', fontWeight: 800 }}>{formatCategory(product.category)} · {product.storeName || 'FASTXHORIZON'}</Typography>
             <Typography component="h1" sx={{ color: '#202A3C', fontSize: { xs: '1.45rem', sm: '1.7rem', md: '2rem' }, fontWeight: 750, lineHeight: 1.2, letterSpacing: '-.02em', mb: 1, display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{product.name}</Typography>
             {displayedSku && <Typography variant="body2" sx={{ color: '#667085', mb: 1 }}>SKU: {displayedSku}</Typography>}
@@ -327,7 +324,7 @@ function ProductDetails({ addToCart }) {
 
       <Dialog open={zoomOpen} onClose={() => setZoomOpen(false)} maxWidth="lg" fullWidth aria-labelledby="product-image-dialog-title"><IconButton onClick={() => setZoomOpen(false)} aria-label="Close enlarged image" sx={{ position: 'absolute', right: 8, top: 8, zIndex: 1, bgcolor: 'rgba(255,255,255,.9)' }}><CloseRoundedIcon /></IconButton><DialogContent id="product-image-dialog-title" sx={{ p: { xs: 1, md: 3 }, bgcolor: '#F8FAFC', textAlign: 'center' }}>{displayedImages.length > 0 && <Box component="img" src={displayedImages[galleryIndex % displayedImages.length]} alt={`${product.name} enlarged`} sx={{ maxWidth: '100%', maxHeight: '80vh', objectFit: 'contain' }} />}</DialogContent></Dialog>
 
-      <Box sx={{ mt: 4, p: { xs: 2, md: 3 }, borderRadius: 4, bgcolor: 'rgba(255,255,255,.72)', border: '1px solid #D7DEE8', boxShadow: '0 12px 32px rgba(32,42,60,.07)' }}><Tabs value={tab} onChange={(_event, value) => setTab(value)} variant="scrollable" sx={{ '& .MuiTabs-indicator': { backgroundColor: '#2359CE', height: 3, borderRadius: 2 }, '& .MuiTab-root': { color: '#667085', '&.Mui-selected': { color: '#2359CE', fontWeight: 800 } } }}><Tab label="Description" /><Tab label="Specifications" /><Tab label="Reviews" /><Tab label="Shipping & Returns" /></Tabs>
+      <Box className="product-details-v7__details product-details-v8__details" sx={{ mt: 4, p: { xs: 2, md: 3 }, borderRadius: 4, bgcolor: 'rgba(255,255,255,.72)', border: '1px solid #D7DEE8', boxShadow: '0 12px 32px rgba(32,42,60,.07)' }}><Tabs value={tab} onChange={(_event, value) => setTab(value)} variant="scrollable" sx={{ '& .MuiTabs-indicator': { backgroundColor: '#2359CE', height: 3, borderRadius: 2 }, '& .MuiTab-root': { color: '#667085', '&.Mui-selected': { color: '#2359CE', fontWeight: 800 } } }}><Tab label="Description" /><Tab label="Specifications" /><Tab label="Reviews" /><Tab label="Shipping & Returns" /></Tabs>
         <Box sx={{ p: { xs: 1, md: 2 }, mt: 1, color: '#344054', borderTop: '1px solid #E0E5ED' }}>
           {tab === 0 && <Typography sx={{ whiteSpace: 'pre-line', lineHeight: 1.8 }}>{product.longDescription || product.description || 'No description available.'}</Typography>}
           {tab === 1 && <Stack spacing={1}><Typography><b style={{ color: '#2359CE' }}>SKU:</b> {displayedSku || 'Not specified'}</Typography><Typography><b style={{ color: '#2359CE' }}>Category:</b> {formatCategory(product.category)}</Typography>{product.brand && <Typography><b style={{ color: '#2359CE' }}>Brand:</b> {product.brand}</Typography>}</Stack>}
@@ -336,9 +333,9 @@ function ProductDetails({ addToCart }) {
         </Box>
       </Box>
 
-      <Box sx={{ mt: 5 }}>
+      <Box className="product-details-v7__related product-details-v8__related" sx={{ mt: 5 }}>
         <Typography variant="h5" gutterBottom>
-          Recommended for you
+          Discover Something More
         </Typography>
 
         {recLoading ? (
@@ -350,28 +347,12 @@ function ProductDetails({ addToCart }) {
             <SimilarProductsError onRetry={fetchRecommended} />
           ) : (
             <Typography variant="body2" color="text.secondary">
-              We are curating recommendations for this product. Check back soon for more gear.
+              We are curating recommendations for this product. Check back soon for more discoveries.
             </Typography>
           )
         ) : (
-          <Grid container spacing={3}>
-            {recommended.map(rec => (
-              <Grid item xs={12} sm={6} md={4} key={rec.id}>
-                <Card elevation={4} sx={{ height: '100%' }}>
-                  <CardActionArea onClick={() => navigate(`/product/${rec.id}`)}>
-                    <CardMedia component="img" height="160" image={rec.image} alt={rec.name} sx={{ objectFit: 'contain', p: 2 }} />
-                    <CardContent>
-                      <Typography variant="subtitle1" gutterBottom noWrap>
-                        {rec.name}
-                      </Typography>
-                      <Typography variant="h6" color="primary">
-                        {formatPrice(rec.price)}
-                      </Typography>
-                    </CardContent>
-                  </CardActionArea>
-                </Card>
-              </Grid>
-            ))}
+          <Grid container className="product-grid" spacing={0}>
+            {recommended.map(rec => <Grid item xs={6} sm={6} md={4} lg={3} xl={2} key={rec.id}><ProductCard product={rec} addToCart={addToCart} /></Grid>)}
           </Grid>
         )}
       </Box>

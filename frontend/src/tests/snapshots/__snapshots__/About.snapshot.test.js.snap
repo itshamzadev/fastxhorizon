@@ -3,7 +3,7 @@
 exports[`About snapshot matches the rendered markup 1`] = `
 <DocumentFragment>
   <div
-    class="MuiContainer-root MuiContainer-maxWidthLg css-1luz022-MuiContainer-root"
+    class="MuiContainer-root MuiContainer-maxWidthLg luxury-page luxury-corporate css-1luz022-MuiContainer-root"
   >
     <div
       class="MuiStack-root css-nx4is9-MuiStack-root"
@@ -14,18 +14,18 @@ exports[`About snapshot matches the rendered markup 1`] = `
         <span
           class="MuiChip-label MuiChip-labelMedium css-1jzq0dw-MuiChip-label"
         >
-          About Fusion
+          About FastXHorizon
         </span>
       </div>
       <h3
         class="MuiTypography-root MuiTypography-h3 css-153g3uf-MuiTypography-root"
       >
-        We exist to help you curate the future.
+        A considered marketplace for the way you live.
       </h3>
       <p
         class="MuiTypography-root MuiTypography-body1 css-hsbfs4-MuiTypography-root"
       >
-        Fusion Electronics is a collective of engineers, industrial designers, and experience strategists. We scout the highest performing gadgets, stress-test them in our lab, and package them into delightful experiences so you can focus on creating.
+        FASTXHORIZON (PRIVATE) LIMITED is a general multi-category e-commerce marketplace. We bring together thoughtfully presented products across jewellery, accessories, technology, home and future collections.
       </p>
     </div>
     <div
@@ -207,7 +207,7 @@ exports[`About snapshot matches the rendered markup 1`] = `
       <p
         class="MuiTypography-root MuiTypography-body1 css-1pnmrwp-MuiTypography-root"
       >
-        From humble beginnings to a global community of builders, here’s how we’ve evolved.
+        Our marketplace continues to evolve as new categories and products become available.
       </p>
     </div>
     <div
@@ -239,7 +239,7 @@ exports[`About snapshot matches the rendered markup 1`] = `
             <p
               class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
             >
-              Started Fusion Electronics with a mission to curate gear that empowers creators and everyday innovators.
+              Established FASTXHORIZON (PRIVATE) LIMITED as a general multi-category online marketplace.
             </p>
           </div>
         </div>
@@ -266,7 +266,7 @@ exports[`About snapshot matches the rendered markup 1`] = `
             <p
               class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
             >
-              Opened regional fulfillment hubs in Austin, Berlin, and Singapore to ship faster than ever.
+              Expanded the marketplace catalogue while keeping product discovery clear and customer-focused.
             </p>
           </div>
         </div>
@@ -315,7 +315,7 @@ exports[`About snapshot matches the rendered markup 1`] = `
             <h6
               class="MuiTypography-root MuiTypography-h6 css-tjvwag-MuiTypography-root"
             >
-              50k+ Members
+              Broader Marketplace
             </h6>
             <p
               class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
@@ -343,7 +343,7 @@ exports[`About snapshot matches the rendered markup 1`] = `
           <p
             class="MuiTypography-root MuiTypography-body1 css-otmprn-MuiTypography-root"
           >
-            Our team spans hardware engineers, firmware wizards, service designers, and stylists obsessed with making tech effortless. We source directly from makers and run micro-batch pilots before scaling popular favourites.
+            We focus on creating a calm, trustworthy place to discover products from the categories our marketplace supports. Our approach is practical: clear information, thoughtful presentation and a customer experience that can grow with the catalogue.
           </p>
           <div
             class="MuiStack-root css-zommdg-MuiStack-root"
@@ -354,12 +354,12 @@ exports[`About snapshot matches the rendered markup 1`] = `
               <h5
                 class="MuiTypography-root MuiTypography-h5 css-bezmlo-MuiTypography-root"
               >
-                38
+                01
               </h5>
               <span
                 class="MuiTypography-root MuiTypography-caption css-ol7wxs-MuiTypography-root"
               >
-                Specialists across 5 disciplines
+                marketplace identity
               </span>
             </div>
             <div
@@ -368,12 +368,12 @@ exports[`About snapshot matches the rendered markup 1`] = `
               <h5
                 class="MuiTypography-root MuiTypography-h5 css-bezmlo-MuiTypography-root"
               >
-                72%
+                PKR
               </h5>
               <span
                 class="MuiTypography-root MuiTypography-caption css-ol7wxs-MuiTypography-root"
               >
-                Products scored 4.5★ or higher
+                configured storefront currency
               </span>
             </div>
             <div
@@ -382,12 +382,12 @@ exports[`About snapshot matches the rendered markup 1`] = `
               <h5
                 class="MuiTypography-root MuiTypography-h5 css-bezmlo-MuiTypography-root"
               >
-                12
+                24/7
               </h5>
               <span
                 class="MuiTypography-root MuiTypography-caption css-ol7wxs-MuiTypography-root"
               >
-                Partner labs worldwide
+                browsing access
               </span>
             </div>
           </div>
@@ -409,11 +409,11 @@ exports[`About snapshot matches the rendered markup 1`] = `
             <p
               class="MuiTypography-root MuiTypography-body2 css-1c6za42-MuiTypography-root"
             >
-              • Technology should feel warm, human, and designed for real life.
+              • Product discovery should feel clear, calm and useful.
               <br />
-              • Transparency matters. We publish sourcing notes and lifecycle scores.
+              • Accurate catalogue information matters.
               <br />
-              • Community wins. Co-designing with our members leads to breakthrough ideas.
+              • The marketplace is built to welcome more categories over time.
             </p>
           </div>
         </div>

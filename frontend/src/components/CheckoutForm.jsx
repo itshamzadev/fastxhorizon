@@ -10,14 +10,16 @@ function CheckoutForm({ onSubmit, submitting = false }) {
   const [config, setConfig] = useState(null);
   const [error, setError] = useState('');
   const { notify } = useNotifier();
-  useEffect(() => { apiClient.get('payments/config').then(({ data }) => { setConfig(data); const first = data?.manual?.methods?.[0]; if (first) setForm(current => ({ ...current, methodKey: first.key })) }).catch(() => setError('Payment options are currently unavailable.')) }, []);
+  useEffect(() => { apiClient.get('payments/config').then(({ data: response }) => { const data = response?.data || response; setConfig(data); const first = data?.manual?.methods?.[0]; if (first) setForm(current => ({ ...current, methodKey: first.key })) }).catch(() => setError('Payment options are currently unavailable.')) }, []);
   const methods = config?.manual?.methods || [];
   const selected = methods.find(method => method.key === form.methodKey);
   const setField = (name, value) => setForm(current => ({ ...current, [name]: value }));
   const setPaymentValue = (id, value) => setForm(current => ({ ...current, paymentValues: { ...current.paymentValues, [id]: value } }));
   const fileToData = (file, fieldId) => new Promise(resolve => { const reader = new FileReader(); reader.onload = () => resolve({ fieldId, name: file.name, mimeType: file.type, data: reader.result }); reader.readAsDataURL(file) });
   const submit = async event => { event.preventDefault(); const required = selected?.fields?.filter(field => field.required) || []; const missing = required.find(field => field.type !== 'file' && (form.paymentValues[field.id] === undefined || form.paymentValues[field.id] === '')); if (!form.name.trim() || !emailPattern.test(form.email) || !form.shippingAddress.trim() || !form.methodKey || missing) { notify({ severity: 'error', message: missing ? `${missing.label} is required.` : 'Please complete the required checkout fields.' }); return; } await onSubmit(form); };
-  if (error) return <Typography color="error">{error}</Typography>;
+  if (error) return <Alert severity="error">{error}</Alert>;
+  if (!config) return <Box className="luxury-route-loading"><CircularProgress size={24} /><Typography variant="body2">Loading checkout configuration…</Typography></Box>;
+  if (!config.ordersEnabled) return <Alert severity="info" className="luxury-checkout-lock">Online ordering is temporarily unavailable. Please return to your cart when checkout is reopened.</Alert>;
   return <form onSubmit={submit}>
     <Typography variant="h4" gutterBottom>Billing Information</Typography>
     <Grid container spacing={3}><Grid item xs={12}><TextField required fullWidth label="Full Name" value={form.name} onChange={e => setField('name', e.target.value)} /></Grid><Grid item xs={12}><TextField required fullWidth type="email" label="Email Address" value={form.email} onChange={e => setField('email', e.target.value)} /></Grid></Grid>

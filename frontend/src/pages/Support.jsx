@@ -16,11 +16,11 @@ const faqs = [
   {
     question: 'What is your return policy?',
     answer:
-      'You have 30 days from delivery to initiate a return. We provide prepaid labels and instant store credit or refunds back to your original payment method.',
+      'Return eligibility and refund details are communicated for the relevant order and product. Contact support before sending an item back.',
   },
   {
     question: 'Do products come with warranties?',
-    answer: 'Most of our gear includes a 1-year manufacturer warranty. For Fusion-branded collections we extend that to 24 months automatically.',
+    answer: 'Warranty information depends on the product and is shown when verified product information is available.',
   },
   {
     question: 'Can I speak with a product specialist before ordering?',
@@ -34,7 +34,7 @@ const faqs = [
   {
     question: 'Can I finance my purchase?',
     answer:
-      'We partner with Affirm and Klarna to provide flexible financing at checkout. Most approvals happen instantly with 0% APR promotional plans available.',
+      'Online ordering and payment processing are currently paused. No financing option is being advertised at this time.',
   },
   {
     question: 'Will you price match other retailers?',
@@ -76,7 +76,7 @@ function Support() {
 
     notify({ severity: 'info', message: 'Submitting your request…', autoHideDuration: 2200 });
     setTimeout(() => {
-      notify({ severity: 'success', message: 'Contact request submitted! A specialist will reach out within 24 hours.' });
+      notify({ severity: 'success', message: 'Your message has been submitted.' });
     }, 350);
     setForm({ name: '', email: '', topic: '', message: '' });
   };
@@ -103,14 +103,14 @@ function Support() {
   }, [location]);
 
   return (
-    <Container maxWidth="lg" sx={{ pb: 10 }}>
+    <Container maxWidth="lg" className="luxury-page luxury-support" sx={{ pb: 10 }}>
       <Stack spacing={1} sx={{ textAlign: 'center', mt: 6, mb: 6 }} alignItems="center">
         <Chip label="Need a hand?" color="primary" variant="outlined" sx={{ alignSelf: 'center' }} />
         <Typography variant="h3" fontWeight={700}>
           Support that feels human.
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 640, mx: 'auto', textAlign: 'center' }}>
-          Whether you have a delivery question or want help planning your dream setup, our specialists are on standby.
+          Browse our support information and send a message when you need help with the FastXHorizon marketplace.
         </Typography>
       </Stack>
 
@@ -136,7 +136,7 @@ function Support() {
                 Order support
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                Confirmed order updates and fulfillment details are available in your authenticated account. Contact support if you need assistance.
+                Order placement is currently paused. Authenticated customers can review available account information when applicable.
               </Typography>
             </Stack>
           </Paper>
@@ -149,7 +149,7 @@ function Support() {
                 Privacy first
               </Typography>
               <Typography variant="body2" color="text.secondary">
-                We never sell personal data. Review our full privacy brief and security protocols anytime.
+                Read our Privacy Policy to understand how account and contact information is handled.
               </Typography>
             </Stack>
           </Paper>

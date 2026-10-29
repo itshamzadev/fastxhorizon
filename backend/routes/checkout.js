@@ -5,6 +5,7 @@ const Product = require('../models/product');
 const Order = require('../models/order');
 const PaymentConfiguration = require('../models/paymentConfiguration');
 const PaymentSubmission = require('../models/paymentSubmission');
+const auth = require('../middleware/auth');
 
 const router = express.Router();
 
@@ -132,7 +133,7 @@ async function generateOrderNumber() {
  *                   type: string
  *                   description: Description of the server error.
  */
-router.post('/create-order', async (req, res) => {
+router.post('/create-order', auth, async (req, res) => {
   try {
     const { items, name, email, shippingAddress } = req.body;
     const paymentMethod = req.body?.paymentMethod;

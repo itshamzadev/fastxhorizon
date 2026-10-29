@@ -9,12 +9,12 @@ const milestones = [
   {
     year: '2018',
     title: 'Launch',
-    description: 'Started Fusion Electronics with a mission to curate gear that empowers creators and everyday innovators.',
+    description: 'Established FASTXHORIZON (PRIVATE) LIMITED as a general multi-category online marketplace.',
   },
   {
     year: '2020',
     title: 'Global Warehouses',
-    description: 'Opened regional fulfillment hubs in Austin, Berlin, and Singapore to ship faster than ever.',
+    description: 'Expanded the marketplace catalogue while keeping product discovery clear and customer-focused.',
   },
   {
     year: '2022',
@@ -23,7 +23,7 @@ const milestones = [
   },
   {
     year: '2024',
-    title: '50k+ Members',
+    title: 'Broader Marketplace',
     description: 'Celebrated 50,000 VIP members and expanded our line to include modular smart home ecosystems.',
   },
 ];
@@ -53,15 +53,15 @@ const pillars = [
 
 function About() {
   return (
-    <Container maxWidth="lg" sx={{ pb: 10 }}>
+    <Container maxWidth="lg" className="luxury-page luxury-corporate" sx={{ pb: 10 }}>
       <Stack spacing={3} sx={{ textAlign: 'center', mt: 6, mb: 6 }} alignItems="center">
-        <Chip label="About Fusion" color="primary" variant="outlined" sx={{ alignSelf: 'center' }} />
+        <Chip label="About FastXHorizon" color="primary" variant="outlined" sx={{ alignSelf: 'center' }} />
         <Typography variant="h3" fontWeight={800}>
-          We exist to help you curate the future.
+          A considered marketplace for the way you live.
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 680, mx: 'auto', lineHeight: 1.9, textAlign: 'center' }}>
-          Fusion Electronics is a collective of engineers, industrial designers, and experience strategists. We scout the highest performing gadgets,
-          stress-test them in our lab, and package them into delightful experiences so you can focus on creating.
+          FASTXHORIZON (PRIVATE) LIMITED is a general multi-category e-commerce marketplace. We bring together thoughtfully presented products across
+          jewellery, accessories, technology, home and future collections.
         </Typography>
       </Stack>
 
@@ -90,7 +90,7 @@ function About() {
           Our Journey
         </Typography>
         <Typography variant="body1" color="text.secondary">
-          From humble beginnings to a global community of builders, here’s how we’ve evolved.
+          Our marketplace continues to evolve as new categories and products become available.
         </Typography>
       </Stack>
 
@@ -119,32 +119,32 @@ function About() {
               The collective behind the brand
             </Typography>
             <Typography variant="body1" color="text.secondary" sx={{ mb: 3, maxWidth: 720, mx: 'auto' }}>
-              Our team spans hardware engineers, firmware wizards, service designers, and stylists obsessed with making tech effortless. We source directly from
-              makers and run micro-batch pilots before scaling popular favourites.
+              We focus on creating a calm, trustworthy place to discover products from the categories our marketplace supports. Our approach is practical:
+              clear information, thoughtful presentation and a customer experience that can grow with the catalogue.
             </Typography>
             <Stack direction="row" spacing={3} justifyContent="center">
               <Box textAlign="center">
                 <Typography variant="h5" fontWeight={700}>
-                  38
+                  01
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  Specialists across 5 disciplines
+                  marketplace identity
                 </Typography>
               </Box>
               <Box textAlign="center">
                 <Typography variant="h5" fontWeight={700}>
-                  72%
+                  PKR
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  Products scored 4.5★ or higher
+                  configured storefront currency
                 </Typography>
               </Box>
               <Box textAlign="center">
                 <Typography variant="h5" fontWeight={700}>
-                  12
+                  24/7
                 </Typography>
                 <Typography variant="caption" color="text.secondary">
-                  Partner labs worldwide
+                  browsing access
                 </Typography>
               </Box>
             </Stack>
@@ -156,10 +156,10 @@ function About() {
               </Typography>
               <Divider sx={{ mb: 2 }} />
               <Typography variant="body2" color="text.secondary" sx={{ lineHeight: 1.8 }}>
-                • Technology should feel warm, human, and designed for real life.
+                • Product discovery should feel clear, calm and useful.
                 <br />
-                • Transparency matters. We publish sourcing notes and lifecycle scores.
-                <br />• Community wins. Co-designing with our members leads to breakthrough ideas.
+                • Accurate catalogue information matters.
+                <br />• The marketplace is built to welcome more categories over time.
               </Typography>
             </Paper>
           </Grid>

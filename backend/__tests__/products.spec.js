@@ -50,9 +50,10 @@ describe('Products API', () => {
       const res = await request(app).get('/api/products');
       expect(res.status).toBe(200);
       expect(res.body).toEqual([
-        { name: 'A', price: 10, id: '1' },
-        { name: 'B', price: 20, id: '2' },
+        expect.objectContaining({ name: 'A', price: 10, id: '1' }),
+        expect.objectContaining({ name: 'B', price: 20, id: '2' }),
       ]);
+      expect(res.body[0]).not.toHaveProperty('confirmedSupplierCost');
     });
 
     it('500 → server error', async () => {
@@ -65,12 +66,13 @@ describe('Products API', () => {
 
   describe('GET /api/products/:id', () => {
     it('200 → returns product when found', async () => {
-      const fakeProduct = { _id: '123', name: 'X', price: 5 };
+      const fakeProduct = { _id: '123', name: 'X', price: 5, status: 'active', image: 'x.jpg' };
       Product.findById.mockResolvedValue(fakeProduct);
 
       const res = await request(app).get('/api/products/123');
       expect(res.status).toBe(200);
-      expect(res.body).toEqual(fakeProduct);
+      expect(res.body).toEqual(expect.objectContaining({ id: '123', name: 'X', price: 5, image: 'x.jpg' }));
+      expect(res.body).not.toHaveProperty('confirmedSupplierCost');
     });
 
     it('404 → product not found', async () => {
@@ -88,6 +90,24 @@ describe('Products API', () => {
     });
   });
 
+  describe('GET /api/products/random', () => {
+    it('returns stable seeded metadata and public eligibility filters', async () => {
+      Product.countDocuments.mockResolvedValue(8);
+      const docs = [
+        { _id: 'a', name: 'A', description: 'A', price: 10, status: 'active', image: 'a.jpg' },
+        { _id: 'b', name: 'B', description: 'B', price: 20, status: 'active', image: 'b.jpg' },
+      ];
+      const chain = { sort: jest.fn(() => chain), skip: jest.fn(() => chain), limit: jest.fn(() => chain), lean: jest.fn().mockResolvedValue(docs) };
+      Product.find.mockReturnValue(chain);
+
+      const res = await request(app).get('/api/products/random?seed=fixed-seed&page=2&limit=2&category=Jewellery');
+      expect(res.status).toBe(200);
+      expect(res.body).toEqual(expect.objectContaining({ total: 8, page: 2, pageSize: 2, seed: 'fixed-seed', totalPages: 4 }));
+      expect(res.body.products).toHaveLength(2);
+      expect(Product.countDocuments).toHaveBeenCalledWith(expect.objectContaining({ $and: expect.arrayContaining([{ status: 'active' }, { price: { $gt: 0 } }]) }));
+    });
+  });
+
   describe('GET /api/products/category/:category', () => {
     it('200 → returns products in category', async () => {
       const catProds = [{ _id: 'a', name: 'Foo' }, { _id: 'b', name: 'Bar' }];
@@ -95,8 +115,11 @@ describe('Products API', () => {
 
       const res = await request(app).get('/api/products/category/testcat');
       expect(res.status).toBe(200);
-      expect(res.body).toEqual(catProds);
-      expect(Product.find).toHaveBeenCalledWith({ category: 'testcat' });
+      expect(res.body).toEqual([
+        expect.objectContaining({ id: 'a', name: 'Foo' }),
+        expect.objectContaining({ id: 'b', name: 'Bar' }),
+      ]);
+      expect(Product.find).toHaveBeenCalledWith(expect.objectContaining({ $and: expect.any(Array) }));
     });
 
     it('500 → server error', async () => {

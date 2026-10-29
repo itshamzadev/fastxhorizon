@@ -10,7 +10,7 @@ const NotFoundPage = () => {
   };
 
   return (
-    <Container maxWidth="md" sx={{ textAlign: 'center', mt: 8 }}>
+    <Container maxWidth="md" className="luxury-page luxury-not-found" sx={{ textAlign: 'center', mt: 8 }}>
       <Typography variant="h2" color="error" gutterBottom>
         404
       </Typography>

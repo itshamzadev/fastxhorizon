@@ -26,14 +26,14 @@ const dataPractices = [
 
 function Privacy() {
   return (
-    <Container maxWidth="md" sx={{ py: { xs: 6, md: 10 } }}>
+    <Container maxWidth="md" className="luxury-page luxury-policy" sx={{ py: { xs: 6, md: 10 } }}>
       <Stack spacing={3} alignItems="center" textAlign="center" sx={{ mb: 4 }}>
         <Chip label="Privacy Policy" color="primary" variant="outlined" />
         <Typography variant="h3" fontWeight={700}>
           Your trust is the most valuable tech we protect
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 680 }}>
-          We collect only what we need to ship exceptional products and continuously improve the Fusion experience. The details below outline exactly how it
+          We collect only what we need to operate the FastXHorizon marketplace and support customer accounts. The details below outline how it
           works.
         </Typography>
         <Typography variant="caption" color="text.secondary">
@@ -81,8 +81,8 @@ function Privacy() {
               Third-party services we rely on
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Trusted partners such as Stripe, Pinecone, and Google Cloud act as processors under strict data processing agreements. Only the bare minimum
-              required to power payments, recommendations, or analytics is shared.
+              Service providers may process the minimum information required to operate configured marketplace features. We do not expose private account
+              information through public product APIs.
             </Typography>
           </Stack>
 
@@ -91,14 +91,14 @@ function Privacy() {
               Requesting access or deletion
             </Typography>
             <Typography variant="body2" color="text.secondary">
-              Email privacy@fusionelectronics.io with the subject “Data Request” and our privacy desk will validate your identity before fulfilling the request
+              Use the configured customer support channel with the subject “Data Request” and our team will validate your identity before fulfilling the request
               within 30 days.
             </Typography>
           </Stack>
 
           <Stack spacing={2}>
             <Typography variant="body2" color="text.secondary">
-              Questions about this policy? Reach out through the Support Centre or email privacy@fusionelectronics.io so we can help.
+              Questions about this policy? Reach out through the Support Centre so we can help.
             </Typography>
             <Stack direction="row" spacing={1} alignItems="center" justifyContent={{ xs: 'center', md: 'flex-start' }}>
               <VisibilityOffIcon color="primary" fontSize="small" />

@@ -10,7 +10,7 @@ export default function Wishlist({ addToCart }) {
   const { wishlist, wishlistLoading, wishlistError } = useWishlist();
 
   return (
-    <Box sx={{ py: { xs: 2, md: 5 } }}>
+    <Box className="luxury-page luxury-wishlist" sx={{ py: { xs: 2, md: 5 } }}>
       <Stack direction={{ xs: 'column', sm: 'row' }} alignItems={{ xs: 'flex-start', sm: 'flex-end' }} justifyContent="space-between" spacing={2} sx={{ mb: 4 }}>
         <Box>
           <Typography component="span" sx={{ color: 'primary.main', fontSize: 12, fontWeight: 700, letterSpacing: '0.18em', textTransform: 'uppercase' }}>Saved for later</Typography>

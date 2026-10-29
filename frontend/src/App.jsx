@@ -25,6 +25,7 @@ import { apiClient, withRetry } from './services/apiClient';
 import { useNotifier } from './context/NotificationProvider';
 import { WishlistProvider } from './context/WishlistContext';
 import WishlistPage from './pages/Wishlist';
+import RequireCustomerAuth from './components/RequireCustomerAuth';
 import { addWishlistItem, getCustomerToken, getGuestWishlistIds, getWishlist, mergeWishlist, removeWishlistItem, saveGuestWishlistIds } from './services/wishlist';
 
 const theme = createTheme({
@@ -193,7 +194,9 @@ function App() {
       setHomeProductsLoading(true);
       setHomeProductsError(null);
       try {
-        const { data } = await withRetry(() => apiClient.get('products/random', { params: { limit: 24 } }));
+        const seed = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
+        const { data: response } = await withRetry(() => apiClient.get('products/random', { params: { limit: 24, seed } }));
+        const data = Array.isArray(response) ? response : response?.products;
         if (!Array.isArray(data)) throw new Error('Unexpected random products response.');
         const normalized = data.map(product => {
           const canonicalId = product?._id || product?.id;
@@ -331,7 +334,7 @@ function App() {
 
               <Route path="/wishlist" element={<WishlistPage addToCart={addToCart} />} />
 
-              <Route path="/checkout" element={<Checkout cartItems={cart} onOrderComplete={handleOrderComplete} />} />
+              <Route path="/checkout" element={<RequireCustomerAuth><Checkout cartItems={cart} onOrderComplete={handleOrderComplete} /></RequireCustomerAuth>} />
 
               <Route path="/order-success" element={<OrderSuccess />} />
 

@@ -40,6 +40,11 @@ function Shop({ products, addToCart, loading, error }) {
   const [searchTotal, setSearchTotal] = React.useState(null);
   const [searchLoading, setSearchLoading] = React.useState(false);
   const [searchError, setSearchError] = React.useState(null);
+  const [randomProducts, setRandomProducts] = React.useState([]);
+  const [randomTotal, setRandomTotal] = React.useState(0);
+  const [randomLoading, setRandomLoading] = React.useState(false);
+  const [randomError, setRandomError] = React.useState(null);
+  const randomSeed = React.useRef(`${Date.now()}-${Math.random().toString(36).slice(2)}`);
   const { notify } = useNotifier();
   const location = useLocation();
 
@@ -73,7 +78,7 @@ function Shop({ products, addToCart, loading, error }) {
 
   React.useEffect(() => {
     let active = true;
-    if (!searchQuery) { setSearchProducts(null); setSearchTotal(null); setSearchError(null); setSearchLoading(false); return undefined; }
+    if (!searchQuery || sortOption === 'random') { setSearchProducts(null); setSearchTotal(null); setSearchError(null); setSearchLoading(false); return undefined; }
     setSearchLoading(true);
     setSearchError(null);
     apiClient.get('search', { params: { q: searchQuery, limit: 24 } })
@@ -81,11 +86,46 @@ function Shop({ products, addToCart, loading, error }) {
       .catch(searchRequestError => { if (active) { setSearchProducts([]); setSearchTotal(0); setSearchError(searchRequestError); } })
       .finally(() => { if (active) setSearchLoading(false); });
     return () => { active = false; };
-  }, [searchQuery]);
+  }, [searchQuery, sortOption]);
+
+  React.useEffect(() => {
+    let active = true;
+    if (sortOption !== 'random') {
+      setRandomLoading(false);
+      setRandomError(null);
+      return undefined;
+    }
+    setRandomLoading(true);
+    setRandomError(null);
+    const params = {
+      limit: itemsPerPage,
+      page,
+      seed: `${randomSeed.current}:${categoryFilter}:${searchQuery}:${viewFilter}`,
+    };
+    if (categoryFilter !== 'all') params.category = categoryFilter;
+    if (searchQuery) params.search = searchQuery;
+    if (viewFilter === 'featured') params.featured = 'true';
+    if (viewFilter === 'inStock') params.availability = 'available';
+    apiClient.get('products/random', { params })
+      .then(({ data }) => {
+        if (!active) return;
+        const payload = Array.isArray(data) ? { products: data, total: data.length } : data;
+        setRandomProducts(Array.isArray(payload?.products) ? payload.products : []);
+        setRandomTotal(Number(payload?.total) || 0);
+      })
+      .catch(randomRequestError => {
+        if (!active) return;
+        setRandomProducts([]);
+        setRandomTotal(0);
+        setRandomError(randomRequestError);
+      })
+      .finally(() => active && setRandomLoading(false));
+    return () => { active = false; };
+  }, [sortOption, page, categoryFilter, searchQuery, viewFilter]);
 
   const filteredProducts = React.useMemo(() => {
-    const sourceProducts = searchProducts || products;
-    const base = categoryFilter === 'all' ? sourceProducts : sourceProducts.filter(product => capitalizeCategory(product.category) === categoryFilter || (Array.isArray(product.categoryPath) && product.categoryPath.includes(categoryFilter)));
+    const sourceProducts = sortOption === 'random' ? randomProducts : (searchProducts || products);
+    const base = sortOption === 'random' || categoryFilter === 'all' ? sourceProducts : sourceProducts.filter(product => capitalizeCategory(product.category) === categoryFilter || (Array.isArray(product.categoryPath) && product.categoryPath.includes(categoryFilter)));
 
     const sorted = [...base].sort((a, b) => {
       switch (sortOption) {
@@ -102,19 +142,19 @@ function Shop({ products, addToCart, loading, error }) {
       }
     });
 
-    if (viewFilter === 'inStock') {
+    if (sortOption !== 'random' && viewFilter === 'inStock') {
       return sorted.filter(product => product?.inventoryMode === 'SUPPLIER_BASED' ? product.availabilityStatus === 'AVAILABLE_TO_ORDER' : (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode) ? product.availabilityStatus === 'IN_STOCK' : typeof product.stock === 'number' && product.stock > 0));
     }
-    if (viewFilter === 'featured') {
+    if (sortOption !== 'random' && viewFilter === 'featured') {
       return sorted.filter(product => product.isFeatured || (product.rating || 0) >= 4.5);
     }
     return sorted;
-  }, [products, searchProducts, categoryFilter, sortOption, viewFilter, capitalizeCategory]);
+  }, [products, searchProducts, randomProducts, categoryFilter, sortOption, viewFilter, capitalizeCategory]);
 
-  const pageCount = Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
+  const pageCount = sortOption === 'random' ? Math.max(1, Math.ceil(randomTotal / itemsPerPage)) : Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const productsToShow = filteredProducts.slice(startIndex, endIndex);
+  const productsToShow = sortOption === 'random' ? filteredProducts : filteredProducts.slice(startIndex, endIndex);
 
   const handlePageChange = (_event, value) => {
     setPage(value);
@@ -122,24 +162,28 @@ function Shop({ products, addToCart, loading, error }) {
   };
 
   const handleCategoryChange = event => {
+    randomSeed.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     setCategoryFilter(event.target.value);
     setPage(1);
     setAnimatedCards([]);
   };
 
   const handleSortChange = event => {
+    randomSeed.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     setSortOption(event.target.value);
     setPage(1);
   };
 
   const handleViewChange = (_event, nextView) => {
     if (nextView !== null) {
+      randomSeed.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
       setViewFilter(nextView);
       setPage(1);
     }
   };
 
   const handleQuickSelect = category => {
+    randomSeed.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
     setCategoryFilter(category);
     setPage(1);
     notify({ severity: 'info', message: `Showing ${category === 'all' ? 'all' : category} products` });
@@ -153,7 +197,7 @@ function Shop({ products, addToCart, loading, error }) {
     return () => clearTimeout(timer);
   }, [productsToShow]);
 
-  if (loading || searchLoading) {
+  if (loading || searchLoading || randomLoading) {
     return (
       <Box
         sx={{
@@ -175,8 +219,8 @@ function Shop({ products, addToCart, loading, error }) {
   }
 
   return (
-    <Container maxWidth="xl" sx={{ pb: 8 }}>
-      <Paper
+    <Container maxWidth="xl" className="luxury-page luxury-shop" sx={{ pb: 8 }}>
+      <Paper className="luxury-page__hero"
         elevation={0}
         sx={{ p: { xs: 3, md: 5 }, borderRadius: 4, mb: 4, background: '#E8E1D8', border: '1px solid #C5A47E' }}
       >
@@ -207,6 +251,7 @@ function Shop({ products, addToCart, loading, error }) {
                 <MenuItem value="priceHigh">Price: High to Low</MenuItem>
                 <MenuItem value="rating">Top Rated</MenuItem>
                 <MenuItem value="newest">Newest</MenuItem>
+                <MenuItem value="random">Random / Discover</MenuItem>
               </Select>
             </FormControl>
           </Stack>
@@ -214,13 +259,13 @@ function Shop({ products, addToCart, loading, error }) {
       </Paper>
 
       {searchQuery && <Typography variant="h5" sx={{ mb: 2 }}>Search results for “{searchQuery}” <Typography component="span" variant="body1" color="text.secondary">({searchTotal ?? 0} products)</Typography></Typography>}
-      {(error || searchError) && (
+      {(error || searchError || randomError) && (
         <Alert severity="error" sx={{ mb: 3 }}>
-          {(searchError || error)?.message || 'Unable to load products right now. Please try again shortly.'}
+          {(randomError || searchError || error)?.message || 'Unable to load products right now. Please try again shortly.'}
         </Alert>
       )}
 
-      <Paper elevation={0} sx={{ p: { xs: 2, md: 3 }, borderRadius: 4, mb: 4 }}>
+      <Paper className="luxury-page__filters" elevation={0} sx={{ p: { xs: 2, md: 3 }, borderRadius: 4, mb: 4 }}>
         <Stack direction="row" spacing={1} alignItems="center" sx={{ mb: 2 }}>
           <TuneIcon color="primary" />
           <Typography variant="subtitle1" fontWeight={700}>

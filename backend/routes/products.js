@@ -14,8 +14,35 @@ const toIdString = value => {
 
 const FALLBACK_POOL_LIMIT = 150;
 const RANDOM_PRODUCTS_MAX_LIMIT = 24;
+const RANDOM_SEED_MAX_LENGTH = 80;
 
 const RANK_SORT = { rating: -1, numReviews: -1, createdAt: -1 };
+
+const PUBLIC_PRODUCT_FIELDS = ['name', 'description', 'shortDescription', 'longDescription', 'category', 'subcategory', 'categoryPath', 'productType', 'tags', 'brand', 'sku'];
+const publicImageFilter = { $or: [{ image: { $type: 'string', $ne: '' } }, { images: { $elemMatch: { $type: 'string', $ne: '' } } }] };
+const hashSeed = value => {
+  let hash = 2166136261;
+  for (const char of String(value || 'default').slice(0, RANDOM_SEED_MAX_LENGTH)) {
+    hash ^= char.charCodeAt(0);
+    hash = Math.imul(hash, 16777619);
+  }
+  return hash >>> 0;
+};
+const publicRandomFilter = query => {
+  const conditions = [{ status: 'active' }, { price: { $gt: 0 } }, publicImageFilter];
+  const category = String(query.category || '').trim().slice(0, 80);
+  if (category) conditions.push({ $or: [{ category }, { subcategory: category }, { categoryPath: category }] });
+  const search = String(query.search || '').trim().slice(0, 100);
+  for (const term of search.split(/\s+/).filter(Boolean)) {
+    const safe = term.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    conditions.push({ $or: PUBLIC_PRODUCT_FIELDS.map(field => ({ [field]: { $regex: safe, $options: 'i' } })) });
+  }
+  if (query.featured === 'true') conditions.push({ $or: [{ featured: true }, { rating: { $gte: 4.5 } }] });
+  if (query.availability === 'available') {
+    conditions.push({ $or: [{ inventoryMode: 'SUPPLIER_BASED', availabilityStatus: 'AVAILABLE_TO_ORDER' }, { inventoryMode: { $in: ['AVAILABILITY_BASED', 'AVAILABILITY'] }, availabilityStatus: 'IN_STOCK' }, { inventoryMode: { $nin: ['SUPPLIER_BASED', 'AVAILABILITY_BASED', 'AVAILABILITY'] }, stock: { $gt: 0 } }] });
+  }
+  return { $and: conditions };
+};
 
 const normalizeProduct = product => ({
   id: product._id,
@@ -411,14 +438,8 @@ const pineconeGroupRecommendations = async (products, limit = 10) => {
  */
 router.get('/', async (req, res) => {
   try {
-    const products = await Product.find();
-
-    const formattedProducts = products.map(product => ({
-      ...product.toObject(),
-      id: product._id,
-    }));
-
-    res.json(formattedProducts);
+    const products = await Product.find(publicRandomFilter({}));
+    res.json(products.map(product => normalizeProduct(typeof product.toObject === 'function' ? { ...product.toObject(), _id: product._id } : product)));
   } catch (err) {
     res.status(500).send('Server error');
   }
@@ -433,37 +454,23 @@ router.get('/random', async (req, res) => {
     const requestedLimit = Number.parseInt(req.query.limit, 10);
     const limit = Number.isFinite(requestedLimit) ? Math.min(Math.max(requestedLimit, 1), RANDOM_PRODUCTS_MAX_LIMIT) : RANDOM_PRODUCTS_MAX_LIMIT;
 
-    const products = await Product.aggregate([
-      { $match: { status: 'active' } },
-      { $sample: { size: limit } },
-      {
-        $project: {
-          _id: 1,
-          name: 1,
-          description: 1,
-          price: 1,
-          category: 1,
-          subcategory: 1,
-          categoryPath: 1,
-          productType: 1,
-          tags: 1,
-          slug: 1,
-          image: 1,
-          images: 1,
-          brand: 1,
-          stock: 1,
-          inventoryMode: 1,
-          availabilityStatus: 1,
-          rating: 1,
-          numReviews: 1,
-          createdAt: 1,
-          storeName: 1,
-          sellerStoreName: 1,
-        },
-      },
-    ]);
+    const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
+    const seed = String(req.query.seed || `${Date.now()}-${Math.random()}`).slice(0, RANDOM_SEED_MAX_LENGTH);
+    const filter = publicRandomFilter(req.query);
+    const total = await Product.countDocuments(filter);
+    if (!total) return res.json({ products: [], total: 0, page, pageSize: limit, totalPages: 0, seed });
 
-    res.json(products.map(normalizeProduct));
+    // A seeded rotation of the indexed _id order gives stable, duplicate-free pages
+    // without loading the catalog into memory or running an unbounded $sample.
+    const offset = hashSeed(seed) % total;
+    const start = ((page - 1) * limit + offset) % total;
+    const firstBatch = Math.min(limit, total - start);
+    const first = await Product.find(filter).sort({ _id: 1 }).skip(start).limit(firstBatch).lean();
+    const second = first.length < limit
+      ? await Product.find(filter).sort({ _id: 1 }).skip(0).limit(limit - first.length).lean()
+      : [];
+    const products = [...first, ...second];
+    res.json({ products: products.map(normalizeProduct), total, page, pageSize: limit, totalPages: Math.ceil(total / limit), seed });
   } catch (err) {
     console.error('Error sampling random storefront products:', err);
     res.status(500).json({ message: 'Server error' });
@@ -600,10 +607,10 @@ router.post('/recommendations', async (req, res) => {
 router.get('/:id', async (req, res) => {
   try {
     const product = await Product.findById(req.params.id);
-    if (!product) {
+    if (!product || product.status !== 'active' || !(Number(product.price) > 0) || !((typeof product.image === 'string' && product.image) || (Array.isArray(product.images) && product.images.length))) {
       return res.status(404).send('Product not found');
     }
-    res.json(product);
+    res.json(normalizeProduct(product));
   } catch (err) {
     res.status(500).send('Server error');
   }
@@ -637,8 +644,9 @@ router.get('/category/:category', async (req, res) => {
     const requested = decodeURIComponent(req.params.category);
     const legacy = /^(women|women\/jewellery)$/i.test(requested);
     const category = legacy ? 'Jewellery' : requested;
-    const products = await Product.find(legacy ? { $or: [{ category }, { categoryPath: category }] } : { category });
-    res.json(products);
+    const categoryFilter = legacy ? { $or: [{ category }, { categoryPath: category }] } : { $or: [{ category }, { subcategory: category }, { categoryPath: category }] };
+    const products = await Product.find({ $and: [publicRandomFilter({}), categoryFilter] });
+    res.json(products.map(normalizeProduct));
   } catch (err) {
     res.status(500).send('Server error');
   }

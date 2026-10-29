@@ -3,7 +3,7 @@
 exports[`NotFoundPage snapshot matches the rendered markup 1`] = `
 <DocumentFragment>
   <div
-    class="MuiContainer-root MuiContainer-maxWidthMd css-r1bfsn-MuiContainer-root"
+    class="MuiContainer-root MuiContainer-maxWidthMd luxury-page luxury-not-found css-r1bfsn-MuiContainer-root"
   >
     <h2
       class="MuiTypography-root MuiTypography-h2 MuiTypography-gutterBottom css-tu1zeg-MuiTypography-root"

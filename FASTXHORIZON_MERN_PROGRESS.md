@@ -697,6 +697,21 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Verification: local backend connected to `mongodb://127.0.0.1:27017/fastxhorizon_local` and frontend served at `http://localhost:3000`. Chrome screenshots were captured and inspected at 390px, 768px, 1440px and 1920px under `qa-screenshots/v2/`. Frontend tests passed: 24 suites, 43 tests, 17 snapshots. Frontend production build passed. Existing React Router act/future-flag, Browserslist freshness and optional Pinecone-key warnings remain non-blocking.
 - No Admin Panel, backend business logic, MongoDB records, payments, checkout, ordering or production infrastructure were changed. No push or deployment was performed.
 
+## Product grid alignment and card polish - 2026-10-29
+
+- Stabilized the shared `ProductCard` and all `.product-grid` consumers with stretched grid items, consistent `4 / 5` card proportions, full-width cards and a fixed-height information overlay. This removes row-by-row height drift and accidental flex/grid offsets while preserving the approved 8px outer radius, 6px image treatment and `rgba(25,28,33,0.58)` overlay.
+- Zero-review products now show only `No reviews yet`; empty stars and artificial `0.0 (0)` summaries are hidden. Real ratings and counts remain unchanged when present.
+- Cart controls retain their existing availability behavior and do not change the global ordering/payment lock; no checkout or order API behavior was enabled.
+- Browser QA used real Chrome/CDP renders for the Shop grid at 390px and 1440px. Computed layout checks confirmed two columns at 320px/390px, three at 768px, the existing dense desktop rules at 1024px/1440px, and seven-column capacity at 1920px; cards in each row shared identical x/y alignment and dimensions.
+- Frontend tests passed: 24 suites, 43 tests, 17 snapshots. `npm run build` passed with only existing Browserslist freshness and Node deprecation warnings. No Admin, backend, MongoDB, production or GitHub changes were made.
+
+## Product grid vertical alignment root-cause fix - 2026-10-29
+
+- Chrome DOM inspection found the actual stagger: broad ProductDetails selectors using `.product-details-v7 ... .MuiGrid-item:nth-child(2)` and mobile `padding-top: 28px` were matching the second item in the nested Recommended Products grid. The same selector family also added first-item right padding, so related cards had different widths, y positions and heights.
+- Added an explicit related-grid reset scoped to `.product-details-v7__related`, including zero item padding, static positioning, stretched rows and consistent 20px gaps. The card uses a fixed percentage-based aspect-ratio fallback so content length cannot change the card track height.
+- Fresh Chrome/CDP measurements now show equal first-row `top` values and equal card dimensions at 320px, 390px, 768px, 1024px, 1440px and 1920px. The two-column mobile layout remains intact; product imagery, overlays, icon positions and the `No reviews yet` state remain unchanged.
+- Fresh screenshots: `qa-screenshots/product-grid/recommended-390-fixed.png` and `qa-screenshots/product-grid/recommended-1440-fixed.png`. Frontend tests passed (24 suites, 43 tests, 17 snapshots) and `npm run build` passed. No backend, Admin, MongoDB, payment, production or deployment changes were made.
+
 ## Marketplace identity correction - 2026-10-29
 
 - Replaced the jewellery-led V2 hero with a category-neutral marketplace campaign using locally stored `marketplace-tech.jpg`, an Unsplash-licensed editorial assortment of technology and lifestyle objects. Source and licensing details are recorded in `frontend/public/editorial/ASSET_MANIFEST.md`.
@@ -704,3 +719,58 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Removed textile/material-study imagery from the active homepage composition. Category cards still derive their names, counts and product imagery from real published catalog data, so future categories can enter without another structural redesign.
 - Preserved the approved product-card component, real API integrations, logo/header/footer, search, authentication, wishlist, disabled checkout/payments/order creation and all product publication rules. No Admin, backend, MongoDB or production changes were made.
 - Browser screenshots were captured and inspected at 390px, 768px, 1440px and 1920px under `qa-screenshots/marketplace-v2/`. Frontend tests passed: 24 suites, 43 tests, 17 snapshots. Frontend production build passed. Remaining output is limited to existing React test act/router warnings and the stale Browserslist database notice.
+
+## Ultra-premium product details V7 - 2026-10-29
+
+- Rebuilt `frontend/src/pages/ProductDetails.jsx` as an editorial, image-first product experience with a dedicated gallery stage, thumbnail rail, image counter, keyboard-accessible zoom dialog, compact product information hierarchy, real PKR price, truthful review/availability states and disabled ordering messaging.
+- Added the V7 product-detail visual system to `frontend/src/App.css`: ivory/charcoal/sand-gold marketplace styling, Cormorant display typography, restrained separators, responsive asymmetric desktop composition, mobile single-column flow and reduced-motion-compatible transitions.
+- Preserved the existing product API, normalized gallery URLs, variant selection/state updates, wishlist behavior, inventory-mode semantics, product routing and server-enforced ordering/payment lock. No product data, prices, Admin, backend or MongoDB records were changed.
+- Related recommendations now reuse the shared approved `ProductCard` component and its existing responsive/grid/overlay behavior instead of a second custom card implementation.
+- Real local Chrome captures were inspected for the jewellery product at `qa-screenshots/product-v7/jewellery-390-cdp.png`, `jewellery-768.png`, `jewellery-1440.png` and `jewellery-1920.png`; the CDP-controlled 390px capture confirmed the mobile single-column gallery, title wrapping, compact actions, detail tabs and two-column related cards.
+- Verification: frontend tests passed (24 suites, 43 tests, 17 snapshots); `npm run build` passed. Non-blocking existing warnings include React Router test warnings, stale Browserslist data and the optional backend Pinecone key warning. No GitHub push or deployment was performed.
+
+## Product details V8 flagship structural redesign - 2026-10-29
+
+- Added a new V8 composition on top of the existing Product Details architecture: compact editorial breadcrumb, dedicated gallery stage with desktop thumbnail rail/mobile strip, separate open information column, refined detail-rule sections and a dark editorial recommendations band titled `Discover Something More`.
+- Added V8-specific cascade rules after the legacy V7 responsive rules so the new layout is not overridden by the older broad selectors. Gallery images remain contained and undistorted; desktop information stays editorial/sticky while mobile becomes a clean single-column flow.
+- Added V8 classes to the existing gallery, information and recommendation elements only. Real product APIs, PKR formatter, variant selection, gallery/lightbox, wishlist integration, honest reviews/availability and the server-enforced ordering/payment lock remain unchanged.
+- Local Chrome/CDP screenshots were captured and inspected at `qa-screenshots/product-v8/product-390.png`, `product-768.png`, `product-1440.png` and `product-1920.png`. The 320px capture was also generated for layout measurement.
+- DOM measurements confirmed no horizontal overflow beyond the browser scrollbar and aligned recommendation rows: 320px/390px use two columns, 768px uses three, 1024px/1440px use the existing responsive tracks, and 1920px uses the dense wide layout. Each measured row had equal `top` and equal height values.
+- Frontend tests and production build are the final verification step for this change. No Admin Panel, backend, MongoDB, product records, payment configuration, production infrastructure, GitHub push or deployment was changed.
+
+## Customer website luxury UI transformation V9 - 2026-10-29
+
+- Audited the customer routes: `/`, `/shop`, `/about`, `/support`, `/terms`, `/privacy`, `/shipping-returns`, `/cart`, `/wishlist`, `/checkout`, `/order-success`, `/product/:id`, `/login`, `/register`, `/forgot-password`, `/reset-password` and the wildcard 404 route.
+- Added a shared `luxury-page` treatment for Shop, Wishlist, Cart, Login, Register, About, Support, policy pages and Not Found: consistent ivory canvas, charcoal/Cormorant hierarchy, Manrope UI text, sand-gold rules, restrained square corners, form states, buttons, filters, alerts, accordions and empty states.
+- Shop now has a charcoal editorial catalogue header and cleaner filter/product-grid rhythm while retaining real API data, existing filters/sort/pagination, approved ProductCard behavior and disabled ordering.
+- Wishlist, authentication, cart and support/legal pages now visually belong to the same storefront system without changing authentication/session APIs, wishlist persistence, cart state or policy routes.
+- Removed stale customer-facing Fusion Electronics copy and unsupported operational claims from About, Support, Privacy and Terms content; company identity now uses FASTXHORIZON (PRIVATE) LIMITED and truthful marketplace language.
+- Browser QA captured and inspected representative local routes at 390px and 1440px: homepage, Shop, Login and About screenshots are stored under `qa-screenshots/v9-routes/`. Route checks also covered Wishlist, Support, Privacy and Cart. All checked pages stayed within the browser viewport width; Wishlist correctly showed its real empty-state alert.
+- Intentional markup/content changes were reflected in snapshots. Frontend tests passed after snapshot updates: 24 suites, 43 tests, 17 snapshots. Production build passed with only existing Node deprecation and stale Browserslist warnings.
+- No Admin Panel, backend business logic, MongoDB records, supplier pricing, payment settings, checkout/order APIs, production infrastructure, GitHub push or deployment was changed.
+
+## Local order-testing response fix - 2026-10-29
+
+- Local-only `fastxhorizon_local` payment configuration was enabled for testing with a clearly labeled `local-manual-test` method. Automatic Payment and COD remain disabled; no production configuration was changed.
+- Fixed the actual frontend bug in `ProductDetails.jsx` and `CheckoutForm.jsx`: the backend returns the payment configuration under `{ data: ... }`, while the frontend was reading the Axios response wrapper as if it were the configuration itself. This kept `ordersEnabled` false and left Add to Cart disabled even when the local API returned true.
+- Chrome/CDP verification after hot reload showed Product Details `Add to Cart` has `disabled: false`, the unavailable-order notice is gone, and `/api/payments/config` is being requested from the local backend.
+# V10 Luxury Cart & Secure Checkout
+
+- Redesigned the customer Cart page with an editorial two-column desktop layout, responsive stacked mobile layout, real PKR subtotal/item totals, empty-cart state, and truthful ordering-disabled messaging.
+- Added `RequireCustomerAuth` at the `/checkout` route. It validates the existing customer session through `GET /api/auth/me`, preserves a safe `/checkout` return path, and avoids trusting a token string alone.
+- Added `GET /api/auth/me` using the existing customer JWT/auth middleware and active-user check.
+- Protected `POST /api/checkout/create-order` with the existing customer auth middleware. Unauthenticated requests now receive HTTP 401; authenticated requests still pass the existing payment and global ordering guards.
+- Checkout UI now unwraps the payment configuration response consistently and shows the unavailable state without exposing active payment controls while `ordersEnabled` is false.
+- Local MongoDB payment configuration was reset to browsing-only: orders disabled, Automatic Payment disabled, Manual Payment disabled, and COD disabled. No production database was changed.
+- Verification: targeted frontend Cart/Login/Checkout tests passed (11 tests); backend full Jest suite passed (10 suites, 49 tests); frontend production build passed. Browser automation was not available in this environment, so rendered screenshots were not captured in this pass.
+
+# V11 Random Product Discovery
+
+- Public product listing and random discovery now use active products with a positive approved public price; local verification returned 23 public products and excluded all 730 draft YouMart records.
+- Reworked `GET /api/products/random` to accept `seed`, `page`, `limit`, category, search, featured and availability filters and return pagination metadata.
+- Random pagination uses a deterministic seeded rotation over `_id` order. The seed remains stable for a Shop result set, so page navigation does not reshuffle or duplicate products; a new homepage load generates a new seed.
+- Homepage random discovery now consumes the API response shape and requests a fresh seed once per app load. Wishlist and other React state updates do not trigger a refetch.
+- Shop now includes `Random / Discover` sorting with server-side category/search/availability filtering and stable pagination. Existing sort modes remain client-side and unchanged.
+- Search public filtering also excludes products without a positive public price or usable image. Supplier costs and private pricing fields remain absent from public responses.
+- Verification: real local MongoDB random API checks passed (same-seed page overlap 0; different seeds produced different order); backend product/search tests passed (14 tests); frontend Shop/Home tests passed (7 tests); frontend production build passed. No production systems were touched.
+

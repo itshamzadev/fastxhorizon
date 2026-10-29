@@ -4,6 +4,7 @@ const jwt = require('jsonwebtoken');
 const { check, validationResult } = require('express-validator');
 const User = require('../models/user');
 const router = express.Router();
+const auth = require('../middleware/auth');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -200,6 +201,16 @@ router.post('/login', [check('email', 'Please include a valid email').isEmail(),
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
+  }
+});
+
+router.get('/me', auth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.id).select('_id name email status date').lean();
+    if (!user || user.status !== 'active') return res.status(401).json({ msg: 'Customer session is not active.' });
+    return res.json({ data: { id: String(user._id), name: user.name, email: user.email, status: user.status } });
+  } catch (error) {
+    return res.status(500).json({ msg: 'Unable to verify customer session.' });
   }
 });
 

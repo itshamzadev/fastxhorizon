@@ -3,10 +3,10 @@
 exports[`Shop snapshot matches the rendered markup (loaded, empty products) 1`] = `
 <DocumentFragment>
   <div
-    class="MuiContainer-root MuiContainer-maxWidthXl css-1co2cf-MuiContainer-root"
+    class="MuiContainer-root MuiContainer-maxWidthXl luxury-page luxury-shop css-1co2cf-MuiContainer-root"
   >
     <div
-      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 css-oi3a1q-MuiPaper-root"
+      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 luxury-page__hero css-oi3a1q-MuiPaper-root"
     >
       <div
         class="MuiStack-root css-1l4iccl-MuiStack-root"
@@ -151,7 +151,7 @@ exports[`Shop snapshot matches the rendered markup (loaded, empty products) 1`] 
       </div>
     </div>
     <div
-      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 css-kc63w4-MuiPaper-root"
+      class="MuiPaper-root MuiPaper-elevation MuiPaper-rounded MuiPaper-elevation0 luxury-page__filters css-kc63w4-MuiPaper-root"
     >
       <div
         class="MuiStack-root css-wubis5-MuiStack-root"

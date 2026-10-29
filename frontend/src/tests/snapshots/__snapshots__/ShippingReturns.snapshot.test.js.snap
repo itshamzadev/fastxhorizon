@@ -3,7 +3,7 @@
 exports[`ShippingReturns snapshot matches the rendered markup 1`] = `
 <DocumentFragment>
   <div
-    class="MuiContainer-root MuiContainer-maxWidthMd css-doq7n0-MuiContainer-root"
+    class="MuiContainer-root MuiContainer-maxWidthMd luxury-page luxury-policy css-doq7n0-MuiContainer-root"
   >
     <div
       class="MuiStack-root css-fb8lv7-MuiStack-root"

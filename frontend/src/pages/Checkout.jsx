@@ -115,7 +115,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
     const id = item._id || item.id;
     return id && selectedItems.has(id);
   });
-  const total = itemsToShow.reduce((sum, item) => sum + (item.price || 0), 0);
+  const total = itemsToShow.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1), 0);
   const allSelected = cartItems.every(item => selectedItems.has(item._id || item.id));
 
   const toggleItem = id => {
@@ -141,7 +141,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
   };
 
   return (
-    <Container maxWidth="md" sx={{ pb: 10 }}>
+    <Container maxWidth="lg" className="luxury-page luxury-checkout luxury-checkout-v10" sx={{ pb: 10 }}>
       <Paper elevation={0} sx={{ p: { xs: 3, md: 5 }, borderRadius: 4 }}>
         <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
           <ShoppingCartCheckoutIcon color="primary" fontSize="large" />

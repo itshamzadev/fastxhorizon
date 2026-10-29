@@ -3,7 +3,7 @@
 exports[`Support snapshot matches the rendered markup 1`] = `
 <DocumentFragment>
   <div
-    class="MuiContainer-root MuiContainer-maxWidthLg css-1luz022-MuiContainer-root"
+    class="MuiContainer-root MuiContainer-maxWidthLg luxury-page luxury-support css-1luz022-MuiContainer-root"
   >
     <div
       class="MuiStack-root css-k8kjxm-MuiStack-root"
@@ -25,7 +25,7 @@ exports[`Support snapshot matches the rendered markup 1`] = `
       <p
         class="MuiTypography-root MuiTypography-body1 css-sh0zs6-MuiTypography-root"
       >
-        Whether you have a delivery question or want help planning your dream setup, our specialists are on standby.
+        Browse our support information and send a message when you need help with the FastXHorizon marketplace.
       </p>
     </div>
     <div
@@ -94,7 +94,7 @@ exports[`Support snapshot matches the rendered markup 1`] = `
             <p
               class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
             >
-              Confirmed order updates and fulfillment details are available in your authenticated account. Contact support if you need assistance.
+              Order placement is currently paused. Authenticated customers can review available account information when applicable.
             </p>
           </div>
         </div>
@@ -128,7 +128,7 @@ exports[`Support snapshot matches the rendered markup 1`] = `
             <p
               class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
             >
-              We never sell personal data. Review our full privacy brief and security protocols anytime.
+              Read our Privacy Policy to understand how account and contact information is handled.
             </p>
           </div>
         </div>
@@ -265,7 +265,7 @@ exports[`Support snapshot matches the rendered markup 1`] = `
                 <p
                   class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
                 >
-                  You have 30 days from delivery to initiate a return. We provide prepaid labels and instant store credit or refunds back to your original payment method.
+                  Return eligibility and refund details are communicated for the relevant order and product. Contact support before sending an item back.
                 </p>
               </div>
             </div>
@@ -327,7 +327,7 @@ exports[`Support snapshot matches the rendered markup 1`] = `
                 <p
                   class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
                 >
-                  Most of our gear includes a 1-year manufacturer warranty. For Fusion-branded collections we extend that to 24 months automatically.
+                  Warranty information depends on the product and is shown when verified product information is available.
                 </p>
               </div>
             </div>
@@ -513,7 +513,7 @@ exports[`Support snapshot matches the rendered markup 1`] = `
                 <p
                   class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
                 >
-                  We partner with Affirm and Klarna to provide flexible financing at checkout. Most approvals happen instantly with 0% APR promotional plans available.
+                  Online ordering and payment processing are currently paused. No financing option is being advertised at this time.
                 </p>
               </div>
             </div>

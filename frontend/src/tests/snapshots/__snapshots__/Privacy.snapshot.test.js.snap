@@ -3,7 +3,7 @@
 exports[`Privacy snapshot matches the rendered markup 1`] = `
 <DocumentFragment>
   <div
-    class="MuiContainer-root MuiContainer-maxWidthMd css-doq7n0-MuiContainer-root"
+    class="MuiContainer-root MuiContainer-maxWidthMd luxury-page luxury-policy css-doq7n0-MuiContainer-root"
   >
     <div
       class="MuiStack-root css-fb8lv7-MuiStack-root"
@@ -25,7 +25,7 @@ exports[`Privacy snapshot matches the rendered markup 1`] = `
       <p
         class="MuiTypography-root MuiTypography-body1 css-81jeky-MuiTypography-root"
       >
-        We collect only what we need to ship exceptional products and continuously improve the Fusion experience. The details below outline exactly how it works.
+        We collect only what we need to operate the FastXHorizon marketplace and support customer accounts. The details below outline how it works.
       </p>
       <span
         class="MuiTypography-root MuiTypography-caption css-ol7wxs-MuiTypography-root"
@@ -180,7 +180,7 @@ exports[`Privacy snapshot matches the rendered markup 1`] = `
           <p
             class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
           >
-            Trusted partners such as Stripe, Pinecone, and Google Cloud act as processors under strict data processing agreements. Only the bare minimum required to power payments, recommendations, or analytics is shared.
+            Service providers may process the minimum information required to operate configured marketplace features. We do not expose private account information through public product APIs.
           </p>
         </div>
         <div
@@ -194,7 +194,7 @@ exports[`Privacy snapshot matches the rendered markup 1`] = `
           <p
             class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
           >
-            Email privacy@fusionelectronics.io with the subject “Data Request” and our privacy desk will validate your identity before fulfilling the request within 30 days.
+            Use the configured customer support channel with the subject “Data Request” and our team will validate your identity before fulfilling the request within 30 days.
           </p>
         </div>
         <div
@@ -203,7 +203,7 @@ exports[`Privacy snapshot matches the rendered markup 1`] = `
           <p
             class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
           >
-            Questions about this policy? Reach out through the Support Centre or email privacy@fusionelectronics.io so we can help.
+            Questions about this policy? Reach out through the Support Centre so we can help.
           </p>
           <div
             class="MuiStack-root css-o0avyz-MuiStack-root"

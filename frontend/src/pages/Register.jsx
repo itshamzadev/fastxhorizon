@@ -62,7 +62,7 @@ function Register() {
   };
 
   return (
-    <Container maxWidth="sm" sx={{ mt: 6, mb: 8 }}>
+    <Container maxWidth="sm" className="luxury-page luxury-auth" sx={{ mt: 6, mb: 8 }}>
       <Paper elevation={3} sx={{ p: { xs: 4, md: 5 }, borderRadius: 3 }}>
         <Stack spacing={1} sx={{ mb: 3 }}>
           <Typography variant="h4" align="center" fontWeight={700}>

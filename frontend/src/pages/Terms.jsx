@@ -10,7 +10,7 @@ import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 const termsSections = [
   {
     title: 'Using our platform',
-    copy: 'Fusion Electronics delivers a curated digital storefront for premium consumer technology. By visiting our site you agree to engage respectfully, refrain from malicious activity, and only submit accurate personal details. Accounts may be suspended when suspicious behaviour is detected to keep the community safe.',
+    copy: 'FASTXHORIZON (PRIVATE) LIMITED provides a multi-category e-commerce marketplace. By visiting the site you agree to engage respectfully, refrain from malicious activity, and submit accurate personal details. Accounts may be restricted when suspicious behaviour is detected to help keep the community safe.',
     icon: <VerifiedUserIcon color="primary" fontSize="large" />,
   },
   {
@@ -20,7 +20,7 @@ const termsSections = [
   },
   {
     title: 'Shipping commitments',
-    copy: 'Most in-stock products ship within one business day from our fulfillment hubs. Delivery timeframes shared at checkout are estimates subject to carrier performance. Please verify your shipping address carefully—undeliverable packages may incur reshipment fees.',
+    copy: 'Shipping charges, fulfilment details and any applicable requirements are communicated for an order when ordering is available. Please verify your shipping address carefully.',
     icon: <LocalShippingIcon color="primary" fontSize="large" />,
   },
   {
@@ -37,14 +37,14 @@ const termsSections = [
 
 function Terms() {
   return (
-    <Container maxWidth="md" sx={{ py: { xs: 6, md: 10 } }}>
+    <Container maxWidth="md" className="luxury-page luxury-policy" sx={{ py: { xs: 6, md: 10 } }}>
       <Stack spacing={3} alignItems="center" textAlign="center" sx={{ mb: 4 }}>
         <Chip label="Terms of Service" color="primary" variant="outlined" />
         <Typography variant="h3" fontWeight={700}>
           The agreement that powers our partnership
         </Typography>
         <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 680 }}>
-          These terms ensure every Fusion Electronics order is handled with integrity, transparency, and the level of care you expect from a premium retailer.
+          These terms explain how the FastXHorizon marketplace operates and how customer information, products and support interactions are handled.
         </Typography>
         <Typography variant="caption" color="text.secondary">
           Last updated: April 7, 2025

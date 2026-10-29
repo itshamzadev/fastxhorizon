@@ -15,7 +15,7 @@ const shippingSteps = [
 
 function ShippingReturns() {
   return (
-    <Container maxWidth="md" sx={{ py: { xs: 6, md: 10 } }}>
+    <Container maxWidth="md" className="luxury-page luxury-policy" sx={{ py: { xs: 6, md: 10 } }}>
       <Stack spacing={3} alignItems="center" textAlign="center" sx={{ mb: 4 }}>
         <Chip label="Shipping & Returns" color="primary" variant="outlined" />
         <Typography variant="h3" fontWeight={700}>Shipping and returns, clearly explained</Typography>

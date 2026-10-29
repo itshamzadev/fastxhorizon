@@ -65,9 +65,10 @@ export default function ProductCard({ product, addToCart }) {
 
   return (
     <Card
+      className="product-card-premium"
       onClick={handleCardClick}
       sx={{
-        height: '100%', minHeight: { xs: 300, sm: 335, md: 360 }, minWidth: 0, cursor: canonicalId ? 'pointer' : 'default', position: 'relative', display: 'flex', flexDirection: 'column', overflow: 'hidden',
+        width: '100%', height: 'auto', aspectRatio: '4 / 5', minHeight: 0, minWidth: 0, cursor: canonicalId ? 'pointer' : 'default', position: 'relative', display: 'flex', flexDirection: 'column', overflow: 'hidden',
         bgcolor: '#292D32', color: '#fff', border: '1px solid rgba(197,164,126,0.35)', borderRadius: '8px', boxShadow: '0 12px 28px rgba(41,45,50,0.18)',
         transition: 'transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease',
         '&:hover': { transform: 'translateY(-4px)', boxShadow: '0 18px 34px rgba(15, 23, 42, 0.24)', borderColor: 'rgba(96,165,250,0.4)' },
@@ -100,12 +101,11 @@ export default function ProductCard({ product, addToCart }) {
         </Tooltip>
       </Box>
 
-      <CardContent sx={{ position: 'absolute', zIndex: 2, left: { xs: 6, sm: 8 }, right: { xs: 6, sm: 8 }, bottom: { xs: 6, sm: 8 }, display: 'flex', flexDirection: 'column', p: { xs: 1.35, sm: 1.6 }, '&:last-child': { pb: { xs: 1.35, sm: 1.6 } }, background: 'rgba(25,28,33,0.58)', border: '1px solid rgba(197,164,126,0.45)', borderRadius: '6px', boxShadow: '0 10px 28px rgba(41,45,50,0.22)', backdropFilter: 'blur(2px)', WebkitBackdropFilter: 'blur(2px)' }}>
+      <CardContent className="product-card-premium__overlay" sx={{ position: 'absolute', zIndex: 2, left: { xs: 6, sm: 8 }, right: { xs: 6, sm: 8 }, bottom: { xs: 6, sm: 8 }, minHeight: { xs: 126, sm: 136 }, display: 'flex', flexDirection: 'column', p: { xs: 1.35, sm: 1.6 }, '&:last-child': { pb: { xs: 1.35, sm: 1.6 } }, background: 'rgba(25,28,33,0.58)', border: '1px solid rgba(197,164,126,0.45)', borderRadius: '6px', boxShadow: '0 10px 28px rgba(41,45,50,0.22)', backdropFilter: 'blur(2px)', WebkitBackdropFilter: 'blur(2px)' }}>
         <Typography component="span" sx={{ color: '#E2E8F0', fontSize: '0.62rem', fontWeight: 700, letterSpacing: '0.12em', textTransform: 'uppercase', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textShadow: '0 1px 4px rgba(15,23,42,0.65)' }}>{resolveStoreName(product)}</Typography>
         <Typography component="h3" sx={{ mt: 0.5, color: '#FFFFFF', fontSize: { xs: '0.86rem', sm: '0.95rem' }, fontWeight: 700, lineHeight: 1.3, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: { xs: '2.23rem', sm: '2.47rem' }, textShadow: '0 1px 5px rgba(15,23,42,0.72)' }}>{product?.name || 'Unnamed product'}</Typography>
         <Stack direction="row" spacing={0.45} alignItems="center" sx={{ mt: 0.8, minHeight: 20 }}>
-          <Rating name={`rating-${canonicalId}`} value={ratingValue} precision={0.1} readOnly size="small" sx={{ color: '#FBBF24', fontSize: '0.92rem' }} />
-          <Typography component="span" sx={{ color: '#E2E8F0', fontSize: '0.68rem', whiteSpace: 'nowrap', textShadow: '0 1px 4px rgba(15,23,42,0.65)' }}>{ratingValue.toFixed(1)} ({reviewCount})</Typography>
+          {reviewCount > 0 ? <><Rating name={`rating-${canonicalId}`} value={ratingValue} precision={0.1} readOnly size="small" sx={{ color: '#FBBF24', fontSize: '0.92rem' }} /><Typography component="span" sx={{ color: '#E2E8F0', fontSize: '0.68rem', whiteSpace: 'nowrap', textShadow: '0 1px 4px rgba(15,23,42,0.65)' }}>{ratingValue.toFixed(1)} ({reviewCount})</Typography></> : <Typography component="span" sx={{ color: '#CBD5E1', fontSize: '0.68rem', whiteSpace: 'nowrap', textShadow: '0 1px 4px rgba(15,23,42,0.65)' }}>No reviews yet</Typography>}
         </Stack>
         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1} sx={{ mt: 'auto', pt: 1.25 }}>
           <Typography sx={{ color: '#FFFFFF', fontSize: { xs: '0.82rem', sm: '0.92rem' }, fontWeight: 800, whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis', textShadow: '0 1px 5px rgba(15,23,42,0.72)' }}>{formatPrice(product?.price)}</Typography>
