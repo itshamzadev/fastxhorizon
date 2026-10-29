@@ -3,6 +3,7 @@ import { AppBar, Toolbar, IconButton, Badge, InputBase, Box, CircularProgress, T
 import SearchIcon from '@mui/icons-material/Search';
 import ShoppingCartIcon from '@mui/icons-material/ShoppingCart';
 import LogoutIcon from '@mui/icons-material/Logout';
+
 import LoginIcon from '@mui/icons-material/Login';
 import PersonAddAltIcon from '@mui/icons-material/PersonAddAlt';
 import CloseIcon from '@mui/icons-material/Close';
@@ -16,6 +17,8 @@ import { apiClient } from '../services/apiClient';
 import { useNotifier } from '../context/NotificationProvider';
 import AnnouncementBar from './AnnouncementBar';
 import { useWishlist } from '../context/WishlistContext';
+
+const LOGO_SRC = '/fastxhorizon.png?v=2.5';
 
 const controlSx = {
   color: '#292D32',
@@ -166,7 +169,7 @@ function NavigationBar({ cartItemCount }) {
       <AppBar position="static" elevation={0} sx={{ backgroundColor: '#FBF9F5', color: '#292D32', borderRadius: 0, borderBottom: '1px solid rgba(41,45,50,.12)', boxShadow: '0 8px 24px rgba(41,45,50,.06)', '& .logo-link': { textDecoration: 'none', display: 'inline-flex', alignItems: 'center', lineHeight: 0 }, '& .logo-image': { display: 'block', width: { xs: 108, sm: 175, md: 205 }, maxWidth: { xs: '29vw', sm: '38vw' }, height: 'auto' } }}>
         <Toolbar sx={{ position: 'relative', py: { xs: 1, md: 1.5 }, gap: { xs: 0.25, sm: 0.75, md: 1 } }}>
           <Box sx={{ flexGrow: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 3 }}>
-            <Link to="/" className="logo-link" aria-label="FastXHorizon home"><Box component="img" className="logo-image" src="/fastxhorizon.png" alt="FastXHorizon" /></Link>
+            <Link to="/" className="logo-link" aria-label="FastXHorizon home"><Box component="img" className="logo-image" src={LOGO_SRC} alt="FastXHorizon" /></Link>
             <Box className="luxury-desktop-nav" component="nav" aria-label="Primary navigation"><Link to="/" className="luxury-nav-link">Discover</Link><Link to="/shop" className="luxury-nav-link">Collections</Link><Link to="/about" className="luxury-nav-link">About</Link></Box>
           </Box>
 

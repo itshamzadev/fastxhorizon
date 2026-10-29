@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Box, Container, Grid, Typography, Link as MuiLink, Stack, TextField, IconButton, Divider, Chip, Tooltip } from '@mui/material';
 import { Link as RouterLink } from 'react-router-dom';
+
 import SendIcon from '@mui/icons-material/Send';
 import GitHubIcon from '@mui/icons-material/GitHub';
 import LinkedInIcon from '@mui/icons-material/LinkedIn';
@@ -12,6 +13,8 @@ import LocalShippingIcon from '@mui/icons-material/LocalShipping';
 import SupportAgentIcon from '@mui/icons-material/SupportAgent';
 import { useNotifier } from '../context/NotificationProvider';
 import { apiClient } from '../services/apiClient';
+
+const LOGO_SRC = '/fastxhorizon.png?v=2.5';
 
 const quickLinks = [
   { label: 'Home', to: '/' },
@@ -75,7 +78,7 @@ function Footer() {
         <Grid container spacing={5}>
           <Grid item xs={12} sm={6} md={4}>
             <MuiLink component={RouterLink} to="/" aria-label="FastXHorizon home" sx={{ display: 'inline-flex', lineHeight: 0, mb: 2 }}>
-              <Box component="img" src="/fastxhorizon.png" alt="FastXHorizon" sx={{ display: 'block', width: { xs: 190, sm: 220 }, maxWidth: '70vw', height: 'auto' }} />
+              <Box component="img" src={LOGO_SRC} alt="FastXHorizon" sx={{ display: 'block', width: { xs: 190, sm: 220 }, maxWidth: '70vw', height: 'auto' }} />
             </MuiLink>
             <Typography variant="body2" sx={{ color: '#D8D1C6', maxWidth: 360 }}>
               A multi-category marketplace for thoughtfully presented tech, jewellery, accessories and everyday essentials.
