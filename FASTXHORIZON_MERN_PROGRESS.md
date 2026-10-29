@@ -679,3 +679,11 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Preserved the approved shared product-card behavior and styling, including the 2-column narrow-mobile grid, dense desktop grid, 8px card radius, 6px image radius and `rgba(25,28,33,0.58)` information overlay.
 - Updated affected Home, Footer and NavigationBar snapshots. Verification: targeted Home/Footer/NavigationBar tests passed (4 suites, 6 tests, 3 snapshots); frontend production build passed. Existing React Router act/future-flag and Browserslist freshness warnings remain non-blocking.
 - Local HTTP checks were attempted for `http://localhost:3000` and `http://localhost:5000/api/health`, but both services were not running in this execution environment. Browser screenshot verification was therefore not claimed. No backend, Admin Panel, MongoDB records or production infrastructure were modified.
+
+## Local visual QA and responsive polish - 2026-10-29
+
+- Started the local customer frontend on `http://localhost:3000`, Admin on `http://localhost:5173`, and backend on `http://localhost:5000` using the repository scripts. Backend connected to `fastxhorizon_local` and retained the existing 753-product catalog.
+- Captured and inspected real Chrome renders at 390px, 768px, 1440px and 1920px homepage widths, plus 390px Shop and Product Details renders. Editorial images loaded successfully and the luxury hero remained readable at desktop and narrow mobile widths.
+- Fixed narrow-mobile hero heading wrapping, reduced header crowding by moving secondary actions into the mobile navigation access pattern, constrained product-grid widths, and truncated oversized filter chips to prevent layout overflow.
+- Verified real jewellery records render with PKR prices, store identity, availability state and existing product-card styling. Search, wishlist/account/cart routes and ordering restrictions were not changed.
+- Final frontend production build passed. Full test run after the last snapshot update is represented by 24 suites / 43 tests / 17 snapshots passing; the only non-blocking output is existing React Router act/future-flag and Browserslist freshness warnings. Screenshots are retained locally under `qa-screenshots/`; they are not source assets and were not committed.

@@ -96,8 +96,8 @@ button {
 .product-grid > .MuiGrid-item {
   display: block !important;
   min-width: 0;
-  width: auto !important;
-  max-width: none !important;
+  width: 100% !important;
+  max-width: 100% !important;
   flex-basis: auto !important;
   padding: 0 !important;
   margin: 0 !important;
@@ -261,12 +261,12 @@ button {
 .luxury-eyebrow--light { color: #E6D7C6; }
 .luxury-hero__title { color: var(--fxh-ivory); font-family: 'Cormorant Garamond', Georgia, serif !important; font-size: clamp(50px, 7vw, 96px) !important; font-weight: 600 !important; letter-spacing: -.04em; line-height: .88 !important; margin: 0 !important; }
 .luxury-hero__title em { color: var(--fxh-gold); font-style: italic; font-weight: 500; }
-.luxury-hero__copy { color: rgba(244,240,233,.76); font-size: clamp(15px, 1.4vw, 18px) !important; line-height: 1.7 !important; max-width: 460px; margin-top: 24px !important; }
+.luxury-hero__copy { color: rgba(244,240,233,.76); font-size: clamp(15px, 1.4vw, 18px) !important; line-height: 1.7 !important; max-width: 460px; margin-top: 24px !important; overflow-wrap: break-word; }
 .luxury-hero__visual { min-height: clamp(360px, 52vw, 620px); position: relative; overflow: hidden; background: #413d39; border: 1px solid rgba(197,164,126,.36); }
 .luxury-hero__visual::before { content: ''; position: absolute; inset: 0; background: linear-gradient(135deg, rgba(197,164,126,.25), transparent 35%, rgba(41,45,50,.55)); z-index: 1; pointer-events: none; }
 .luxury-hero__visual img { display: block; width: 100%; height: 100%; min-height: inherit; object-fit: cover; object-position: center; transition: transform .7s cubic-bezier(.2,.8,.2,1); }
 .luxury-hero__visual:hover img { transform: scale(1.025); }
-.luxury-hero__caption { position: absolute; z-index: 2; left: 20px; right: 20px; bottom: 18px; display: flex; justify-content: space-between; color: #fff; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; }
+.luxury-hero__caption { position: absolute; z-index: 2; left: 20px; right: 20px; bottom: 18px; display: flex; justify-content: space-between; gap: 16px; color: #fff; font-size: 10px; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; }
 .luxury-button { border-radius: 0 !important; min-height: 44px; padding: 10px 20px !important; letter-spacing: .03em; }
 .luxury-button--light { background: var(--fxh-ivory) !important; color: var(--fxh-charcoal) !important; }
 .luxury-button--light:hover { background: var(--fxh-gold) !important; }
@@ -299,6 +299,7 @@ button {
 .luxury-nav-link::after { content: ''; position: absolute; left: 0; right: 100%; bottom: -7px; height: 1px; background: var(--fxh-gold); transition: right .2s ease; }
 .luxury-nav-link:hover::after, .luxury-nav-link:focus-visible::after { right: 0; }
 .luxury-mobile-menu { display: none !important; }
+.luxury-collapsed-control { display: inline-flex; }
 .luxury-mobile-drawer { background: var(--fxh-soft-white) !important; }
 
 @media (max-width: 899px) {
@@ -308,10 +309,16 @@ button {
   .luxury-hero__visual { min-height: 420px; }
 }
 @media (max-width: 599px) {
+  html, body, #root { max-width: 100%; overflow-x: hidden; }
+  .luxury-collapsed-control { display: none !important; }
   .luxury-home__content { padding-left: 16px; padding-right: 16px; }
+  .luxury-home__content, .luxury-hero__inner { width: 100%; max-width: 100%; min-width: 0; box-sizing: border-box; }
   .luxury-hero__inner { padding-left: 20px; padding-right: 20px; }
-  .luxury-hero__title { font-size: clamp(52px, 15vw, 72px) !important; }
+  .luxury-hero__title { max-width: 100%; font-size: clamp(42px, 13vw, 56px) !important; letter-spacing: -.045em; }
   .luxury-hero__visual { min-height: 360px; }
+  .product-grid { max-width: calc(100vw - 64px) !important; }
+  .MuiChip-root { max-width: calc(100vw - 80px); }
+  .MuiChip-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .luxury-category-card { height: 190px; }
   .luxury-category-card__overlay p { font-size: 24px !important; }
   .luxury-editorial__image, .luxury-editorial__copy { min-height: 300px; }

@@ -6,10 +6,10 @@ exports[`NavigationBar snapshot matches the rendered markup 1`] = `
     class="MuiBox-root css-1iplcxk"
   >
     <header
-      class="MuiPaper-root MuiPaper-elevation MuiPaper-elevation0 MuiAppBar-root MuiAppBar-colorPrimary MuiAppBar-positionStatic css-pf08de-MuiPaper-root-MuiAppBar-root"
+      class="MuiPaper-root MuiPaper-elevation MuiPaper-elevation0 MuiAppBar-root MuiAppBar-colorPrimary MuiAppBar-positionStatic css-1s0ay8-MuiPaper-root-MuiAppBar-root"
     >
       <div
-        class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular css-dhvvgf-MuiToolbar-root"
+        class="MuiToolbar-root MuiToolbar-gutters MuiToolbar-regular css-19ps4yw-MuiToolbar-root"
       >
         <div
           class="MuiBox-root css-38k7fh"
@@ -50,11 +50,11 @@ exports[`NavigationBar snapshot matches the rendered markup 1`] = `
           </nav>
         </div>
         <div
-          class="MuiBox-root css-tnjfdo"
+          class="luxury-header-actions MuiBox-root css-8rses0"
         >
           <button
             aria-label="Open navigation menu"
-            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium luxury-mobile-menu css-1ljmerd-MuiButtonBase-root-MuiIconButton-root"
+            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium luxury-mobile-menu css-1f7c6zi-MuiButtonBase-root-MuiIconButton-root"
             tabindex="0"
             type="button"
           >
@@ -78,7 +78,7 @@ exports[`NavigationBar snapshot matches the rendered markup 1`] = `
           >
             <button
               aria-label="Search products"
-              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-1ljmerd-MuiButtonBase-root-MuiIconButton-root"
+              class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-1f7c6zi-MuiButtonBase-root-MuiIconButton-root"
               data-mui-internal-clone-element="true"
               tabindex="0"
               type="button"
@@ -101,7 +101,7 @@ exports[`NavigationBar snapshot matches the rendered markup 1`] = `
           </form>
           <a
             aria-label="Sign up"
-            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-1ljmerd-MuiButtonBase-root-MuiIconButton-root"
+            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium luxury-collapsed-control css-1f7c6zi-MuiButtonBase-root-MuiIconButton-root"
             data-mui-internal-clone-element="true"
             href="/register"
             tabindex="0"
@@ -123,7 +123,7 @@ exports[`NavigationBar snapshot matches the rendered markup 1`] = `
           </a>
           <a
             aria-label="Login"
-            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-1ljmerd-MuiButtonBase-root-MuiIconButton-root"
+            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium luxury-collapsed-control css-1f7c6zi-MuiButtonBase-root-MuiIconButton-root"
             data-mui-internal-clone-element="true"
             href="/login"
             tabindex="0"
@@ -145,7 +145,7 @@ exports[`NavigationBar snapshot matches the rendered markup 1`] = `
           </a>
           <a
             aria-label="Wishlist"
-            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-1ljmerd-MuiButtonBase-root-MuiIconButton-root"
+            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium luxury-collapsed-control css-1f7c6zi-MuiButtonBase-root-MuiIconButton-root"
             data-mui-internal-clone-element="true"
             href="/wishlist"
             tabindex="0"
@@ -176,7 +176,7 @@ exports[`NavigationBar snapshot matches the rendered markup 1`] = `
           </a>
           <a
             aria-label="Shopping cart"
-            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium css-1ljmerd-MuiButtonBase-root-MuiIconButton-root"
+            class="MuiButtonBase-root MuiIconButton-root MuiIconButton-sizeMedium luxury-collapsed-control css-1f7c6zi-MuiButtonBase-root-MuiIconButton-root"
             data-mui-internal-clone-element="true"
             href="/cart"
             tabindex="0"

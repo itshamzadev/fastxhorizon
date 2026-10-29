@@ -19,8 +19,8 @@ import { useWishlist } from '../context/WishlistContext';
 
 const controlSx = {
   color: '#292D32',
-  width: { xs: 36, sm: 40 },
-  height: { xs: 36, sm: 40 },
+  width: { xs: 32, sm: 40 },
+  height: { xs: 32, sm: 40 },
   flex: '0 0 auto',
   '&:hover': { bgcolor: '#E6F0EA', color: '#256B58' },
   '&:focus-visible': { outline: '2px solid #C5A47E', outlineOffset: 2 },
@@ -163,14 +163,14 @@ function NavigationBar({ cartItemCount }) {
 
   return (
     <Box component="div" sx={{ position: 'sticky', top: 0, zIndex: theme => theme.zIndex.appBar, width: '100%', bgcolor: '#F4F0E9' }}>
-      <AppBar position="static" elevation={0} sx={{ backgroundColor: '#FBF9F5', color: '#292D32', borderRadius: 0, borderBottom: '1px solid rgba(41,45,50,.12)', boxShadow: '0 8px 24px rgba(41,45,50,.06)', '& .logo-link': { textDecoration: 'none', display: 'inline-flex', alignItems: 'center', lineHeight: 0 }, '& .logo-image': { display: 'block', width: { xs: 145, sm: 175, md: 205 }, maxWidth: '38vw', height: 'auto' } }}>
-        <Toolbar sx={{ py: { xs: 1, md: 1.5 }, gap: { xs: 0.25, sm: 0.75, md: 1 } }}>
+      <AppBar position="static" elevation={0} sx={{ backgroundColor: '#FBF9F5', color: '#292D32', borderRadius: 0, borderBottom: '1px solid rgba(41,45,50,.12)', boxShadow: '0 8px 24px rgba(41,45,50,.06)', '& .logo-link': { textDecoration: 'none', display: 'inline-flex', alignItems: 'center', lineHeight: 0 }, '& .logo-image': { display: 'block', width: { xs: 108, sm: 175, md: 205 }, maxWidth: { xs: '29vw', sm: '38vw' }, height: 'auto' } }}>
+        <Toolbar sx={{ position: 'relative', py: { xs: 1, md: 1.5 }, gap: { xs: 0.25, sm: 0.75, md: 1 } }}>
           <Box sx={{ flexGrow: 1, minWidth: 0, display: 'flex', alignItems: 'center', gap: 3 }}>
             <Link to="/" className="logo-link" aria-label="FastXHorizon home"><Box component="img" className="logo-image" src="/fastxhorizon.png" alt="FastXHorizon" /></Link>
             <Box className="luxury-desktop-nav" component="nav" aria-label="Primary navigation"><Link to="/" className="luxury-nav-link">Discover</Link><Link to="/shop" className="luxury-nav-link">Collections</Link><Link to="/about" className="luxury-nav-link">About</Link></Box>
           </Box>
 
-          <Box sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0, sm: 0.25 }, minWidth: 0 }}>
+          <Box className="luxury-header-actions" sx={{ display: 'flex', alignItems: 'center', gap: { xs: 0, sm: 0.25 }, minWidth: 0, flexShrink: 0 }}>
             <IconButton className="luxury-mobile-menu" aria-label="Open navigation menu" onClick={() => setMobileMenuOpen(true)} sx={controlSx}><MenuRoundedIcon fontSize="small" /></IconButton>
             <Box ref={searchBarRef} component="form" onSubmit={handleSearchSubmit} sx={{ position: 'relative', display: 'flex', alignItems: 'center', justifyContent: 'flex-end', width: searchOpen ? { xs: 'min(210px, calc(100vw - 156px))', sm: 280, md: 330 } : { xs: 36, sm: 40 }, height: { xs: 36, sm: 40 }, overflow: 'visible', borderRadius: 999, bgcolor: searchOpen ? '#F1F5FF' : 'transparent', transition: 'width 300ms ease, background-color 250ms ease, box-shadow 250ms ease', transformOrigin: 'right center', '&:focus-within': { bgcolor: '#EFF6FF', boxShadow: '0 0 0 2px rgba(37,99,235,0.18)' }, '@media (prefers-reduced-motion: reduce)': { transition: 'none' } }}>
               {searchOpen && <InputBase inputRef={searchInputRef} onKeyDown={handleSearchKeyDown} placeholder="Search products..." inputProps={{ 'aria-label': 'Search products', role: 'combobox', 'aria-expanded': Boolean(searchQuery.trim()), 'aria-autocomplete': 'list' }} value={searchQuery} onChange={handleSearchChange} sx={{ flex: 1, minWidth: 0, ml: 1.25, color: '#0F172A', '& input::placeholder': { color: '#64748B', opacity: 1 } }} />}
@@ -180,21 +180,21 @@ function NavigationBar({ cartItemCount }) {
             </Box>
 
             {!isLoggedIn ? <>
-              <Tooltip title="Sign up" arrow placement="bottom"><IconButton component={Link} to="/register" aria-label="Sign up" sx={controlSx}><PersonAddAltIcon fontSize="small" /></IconButton></Tooltip>
-              <Tooltip title="Login" arrow placement="bottom"><IconButton component={Link} to="/login" aria-label="Login" sx={controlSx}><LoginIcon fontSize="small" /></IconButton></Tooltip>
+              <Tooltip title="Sign up" arrow placement="bottom"><IconButton className="luxury-collapsed-control" component={Link} to="/register" aria-label="Sign up" sx={controlSx}><PersonAddAltIcon fontSize="small" /></IconButton></Tooltip>
+              <Tooltip title="Login" arrow placement="bottom"><IconButton className="luxury-collapsed-control" component={Link} to="/login" aria-label="Login" sx={controlSx}><LoginIcon fontSize="small" /></IconButton></Tooltip>
             </> : <>
               <Tooltip title="Account" arrow placement="bottom"><IconButton aria-label="Account" onClick={() => navigate('/')} sx={controlSx}><AccountCircleIcon fontSize="small" /></IconButton></Tooltip>
               <Tooltip title="Logout" arrow placement="bottom"><IconButton aria-label="Logout" onClick={handleLogout} sx={controlSx}><LogoutIcon fontSize="small" /></IconButton></Tooltip>
             </>}
 
-            <Tooltip title="Wishlist" arrow placement="bottom"><IconButton component={Link} to="/wishlist" aria-label="Wishlist" sx={controlSx}><Badge badgeContent={wishlist.length} color="secondary" overlap="circular" showZero={false}><FavoriteBorderRoundedIcon fontSize="small" /></Badge></IconButton></Tooltip>
-            <Tooltip title="Shopping cart" arrow placement="bottom"><IconButton component={Link} to="/cart" aria-label="Shopping cart" sx={controlSx}><Badge badgeContent={cartItemCount} overlap="circular" showZero sx={{ '& .MuiBadge-badge': { backgroundColor: '#DC2626', color: '#FFFFFF', fontWeight: 700 } }}><ShoppingCartIcon fontSize="small" /></Badge></IconButton></Tooltip>
+            <Tooltip title="Wishlist" arrow placement="bottom"><IconButton className="luxury-collapsed-control" component={Link} to="/wishlist" aria-label="Wishlist" sx={controlSx}><Badge badgeContent={wishlist.length} color="secondary" overlap="circular" showZero={false}><FavoriteBorderRoundedIcon fontSize="small" /></Badge></IconButton></Tooltip>
+            <Tooltip title="Shopping cart" arrow placement="bottom"><IconButton className="luxury-collapsed-control" component={Link} to="/cart" aria-label="Shopping cart" sx={controlSx}><Badge badgeContent={cartItemCount} overlap="circular" showZero sx={{ '& .MuiBadge-badge': { backgroundColor: '#DC2626', color: '#FFFFFF', fontWeight: 700 } }}><ShoppingCartIcon fontSize="small" /></Badge></IconButton></Tooltip>
           </Box>
         </Toolbar>
       </AppBar>
       <AnnouncementBar />
       <Drawer anchor="right" open={mobileMenuOpen} onClose={() => setMobileMenuOpen(false)} PaperProps={{ className: 'luxury-mobile-drawer' }}>
-        <Box sx={{ width: 280, p: 2 }} role="presentation"><Typography variant="overline" sx={{ letterSpacing: '.16em', color: '#717171' }}>FASTXHORIZON</Typography><Divider sx={{ my: 2 }} /><List onClick={() => setMobileMenuOpen(false)}><ListItemButton component={Link} to="/"><ListItemText primary="Discover" /></ListItemButton><ListItemButton component={Link} to="/shop"><ListItemText primary="Collections" /></ListItemButton><ListItemButton component={Link} to="/about"><ListItemText primary="About" /></ListItemButton><ListItemButton component={Link} to="/support"><ListItemText primary="Support" /></ListItemButton></List></Box>
+          <Box sx={{ width: 280, p: 2 }} role="presentation"><Typography variant="overline" sx={{ letterSpacing: '.16em', color: '#717171' }}>FASTXHORIZON</Typography><Divider sx={{ my: 2 }} /><List onClick={() => setMobileMenuOpen(false)}><ListItemButton component={Link} to="/"><ListItemText primary="Discover" /></ListItemButton><ListItemButton component={Link} to="/shop"><ListItemText primary="Collections" /></ListItemButton><ListItemButton component={Link} to="/about"><ListItemText primary="About" /></ListItemButton><ListItemButton component={Link} to="/support"><ListItemText primary="Support" /></ListItemButton><Divider sx={{ my: 1 }} /><ListItemButton component={Link} to={isLoggedIn ? '/' : '/register'}><ListItemText primary={isLoggedIn ? 'Account' : 'Sign up'} /></ListItemButton><ListItemButton component={Link} to="/login"><ListItemText primary="Login" /></ListItemButton><ListItemButton component={Link} to="/wishlist"><ListItemText primary="Wishlist" /></ListItemButton><ListItemButton component={Link} to="/cart"><ListItemText primary="Shopping cart" /></ListItemButton></List></Box>
       </Drawer>
     </Box>
   );
