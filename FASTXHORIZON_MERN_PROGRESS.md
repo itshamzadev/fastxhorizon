@@ -1036,3 +1036,11 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Existing dynamic JSON configuration and payment review workflow were preserved. No payment configuration records were changed automatically.
 - Backend Jest passed 14 suites / 63 tests. Admin TypeScript/Vite production build passed.
 
+## Professional checkout UI refresh - 2026-10-31
+
+- Refreshed the customer checkout page without changing checkout APIs or payment rules.
+- Added a responsive two-column layout with secure checkout header, progress indicators, sticky order summary, product thumbnails, quantity totals and visible submission errors.
+- Reorganized checkout into Contact Information, Delivery Address and Payment Method sections with selectable payment cards and clearer manual payment instructions/proof upload.
+- Added client-side support for the configured Transaction ID-or-screenshot requirement while preserving server-side validation.
+- Frontend production build passed with `npm run build`.
+

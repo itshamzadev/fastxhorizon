@@ -142,24 +142,23 @@ function Checkout({ cartItems = [], onOrderComplete }) {
   };
 
   return (
-    <Container maxWidth="lg" className="luxury-page luxury-checkout luxury-checkout-v10" sx={{ pb: 10 }}>
-      <Paper elevation={0} sx={{ p: { xs: 3, md: 5 }, borderRadius: 4 }}>
+    <Container maxWidth="xl" className="luxury-page luxury-checkout luxury-checkout-v10" sx={{ pb: 10, pt: { xs: 2, md: 5 } }}>
+      <Box sx={{ mb: { xs: 3, md: 5 } }}>
         <Stack direction="row" spacing={2} alignItems="center" sx={{ mb: 3 }}>
-          <ShoppingCartCheckoutIcon color="primary" fontSize="large" />
+          <Box sx={{ width: 52, height: 52, display: 'grid', placeItems: 'center', borderRadius: 2.5, bgcolor: 'primary.main', color: 'primary.contrastText' }}><ShoppingCartCheckoutIcon /></Box>
           <Box>
-            <Typography variant="h4" gutterBottom>
-              Checkout
-            </Typography>
-            <Typography variant="body2" color="text.secondary">
-              You have {itemsToShow.length} item{itemsToShow.length !== 1 ? 's' : ''} selected. Total due {formatPrice(total)}.
-            </Typography>
+            <Typography variant="overline" color="primary.main" fontWeight={700} letterSpacing={1.5}>FASTXHORIZON SECURE CHECKOUT</Typography>
+            <Typography variant="h3" sx={{ fontWeight: 800, lineHeight: 1.1 }}>Complete your order</Typography>
+            <Typography color="text.secondary" sx={{ mt: .75 }}>Review your items, provide delivery details and choose a payment method.</Typography>
           </Box>
         </Stack>
-
-        <Divider sx={{ mb: 3 }} />
+        <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
+          {['1  Cart review', '2  Delivery details', '3  Payment confirmation'].map((step, index) => <Box key={step} sx={{ px: 1.5, py: .75, borderRadius: 10, bgcolor: index === 0 ? 'primary.main' : 'action.hover', color: index === 0 ? 'primary.contrastText' : 'text.secondary', fontSize: 13, fontWeight: 600 }}>{step}</Box>)}
+        </Stack>
+      </Box>
 
         {cartItems.length > 0 && (
-          <Paper elevation={0} sx={{ mb: 4, borderRadius: 3, background: 'rgba(40,116,240,0.06)', p: 2 }}>
+            <Paper elevation={0} sx={{ mb: { xs: 3, md: 0 }, borderRadius: 3, background: 'rgba(40,116,240,0.06)', p: 2 }}>
             <Stack direction="row" spacing={1} alignItems="center">
               <ShoppingBagIcon color="primary" />
               <Typography variant="subtitle1" fontWeight={600}>
@@ -208,26 +207,19 @@ function Checkout({ cartItems = [], onOrderComplete }) {
           </Paper>
         )}
 
-        {orderCreated ? (
-          <Typography variant="h5" gutterBottom>
-            Thank you for your order! You will be redirected shortly.
-          </Typography>
-        ) : (
-          <>
-            {loading && <CircularProgress sx={{ mb: 3 }} />}
-            {errorMessage && (
-              <Typography color="error" sx={{ display: 'none' }}>
-                {errorMessage}
-              </Typography>
-            )}
+        {orderCreated ? <Paper elevation={0} sx={{ p: 5, textAlign: 'center', borderRadius: 4 }}><ShoppingBagIcon color="primary" sx={{ fontSize: 48, mb: 1 }} /><Typography variant="h5" gutterBottom>Thank you for your order!</Typography><Typography color="text.secondary">Your order has been received. Redirecting you to the confirmation page.</Typography></Paper> : <Box sx={{ display: 'grid', gridTemplateColumns: { xs: '1fr', md: 'minmax(0, 1.55fr) minmax(300px, .75fr)' }, gap: 3, alignItems: 'start' }}>
+          <Paper elevation={0} sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 4 }}>
+            {loading && <CircularProgress size={22} sx={{ mb: 2 }} />}
+            {errorMessage && <Box sx={{ mb: 3, p: 1.5, borderRadius: 2, bgcolor: 'error.main', color: 'error.contrastText' }}><Typography variant="body2">{errorMessage}</Typography></Box>}
             <CheckoutForm onSubmit={handleSubmit} submitting={loading} />
-            <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 2, color: 'text.secondary' }}>
-              <LockIcon fontSize="small" />
-              <Typography variant="caption">Payments processed securely. We never store your card details.</Typography>
-            </Stack>
-          </>
-        )}
-      </Paper>
+            <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 3, color: 'text.secondary' }}><LockIcon fontSize="small" /><Typography variant="caption">Your order details are transmitted securely. Payment evidence is reviewed by our team.</Typography></Stack>
+          </Paper>
+          <Paper elevation={0} sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 4, position: { md: 'sticky' }, top: { md: 24 } }}>
+            <Typography variant="h6" fontWeight={800}>Order summary</Typography><Typography variant="body2" color="text.secondary" sx={{ mb: 2 }}>{itemsToShow.length} selected item{itemsToShow.length !== 1 ? 's' : ''}</Typography>
+            <Stack spacing={1.5}>{itemsToShow.map(item => <Stack key={item._id || item.id} direction="row" spacing={1.5} alignItems="center"><Avatar src={resolveMediaUrl(item.image)} alt="" variant="rounded" sx={{ width: 54, height: 54 }} /><Box sx={{ minWidth: 0, flex: 1 }}><Typography variant="body2" fontWeight={600} noWrap>{item.name}</Typography><Typography variant="caption" color="text.secondary">Qty {item.quantity || 1}</Typography></Box><Typography variant="body2" fontWeight={700}>{formatPrice((Number(item.price) || 0) * (Number(item.quantity) || 1))}</Typography></Stack>)}</Stack>
+            <Divider sx={{ my: 2 }} /><Stack direction="row" justifyContent="space-between"><Typography fontWeight={700}>Total due</Typography><Typography variant="h6" color="primary.main" fontWeight={800}>{formatPrice(total)}</Typography></Stack>
+          </Paper>
+        </Box>}
     </Container>
   );
 }
