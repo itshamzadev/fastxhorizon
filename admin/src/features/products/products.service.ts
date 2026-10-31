@@ -1,11 +1,11 @@
 import type { CreateProductPayload, UpdateProductPayload } from '@/models/schemas'
-import type { Product, ProductsQuery } from '@/models/Product'
+import type { Product, ProductListMeta, ProductsQuery } from '@/models/Product'
 import { apiClient } from '@/services/api/client'
 import type { Paginated } from '@/types/api'
 
 /** Product feature service — the only HTTP boundary for products. */
 export const productService = {
-  list(query: ProductsQuery = {}): Promise<Paginated<Product>> {
+  list(query: ProductsQuery = {}): Promise<{ data: Product[]; meta: ProductListMeta }> {
     return apiClient.get<Paginated<Product>>(import.meta.env.MODE === 'test' ? '/products' : '/admin/products', { query })
   },
 

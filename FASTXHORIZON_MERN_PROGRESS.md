@@ -826,3 +826,10 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Backend analytics now returns valid zero-valued envelopes for empty collections, counts total customers, uses `paymentStatus=verified` for collected revenue, excludes cancelled orders from GMV/sales series, and explicitly reports visitor/conversion/profit/refund metrics as unavailable where no source data exists. MongoDB connection remains the single configured Mongoose connection; no database migration or production setting was changed.
 - Added regression coverage for authenticated access and empty analytics datasets. Verification: Admin build passed; Admin Vitest passed (7 files, 29 tests); backend Jest passed (12 suites, 55 tests). No GitHub push or deployment performed.
 
+## V19 category-wise product management - 2026-10-31
+
+- Extended the authenticated `/api/admin/products` listing with server-side parent category, subcategory, uncategorised, search, status and sort filters. Parent filtering includes products stored against that parent and its two-level category path; pagination and existing product permissions remain intact.
+- Added real filter metadata to the product-list response: total products, uncategorised count, active/draft/archived counts, category counts and subcategory counts. Existing legacy category values are included without changing product records.
+- Updated the existing VitalAdmin Products page with dynamic category/subcategory selectors, dependent subcategory reset, count labels, uncategorised filtering, clear filters, category/subcategory columns and preserved product actions.
+- Updated the local mock API to follow the same filter/query contract for development and tests. Verification: backend syntax passed, Admin build passed, Admin Vitest passed (7 files, 29 tests), backend Jest passed (12 suites, 55 tests). No MongoDB records, production settings, deployment or GitHub push changed.
+

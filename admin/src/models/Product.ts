@@ -70,5 +70,35 @@ export type UpdateProductInput = Partial<CreateProductInput>
 
 export interface ProductsQuery extends ListQuery {
   category?: string | 'all'
+  subcategory?: string | 'all'
   status?: ProductStatus | 'all'
+}
+
+export interface ProductFilterSubcategory {
+  name: string
+  slug: string
+  productCount: number
+}
+
+export interface ProductFilterCategory {
+  name: string
+  slug: string
+  productCount: number
+  virtual?: boolean
+  subcategories: ProductFilterSubcategory[]
+}
+
+export interface ProductFilters {
+  total: number
+  uncategorised: number
+  statusCounts: Record<ProductStatus, number>
+  categories: ProductFilterCategory[]
+}
+
+export interface ProductListMeta {
+  page: number
+  pageSize: number
+  total: number
+  totalPages: number
+  filters?: ProductFilters
 }

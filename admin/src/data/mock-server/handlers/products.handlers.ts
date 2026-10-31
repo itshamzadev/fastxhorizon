@@ -1,5 +1,5 @@
 import { http, HttpResponse } from 'msw'
-import type { Product, ProductCategory, ProductStatus } from '@/models/Product'
+import { PRODUCT_CATEGORIES, type Product, type ProductCategory, type ProductStatus } from '@/models/Product'
 import {
   createProductSchema,
   updateProductSchema,
@@ -46,19 +46,39 @@ export const productsHandlers = [
     const url = new URL(request.url)
     const query = parseListQuery(url)
     const category = url.searchParams.get('category')
+    const subcategory = url.searchParams.get('subcategory')
     const status = url.searchParams.get('status')
 
     let items = [...db.products]
-    if (category && category !== 'all') {
+    if (category === 'uncategorised' || category === 'uncategorized') {
+      items = items.filter((p) => !p.category)
+    } else if (category && category !== 'all') {
       items = items.filter((p) => p.category === (category as ProductCategory))
     }
+    if (subcategory && subcategory !== 'all') items = items.filter((p) => p.subcategory === subcategory)
     if (status && status !== 'all') {
       items = items.filter((p) => p.status === (status as ProductStatus))
     }
     items = items.filter((p) => matchesSearch(p, ['name', 'sku'], query.search))
     items = applySort(items, query.sortField, query.sortDirection, SORTABLE_FIELDS)
 
-    return HttpResponse.json(paginate(items, query))
+    const categoryOptions = PRODUCT_CATEGORIES.map((value) => ({
+      name: value.charAt(0).toUpperCase() + value.slice(1),
+      slug: value,
+      productCount: db.products.filter((product) => product.category === value).length,
+      subcategories: [],
+    }))
+    const response = paginate(items, query)
+    return HttpResponse.json({ ...response, meta: { ...response.meta, filters: {
+      total: db.products.length,
+      uncategorised: db.products.filter((product) => !product.category).length,
+      statusCounts: {
+        active: db.products.filter((product) => product.status === 'active').length,
+        draft: db.products.filter((product) => product.status === 'draft').length,
+        archived: db.products.filter((product) => product.status === 'archived').length,
+      },
+      categories: categoryOptions,
+    } } })
   }),
 
   http.post('*/api/products', async ({ request }) => {

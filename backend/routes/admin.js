@@ -38,6 +38,53 @@ function validCategoryImage(value) {
   return !value || /^(https?:\/\/|data:image\/(png|jpeg|jpg|webp|gif);base64,)/i.test(value);
 }
 
+function escapeRegex(value) {
+  return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function legacyCategoryName(slug) {
+  return slug.replace(/-/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
+}
+
+function categoryValuesFilter(field, values) {
+  const patterns = [...new Set(values.filter(Boolean).map((value) => new RegExp(`^${escapeRegex(value)}$`, 'i')))];
+  return patterns.length ? { [field]: { $in: patterns } } : { [field]: { $exists: false } };
+}
+
+function uncategorisedFilter() {
+  return { $or: [{ category: { $exists: false } }, { category: null }, { category: '' }] };
+}
+
+async function productFilterOptions() {
+  const stored = await Category.find({}).sort({ parentSlug: 1, name: 1 }).lean();
+  const storedParents = stored.filter((category) => !category.parentSlug);
+  const parentSlugs = new Set(storedParents.map((category) => category.slug));
+  const parents = [...storedParents, ...LEGACY_CATEGORIES.filter((slug) => !parentSlugs.has(slug)).map((slug) => ({
+    _id: `legacy:${slug}`, name: legacyCategoryName(slug), slug, parentSlug: null, active: true, virtual: true,
+  }))];
+  const options = await Promise.all(parents.map(async (parent) => {
+    const parentValues = [parent.name, parent.slug];
+    const children = stored.filter((category) => category.parentSlug === parent.slug);
+    const [productCount, subcategories] = await Promise.all([
+      Product.countDocuments({ $or: [categoryValuesFilter('category', parentValues), categoryValuesFilter('categoryPath.0', parentValues)] }),
+      Promise.all(children.map(async (child) => ({
+        name: child.name,
+        slug: child.slug,
+        productCount: await Product.countDocuments({ $or: [categoryValuesFilter('subcategory', [child.name, child.slug]), categoryValuesFilter('categoryPath.1', [child.name, child.slug])] }),
+      }))),
+    ]);
+    return { name: parent.name, slug: parent.slug, productCount, virtual: Boolean(parent.virtual), subcategories };
+  }));
+  const [total, uncategorised, active, draft, archived] = await Promise.all([
+    Product.countDocuments({}),
+    Product.countDocuments(uncategorisedFilter()),
+    Product.countDocuments({ status: 'active' }),
+    Product.countDocuments({ status: 'draft' }),
+    Product.countDocuments({ status: 'archived' }),
+  ]);
+  return { total, uncategorised, statusCounts: { active, draft, archived }, categories: options };
+}
+
 function categoryView(category, productCount = 0, subcategoryCount = 0, virtual = false) {
   return { id: String(category._id), name: category.name, slug: category.slug, parentSlug: category.parentSlug || null, description: category.description || '', image: category.image || '', active: category.active !== false, productCount, subcategoryCount, virtual, createdAt: category.createdAt, updatedAt: category.updatedAt };
 }
@@ -404,12 +451,37 @@ router.get('/dashboard/analytics', requireAdminPermission('dashboard.read'), asy
 
 router.get('/products', requireAdminPermission('products.read'), async (req, res, next) => {
   try {
-    const { page, pageSize, skip } = pageQuery(req); const filter = {}; const search = String(req.query.search || '').trim();
-    if (search) filter.$or = [{ name: { $regex: search.slice(0, 80), $options: 'i' } }, { sku: { $regex: search.slice(0, 40), $options: 'i' } }];
-    if (req.query.category && req.query.category !== 'all') filter.category = String(req.query.category);
-    if (req.query.status && req.query.status !== 'all' && PRODUCT_STATUSES.has(String(req.query.status))) filter.status = String(req.query.status);
-    const [items, total] = await Promise.all([Product.find(filter).sort(sortQuery(req.query.sort, new Set(['name', 'category', 'price', 'stock', 'createdAt']))).skip(skip).limit(pageSize).lean(), Product.countDocuments(filter)]);
-    return res.json({ data: items.map(productView), meta: { page, pageSize, total, totalPages: Math.ceil(total / pageSize) } });
+    const { page, pageSize, skip } = pageQuery(req);
+    const and = [];
+    const search = String(req.query.search || '').trim().slice(0, 80);
+    if (search) {
+      const safeSearch = escapeRegex(search);
+      and.push({ $or: [{ name: { $regex: safeSearch, $options: 'i' } }, { sku: { $regex: safeSearch.slice(0, 40), $options: 'i' } }] });
+    }
+    const category = String(req.query.category || '').trim().toLowerCase();
+    const subcategory = String(req.query.subcategory || '').trim().toLowerCase();
+    if (category === 'uncategorised' || category === 'uncategorized') and.push(uncategorisedFilter());
+    else if (category && category !== 'all') {
+      const parent = await Category.findOne({ slug: category, parentSlug: null }).lean();
+      const values = parent ? [parent.name, parent.slug] : [category, legacyCategoryName(category)];
+      and.push({ $or: [categoryValuesFilter('category', values), categoryValuesFilter('categoryPath.0', values)] });
+    }
+    if (subcategory && subcategory !== 'all') {
+      const child = await Category.findOne({ slug: subcategory }).lean();
+      const values = child ? [child.name, child.slug] : [subcategory, legacyCategoryName(subcategory)];
+      and.push({ $or: [categoryValuesFilter('subcategory', values), categoryValuesFilter('categoryPath.1', values)] });
+    }
+    if (req.query.status && req.query.status !== 'all' && PRODUCT_STATUSES.has(String(req.query.status))) and.push({ status: String(req.query.status) });
+    const filter = and.length ? { $and: and } : {};
+    let sort = String(req.query.sort || '');
+    if (sort === 'inventory') sort = 'stock';
+    if (sort === '-inventory') sort = '-stock';
+    const [items, total, filters] = await Promise.all([
+      Product.find(filter).sort(sortQuery(sort, new Set(['name', 'category', 'price', 'stock', 'createdAt']))).skip(skip).limit(pageSize).lean(),
+      Product.countDocuments(filter),
+      productFilterOptions(),
+    ]);
+    return res.json({ data: items.map(productView), meta: { page, pageSize, total, totalPages: Math.ceil(total / pageSize), filters } });
   } catch (error) { return next(error); }
 });
 

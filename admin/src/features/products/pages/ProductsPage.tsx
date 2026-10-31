@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate, useSearchParams } from 'react-router-dom'
 import { Eye, MoreHorizontal, Package, PackagePlus, Pencil, Trash2 } from 'lucide-react'
-import type { Product, ProductCategory, ProductStatus } from '@/models/Product'
+import type { Product, ProductStatus } from '@/models/Product'
 import { PageHeader } from '@/components/layout/PageHeader'
 import { Button } from '@/components/ui/Button'
 import { SearchInput } from '@/components/forms/SearchInput'
@@ -22,11 +22,8 @@ import { Badge } from '@/components/ui/Badge'
 import { Skeleton } from '@/components/ui/Skeleton'
 import { getUserMessage } from '@/lib/errors'
 import { formatCurrency } from '@/lib/format'
-import {
-  PRODUCT_CATEGORY_OPTIONS,
-  PRODUCT_STATUS_OPTIONS,
-  formatCategory,
-} from '@/components/display/status-badges'
+import { PRODUCT_STATUS_OPTIONS, formatCategory } from '@/components/display/status-badges'
+import { PRODUCT_CATEGORIES } from '@/models/Product'
 import { useDebouncedValue } from '@/hooks/use-debounced-value'
 import { useProducts } from '../hooks/use-products'
 import { ProductFormDialog } from '../components/ProductFormDialog'
@@ -56,7 +53,8 @@ export function ProductsPage() {
 
   const search = searchParams.get('search') ?? ''
   const debouncedSearch = useDebouncedValue(search)
-  const category = (searchParams.get('category') ?? 'all') as ProductCategory | 'all'
+  const category = searchParams.get('category') ?? 'all'
+  const subcategory = searchParams.get('subcategory') ?? 'all'
   const status = (searchParams.get('status') ?? 'all') as ProductStatus | 'all'
   const sortParam = searchParams.get('sort') ?? ''
   const sortField = sortParam.startsWith('-') ? sortParam.slice(1) : sortParam
@@ -68,6 +66,7 @@ export function ProductsPage() {
     const next = new URLSearchParams(searchParams)
     if (!value) next.delete(key)
     else next.set(key, value)
+    if (key === 'category') next.delete('subcategory')
     if (key !== 'page' && key !== 'create') next.delete('page')
     setSearchParams(next, { replace: true })
   }
@@ -77,6 +76,7 @@ export function ProductsPage() {
     pageSize: PAGE_SIZE,
     search: debouncedSearch || undefined,
     category,
+    subcategory,
     status,
     sort: sortParam || undefined,
   })
@@ -97,7 +97,19 @@ export function ProductsPage() {
     updateParam('sort', null)
   }
 
-  const hasFilters = debouncedSearch !== '' || category !== 'all' || status !== 'all'
+  const hasFilters = debouncedSearch !== '' || category !== 'all' || subcategory !== 'all' || status !== 'all'
+  const filters = products.data?.meta.filters
+  const categoryOptions = filters?.categories?.length
+    ? filters.categories
+    : PRODUCT_CATEGORIES.map((value) => ({ name: formatCategory(value), slug: value, productCount: 0, subcategories: [] }))
+  const selectedCategory = categoryOptions.find((option) => option.slug === category)
+  const subcategoryOptions = selectedCategory?.subcategories || []
+  const selectedSubcategory = subcategoryOptions.find((option) => option.slug === subcategory)
+  const selectedLabel = selectedSubcategory?.name
+    || (subcategory !== 'all' ? subcategory : selectedCategory?.name || (category === 'uncategorised' ? 'Uncategorised' : 'All products'))
+  const selectedCount = selectedSubcategory?.productCount
+    ?? selectedCategory?.productCount
+    ?? (category === 'uncategorised' ? filters?.uncategorised : '—')
 
   return (
     <>
@@ -123,7 +135,8 @@ export function ProductsPage() {
           aria-label="Filter by category"
           options={[
             { value: 'all', label: 'All categories' },
-            ...PRODUCT_CATEGORY_OPTIONS,
+            ...categoryOptions.map((option) => ({ value: option.slug, label: `${option.name} (${option.productCount})` })),
+            { value: 'uncategorised', label: `Uncategorised (${filters?.uncategorised ?? 0})` },
           ]}
           value={category}
           onChange={(event) =>
@@ -133,6 +146,17 @@ export function ProductsPage() {
             )
           }
           style={{ width: 170 }}
+        />
+        <Select
+          aria-label="Filter by subcategory"
+          options={[
+            { value: 'all', label: 'All subcategories' },
+            ...subcategoryOptions.map((option) => ({ value: option.slug, label: `${option.name} (${option.productCount})` })),
+          ]}
+          value={subcategory}
+          disabled={!selectedCategory || subcategoryOptions.length === 0}
+          onChange={(event) => updateParam('subcategory', event.target.value === 'all' ? null : event.target.value)}
+          style={{ width: 190 }}
         />
         <Select
           aria-label="Filter by status"
@@ -146,6 +170,15 @@ export function ProductsPage() {
           }
           style={{ width: 150 }}
         />
+        {hasFilters && <Button variant="ghost" onClick={() => { const next = new URLSearchParams(searchParams); ['search', 'category', 'subcategory', 'status', 'page'].forEach((key) => next.delete(key)); setSearchParams(next, { replace: true }) }}>Clear filters</Button>}
+      </div>
+
+      <div className="text-sm text-muted" style={{ display: 'flex', gap: 16, flexWrap: 'wrap', margin: '10px 0 16px' }}>
+        <span><strong>{filters?.total ?? '—'}</strong> all products</span>
+        <span><strong>{selectedCount}</strong> in {selectedLabel}</span>
+        <span><strong>{filters?.statusCounts?.active ?? '—'}</strong> active</span>
+        <span><strong>{filters?.statusCounts?.draft ?? '—'}</strong> draft</span>
+        <span><strong>{filters?.uncategorised ?? '—'}</strong> uncategorised</span>
       </div>
 
       {products.isError ? (
@@ -155,7 +188,7 @@ export function ProductsPage() {
         />
       ) : (
         <>
-          <TableRoot caption="Product catalog with price, inventory and status">
+            <TableRoot caption="Product catalog with category, price, inventory and status">
             <THead>
               <tr>
                 <SortableTh
@@ -169,6 +202,7 @@ export function ProductsPage() {
                   state={colState('category', sortField, sortDirection)}
                   onToggle={() => toggleSort('category')}
                 />
+                <Th>Subcategory</Th>
                 <SortableTh
                   label="Price"
                   state={colState('price', sortField, sortDirection)}
@@ -195,7 +229,7 @@ export function ProductsPage() {
               {products.isPending &&
                 [1, 2, 3, 4, 5].map((row) => (
                   <tr key={row}>
-                    {[1, 2, 3, 4, 5, 6, 7].map((cell) => (
+                    {[1, 2, 3, 4, 5, 6, 7, 8].map((cell) => (
                       <Td key={cell}>
                         <Skeleton style={{ height: 16, width: cell === 1 ? 150 : 80 }} />
                       </Td>
@@ -205,7 +239,7 @@ export function ProductsPage() {
 
               {products.isSuccess && products.data.meta.total === 0 && (
                 <tr>
-                  <td colSpan={7}>
+                  <td colSpan={8}>
                     <EmptyState
                       icon={<Package size={18} aria-hidden="true" />}
                       title={hasFilters ? 'No matching products' : 'Catalog is empty'}
@@ -242,6 +276,9 @@ export function ProductsPage() {
                     <Td className="mono table__cell-muted">{product.sku}</Td>
                     <Td className="table__cell-muted">
                       {formatCategory(product.category)}
+                    </Td>
+                    <Td className="table__cell-muted">
+                      {product.subcategory ? formatCategory(product.subcategory) : '—'}
                     </Td>
                     <Td className="table__cell-num">
                       {formatCurrency(product.price, { precise: true })}
