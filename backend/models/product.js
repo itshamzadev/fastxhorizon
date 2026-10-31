@@ -137,6 +137,9 @@ const productSchema = new mongoose.Schema({
     sourcePublished: { type: String, trim: true, default: '' },
     sourceInStock: { type: Boolean, default: false },
     sourceUrl: { type: String, trim: true, default: '' },
+    // Kept out of normal queries and public serializers. This is operational
+    // provenance for supplier image ingestion, never storefront content.
+    supplierImageSources: { type: [{ url: { type: String, trim: true }, mediaPath: { type: String, trim: true } }], select: false, default: [] },
     sourcePrice: { type: Number, min: 0, default: null },
     confirmedSupplierCost: { type: Number, min: 0, default: null },
     operationalCostEstimate: { type: Number, min: 0, default: null },

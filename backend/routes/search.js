@@ -5,10 +5,14 @@ const Product = require('../models/product');
 const MAX_QUERY_LENGTH = 100;
 const MAX_PAGE_SIZE = 24;
 const MAX_MATCHES_FOR_RANKING = 200;
-const PUBLIC_FIELDS = 'name description shortDescription category subcategory categoryPath productType tags slug image images price currency brand sku storeName stock inventoryMode availabilityStatus rating numReviews createdAt specifications attributes physicalConfiguration digitalConfiguration';
+const PUBLIC_FIELDS = 'name description shortDescription category subcategory categoryPath productType tags slug image images price currency brand sku storeName stock inventoryMode availabilityStatus rating numReviews createdAt specifications attributes physicalConfiguration digitalConfiguration supplierName sourceFormat supplierKey';
 const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const normalizeQuery = value => String(value || '').trim().slice(0, MAX_QUERY_LENGTH);
 const searchableFields = ['name', 'description', 'shortDescription', 'category', 'subcategory', 'categoryPath', 'productType', 'tags', 'brand', 'sku'];
+const publicImages = product => {
+  const values = Array.isArray(product.images) ? product.images : (product.image ? [product.image] : []);
+  return /yourmart|arto/i.test(`${product.supplierName || ''} ${product.sourceFormat || ''} ${product.supplierKey || ''}`) ? values.filter((value) => !/^https?:\/\//i.test(String(value || ''))) : values;
+};
 
 const publicProduct = product => ({
   id: product._id,
@@ -21,8 +25,8 @@ const publicProduct = product => ({
   productType: product.productType || '',
   tags: product.tags || [],
   slug: product.slug,
-  image: product.image || (Array.isArray(product.images) ? product.images[0] : ''),
-  images: Array.isArray(product.images) ? product.images : [],
+  image: publicImages(product)[0] || '',
+  images: publicImages(product),
   price: product.price,
   currency: product.currency || 'PKR',
   brand: product.brand || '',

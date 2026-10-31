@@ -12,7 +12,8 @@ const Refund = require('../models/refund');
 const Category = require('../models/category');
 const CatalogImport = require('../models/catalogImport');
 const PaymentConfiguration = require('../models/paymentConfiguration');
-const { SUPPLIER, safeFilename, buildEntries, makeProductDocument, wooPreview } = require('../services/catalogImport');
+const { SUPPLIER, safeFilename, buildEntries, makeProductDocument, wooPreview, artoPreview } = require('../services/catalogImport');
+const { ingestSupplierImages, auditExternalProductImages } = require('../services/supplierImageIngestion');
 const { SETTING_KEY, DEFAULT_MESSAGE, publicAnnouncement } = require('./storefront');
 
 const router = express.Router();
@@ -492,7 +493,7 @@ router.get('/products', requireAdminPermission('products.read'), async (req, res
 router.post('/product-imports/preview', express.text({ type: ['text/csv', 'text/plain', 'application/octet-stream'], limit: '10mb' }), requireAdminPermission('products.import'), async (req, res, next) => {
   try {
     const requestedFormat = String(req.headers['x-import-format'] || '').toLowerCase();
-    let categories = requestedFormat === 'woocommerce' ? await Category.find({ active: true }).lean() : [];
+    let categories = ['woocommerce', 'artomall'].includes(requestedFormat) ? await Category.find({ active: true }).lean() : [];
     let built = buildEntries(req.body, { format: requestedFormat, categories });
     if (built.format === 'woocommerce' && requestedFormat !== 'woocommerce') {
       categories = await Category.find({ active: true }).lean();
@@ -507,7 +508,11 @@ router.post('/product-imports/preview', express.text({ type: ['text/csv', 'text/
     const skuCounts = new Map();
     for (const sku of skus) skuCounts.set(sku, (skuCounts.get(sku) || 0) + 1);
     const duplicateSkus = new Set([...skuCounts.entries()].filter(([, count]) => count > 1).map(([sku]) => sku));
-    for (const entry of entries) entry.preview = built.format === 'woocommerce' ? wooPreview(entry, existingKeys, existingSkus, duplicateSkus) : entry.preview;
+    const duplicateKeys = new Set(entries.map((entry) => entry.supplierKey).filter((key, index, list) => list.indexOf(key) !== index));
+    for (const entry of entries) {
+      if (built.format === 'woocommerce') entry.preview = wooPreview(entry, existingKeys, existingSkus, duplicateSkus);
+      if (built.format === 'artomall') entry.preview = artoPreview(entry, existingKeys, existingSkus, duplicateKeys);
+    }
     const valid = entries.filter((entry) => entry.preview.validation === 'valid');
     const summary = {
       rows: rows.length, uniqueProducts: entries.length,
@@ -517,7 +522,7 @@ router.post('/product-imports/preview', express.text({ type: ['text/csv', 'text/
       invalidRows: entries.length - valid.length,
       missingPrices: entries.filter((entry) => entry.item.sourcePrice === null).length,
       missingImages: entries.filter((entry) => entry.item.images.length === 0).length,
-      duplicateSkus: duplicateSkus.size,
+      duplicateSkus: duplicateSkus.size + (built.format === 'artomall' ? duplicateKeys.size : 0),
       selectedProducts: valid.filter((entry) => !entry.preview.duplicate).length,
     };
     const stagedBytes = Buffer.byteLength(JSON.stringify(entries), 'utf8');
@@ -525,6 +530,10 @@ router.post('/product-imports/preview', express.text({ type: ['text/csv', 'text/
     const preview = await CatalogImport.create({ supplier: SUPPLIER, filename: safeFilename(req.headers['x-source-filename']), uploadedBy: req.admin._id, status: 'PREVIEWED', previewExpiresAt: new Date(Date.now() + 30 * 60 * 1000), summary, stagedProducts: entries });
     return res.json({ data: { id: String(preview._id), expiresAt: preview.previewExpiresAt, supplier: SUPPLIER, format: built.format || 'shopify', filename: preview.filename, summary, categoryOptions: categories.filter((category) => category.active !== false).map((category) => ({ name: category.name, slug: category.slug, parentSlug: category.parentSlug || null })), products: entries.slice(0, 1000).map((entry) => entry.preview) } });
   } catch (error) { return res.status(400).json({ code: 'validation_error', message: error.message || 'The CSV could not be validated.' }); }
+});
+
+router.get('/product-imports/image-audit', requireAdminPermission('products.import'), async (req, res, next) => {
+  try { return res.json({ data: await auditExternalProductImages(Product) }); } catch (error) { return next(error); }
 });
 
 router.post('/product-imports/confirm', requireAdminPermission('products.import'), async (req, res, next) => {
@@ -552,7 +561,7 @@ router.post('/product-imports/confirm', requireAdminPermission('products.import'
         const sku = String(submitted?.sku || submitted?.supplierSKU || entry.item.supplierSKU || '').trim().toUpperCase();
         const category = { parent: String(submitted?.category || '').trim(), child: String(submitted?.subcategory || '').trim(), matched: false, source: entry.category.source || entry.item.sourceCategories || '' };
         const savedSourcePrice = hasSourcePrice ? (Number.isFinite(sourcePrice) && sourcePrice >= 0 ? sourcePrice : null) : entry.item.sourcePrice;
-        return { ...entry, item: { ...entry.item, title: submitted?.name === undefined ? entry.item.title : String(submitted.name).trim(), supplierSKU: sku, description: submitted?.descriptionHtml === undefined ? entry.item.description : String(submitted.descriptionHtml).slice(0, 10000), shortDescription: submitted?.shortDescription === undefined ? entry.item.shortDescription : String(submitted.shortDescription).slice(0, 300), images, sourcePrice: savedSourcePrice, sellingPrice: Number.isFinite(sellingPrice) && sellingPrice > 0 ? sellingPrice : null, sourceInStock: submitted?.stockAvailable === undefined ? entry.item.sourceInStock : submitted.stockAvailable === true, tags: Array.isArray(submitted?.tags) ? submitted.tags.map(String).slice(0, 50) : entry.item.tags, sourceParent: submitted?.parent === undefined ? entry.item.sourceParent : String(submitted.parent).slice(0, 160) }, category, preview: { ...entry.preview, ...submitted, sku, supplierSKU: sku, images, image: images[0] || null, imageCount: images.length, sourcePrice: savedSourcePrice, sellingPrice: Number.isFinite(sellingPrice) && sellingPrice > 0 ? sellingPrice : null, category: category.parent, subcategory: category.child } };
+        return { ...entry, item: { ...entry.item, title: submitted?.name === undefined ? entry.item.title : String(submitted.name).trim(), slug: submitted?.slug === undefined ? entry.item.slug : String(submitted.slug).trim(), brand: submitted?.brand === undefined ? entry.item.brand : String(submitted.brand).slice(0, 120), supplierSKU: sku, description: submitted?.descriptionHtml === undefined ? entry.item.description : String(submitted.descriptionHtml).slice(0, 10000), shortDescription: submitted?.shortDescription === undefined ? entry.item.shortDescription : String(submitted.shortDescription).slice(0, 300), features: Array.isArray(submitted?.features) ? submitted.features.map(String).slice(0, 100) : entry.item.features, specifications: Array.isArray(submitted?.specifications) ? submitted.specifications.map(String).slice(0, 100) : entry.item.specifications, images, sourcePrice: savedSourcePrice, sellingPrice: Number.isFinite(sellingPrice) && sellingPrice > 0 ? sellingPrice : null, sourceInStock: submitted?.stockAvailable === undefined ? entry.item.sourceInStock : submitted.stockAvailable === true, tags: Array.isArray(submitted?.tags) ? submitted.tags.map(String).slice(0, 50) : entry.item.tags, sourceParent: submitted?.parent === undefined ? entry.item.sourceParent : String(submitted.parent).slice(0, 160), sourceUrl: submitted?.productUrl === undefined ? entry.item.sourceUrl : String(submitted.productUrl).slice(0, 500) }, category, preview: { ...entry.preview, ...submitted, sku, supplierSKU: sku, images, image: images[0] || null, imageCount: images.length, sourcePrice: savedSourcePrice, sellingPrice: Number.isFinite(sellingPrice) && sellingPrice > 0 ? sellingPrice : null, category: category.parent, subcategory: category.child } };
       });
       const duplicateSkuSet = new Set(entries.map((entry) => entry.item.supplierSKU).filter(Boolean).filter((sku, index, list) => list.indexOf(sku) !== index));
       if (duplicateSkuSet.size) return res.status(400).json({ code: 'validation_error', message: 'Selected products contain duplicate SKUs.', duplicateSkus: [...duplicateSkuSet] });
@@ -566,22 +575,29 @@ router.post('/product-imports/confirm', requireAdminPermission('products.import'
     let imported = 0; let skipped = 0; let failed = 0; const errors = [];
     const categoryCache = new Set();
     for (const entry of entries) {
-      if (!entry.item.title || entry.item.title.length > 120 || !entry.item.images.length || entry.item.images.some((image) => !/^https?:\/\//i.test(image)) || entry.item.sourcePrice === null || !entry.item.supplierSKU) { skipped += 1; continue; }
+      if (!entry.item.title || entry.item.title.length > 120 || !entry.item.images.length || entry.item.images.some((image) => !/^https?:\/\//i.test(image)) || entry.item.sourcePrice === null || (entry.format !== 'artomall' && !entry.item.supplierSKU)) { skipped += 1; continue; }
       if ((existingKeys.has(entry.supplierKey) && mode !== 'update_existing') || (existingSkus.has(String(entry.item.supplierSKU).toUpperCase()) && !existingKeys.has(entry.supplierKey))) { skipped += 1; continue; }
       try {
-        if (entry.format === 'woocommerce') {
+        if (entry.format === 'woocommerce' || entry.format === 'artomall') {
           const categoryPair = await validateProductCategoryPair(entry.category.parent, entry.category.child);
           if (categoryPair.error) throw new Error(`Category mapping is invalid: ${categoryPair.error}`);
           entry.category = { ...entry.category, parent: categoryPair.category, child: categoryPair.subcategory, matched: true };
         }
         const document = makeProductDocument(entry);
+        if (entry.format === 'woocommerce' || entry.format === 'artomall') {
+          const supplier = entry.format === 'artomall' ? 'artomall' : 'yourmart';
+          const media = await ingestSupplierImages(entry.item.images, { supplier });
+          document.image = media[0].mediaPath;
+          document.images = media.map((item) => item.mediaPath);
+          document.supplierImageSources = media.map((item) => ({ url: item.url, mediaPath: item.mediaPath }));
+        }
         const parentSlug = entry.category.parent.toLowerCase().replace(/[^a-z0-9]+/g, '-');
         const childSlug = entry.category.child.toLowerCase().replace(/[^a-z0-9]+/g, '-');
-        if (entry.format !== 'woocommerce' && !categoryCache.has(parentSlug)) {
+        if (!['woocommerce', 'artomall'].includes(entry.format) && !categoryCache.has(parentSlug)) {
           await Category.findOneAndUpdate({ slug: parentSlug, parentSlug: null }, { $setOnInsert: { name: entry.category.parent, slug: parentSlug, parentSlug: null, active: true } }, { upsert: true, setDefaultsOnInsert: true });
           categoryCache.add(parentSlug);
         }
-        if (entry.format !== 'woocommerce' && entry.category.child && !categoryCache.has(`${parentSlug}/${childSlug}`)) {
+        if (!['woocommerce', 'artomall'].includes(entry.format) && entry.category.child && !categoryCache.has(`${parentSlug}/${childSlug}`)) {
           await Category.findOneAndUpdate({ slug: childSlug, parentSlug }, { $setOnInsert: { name: entry.category.child, slug: childSlug, parentSlug, active: true } }, { upsert: true, setDefaultsOnInsert: true });
           categoryCache.add(`${parentSlug}/${childSlug}`);
         }

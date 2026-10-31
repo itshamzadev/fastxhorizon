@@ -28,6 +28,11 @@ const publicFlexibleFields = product => ({
   physicalConfiguration: product.productType === 'DIGITAL' ? null : (product.physicalConfiguration ? { weight: product.physicalConfiguration.weight, weightUnit: product.physicalConfiguration.weightUnit, dimensions: product.physicalConfiguration.dimensions, warranty: product.physicalConfiguration.warranty, condition: product.physicalConfiguration.condition, shippingInfo: product.physicalConfiguration.shippingInfo, ownershipMode: product.physicalConfiguration.ownershipMode } : null),
   digitalConfiguration: product.productType === 'DIGITAL' && product.digitalConfiguration ? { deliveryType: product.digitalConfiguration.deliveryType, version: product.digitalConfiguration.version, releaseNotes: product.digitalConfiguration.releaseNotes, supportedPlatforms: product.digitalConfiguration.supportedPlatforms, systemRequirements: product.digitalConfiguration.systemRequirements, licenseType: product.digitalConfiguration.licenseType, downloadLimit: product.digitalConfiguration.downloadLimit, accessDurationDays: product.digitalConfiguration.accessDurationDays, updatePolicy: product.digitalConfiguration.updatePolicy, instructions: product.digitalConfiguration.instructions, documentationUrl: product.digitalConfiguration.documentationUrl } : null,
 });
+const publicImages = product => {
+  const values = Array.isArray(product.images) ? product.images : (product.image ? [product.image] : []);
+  const supplierImport = /yourmart|arto/i.test(`${product.supplierName || ''} ${product.sourceFormat || ''} ${product.supplierKey || ''}`);
+  return supplierImport ? values.filter((value) => !/^https?:\/\//i.test(String(value || ''))) : values;
+};
 const hashSeed = value => {
   let hash = 2166136261;
   for (const char of String(value || 'default').slice(0, RANDOM_SEED_MAX_LENGTH)) {
@@ -70,8 +75,8 @@ const normalizeProduct = product => ({
   productType: product.productType,
   tags: product.tags,
   slug: product.slug,
-  image: product.image,
-  images: Array.isArray(product.images) ? product.images : (product.image ? [product.image] : []),
+  image: publicImages(product)[0] || null,
+  images: publicImages(product),
   variantsEnabled: Boolean(product.variantsEnabled),
   variantAttributes: Array.isArray(product.variantAttributes) ? product.variantAttributes : [],
   variants: Array.isArray(product.variants) ? product.variants.filter(variant => variant.enabled !== false).map(variant => ({ id: variant._id, key: variant.key, options: variant.options || {}, sku: variant.sku || '', price: variant.price, compareAtPrice: variant.compareAtPrice ?? null, images: variant.images || [], inventoryMode: variant.inventoryMode, stock: variant.stock, availabilityStatus: variant.availabilityStatus })) : [],
