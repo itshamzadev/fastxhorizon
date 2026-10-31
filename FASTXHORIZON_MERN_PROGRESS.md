@@ -1051,3 +1051,10 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Client and server validation remain aligned with the Transaction ID-or-screenshot rule.
 - Backend Jest passed 14 suites / 63 tests. Frontend production build passed.
 
+## Checkout 409 diagnostics - 2026-10-31
+
+- The reported live `POST /api/checkout/create-order` HTTP 409 is consistent with the previously identified production backend still running the old numeric-stock reservation logic; the local source fix for `SUPPLIER_BASED` products has not been deployed to Coolify.
+- Improved the frontend to display the backend `error`/`message` response, with a useful 409 fallback instead of a generic failure.
+- Added the non-deprecated `mobile-web-app-capable` meta tag alongside the existing Apple tag.
+- Frontend production build passed. No database records were changed and no deployment was performed.
+
