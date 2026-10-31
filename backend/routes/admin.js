@@ -20,9 +20,6 @@ const router = express.Router();
 const MAX_PAGE_SIZE = 50;
 const PRODUCT_STATUSES = new Set(['active', 'draft', 'archived']);
 const ORDER_STATUSES = new Set(['pending', 'processing', 'shipped', 'delivered', 'cancelled']);
-// These are legacy values still used by existing product records. They are
-// surfaced in management without silently creating or changing DB records.
-const LEGACY_CATEGORIES = ['electronics', 'furniture', 'apparel', 'stationery', 'home', 'sports', 'jewellery'];
 
 router.use(requireAdminSession);
 
@@ -43,10 +40,6 @@ function escapeRegex(value) {
   return String(value || '').replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 }
 
-function legacyCategoryName(slug) {
-  return slug.replace(/-/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase());
-}
-
 function categoryValuesFilter(field, values) {
   const patterns = [...new Set(values.filter(Boolean).map((value) => new RegExp(`^${escapeRegex(value)}$`, 'i')))];
   return patterns.length ? { [field]: { $in: patterns } } : { [field]: { $exists: false } };
@@ -59,10 +52,7 @@ function uncategorisedFilter() {
 async function productFilterOptions() {
   const stored = await Category.find({}).sort({ parentSlug: 1, name: 1 }).lean();
   const storedParents = stored.filter((category) => !category.parentSlug);
-  const parentSlugs = new Set(storedParents.map((category) => category.slug));
-  const parents = [...storedParents, ...LEGACY_CATEGORIES.filter((slug) => !parentSlugs.has(slug)).map((slug) => ({
-    _id: `legacy:${slug}`, name: legacyCategoryName(slug), slug, parentSlug: null, active: true, virtual: true,
-  }))];
+  const parents = storedParents;
   const options = await Promise.all(parents.map(async (parent) => {
     const parentValues = [parent.name, parent.slug];
     const children = stored.filter((category) => category.parentSlug === parent.slug);
@@ -74,7 +64,7 @@ async function productFilterOptions() {
         productCount: await Product.countDocuments({ $or: [categoryValuesFilter('subcategory', [child.name, child.slug]), categoryValuesFilter('categoryPath.1', [child.name, child.slug])] }),
       }))),
     ]);
-    return { name: parent.name, slug: parent.slug, productCount, virtual: Boolean(parent.virtual), subcategories };
+    return { name: parent.name, slug: parent.slug, productCount, subcategories };
   }));
   const [total, uncategorised, active, draft, archived] = await Promise.all([
     Product.countDocuments({}),
@@ -86,8 +76,8 @@ async function productFilterOptions() {
   return { total, uncategorised, statusCounts: { active, draft, archived }, categories: options };
 }
 
-function categoryView(category, productCount = 0, subcategoryCount = 0, virtual = false) {
-  return { id: String(category._id), name: category.name, slug: category.slug, parentSlug: category.parentSlug || null, description: category.description || '', image: category.image || '', active: category.active !== false, productCount, subcategoryCount, virtual, createdAt: category.createdAt, updatedAt: category.updatedAt };
+function categoryView(category, productCount = 0, subcategoryCount = 0) {
+  return { id: String(category._id), name: category.name, slug: category.slug, parentSlug: category.parentSlug || null, description: category.description || '', image: category.image || '', active: category.active !== false, productCount, subcategoryCount, createdAt: category.createdAt, updatedAt: category.updatedAt };
 }
 
 async function findCategoryReference(value, parentSlug = null) {
@@ -98,11 +88,7 @@ async function findCategoryReference(value, parentSlug = null) {
 
 async function validateProductCategoryPair(categoryValue, subcategoryValue) {
   const category = await findCategoryReference(categoryValue, null);
-  if (!category) {
-    const legacy = LEGACY_CATEGORIES.find((slug) => slug === slugify(categoryValue) || legacyCategoryName(slug).toLowerCase() === String(categoryValue || '').trim().toLowerCase());
-    if (legacy && !String(subcategoryValue || '').trim()) return { category: legacyCategoryName(legacy), subcategory: '', categoryPath: [legacyCategoryName(legacy)] };
-    return { error: 'A valid top-level category is required.' };
-  }
+  if (!category) return { error: 'A valid top-level category is required.' };
   const subcategoryValueNormalized = String(subcategoryValue || '').trim();
   if (!subcategoryValueNormalized) return { category: category.name, subcategory: '', categoryPath: [category.name] };
   const subcategory = await findCategoryReference(subcategoryValueNormalized, category.slug);
@@ -263,33 +249,20 @@ router.get('/categories', requireSuperAdmin, async (req, res, next) => {
     if (parentSlug !== undefined) filter.parentSlug = parentSlug;
     if (search) filter.$or = [{ name: { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' } }, { slug: { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' } }];
     const storedCategories = await Category.find(filter).sort({ parentSlug: 1, name: 1 }).lean();
-    const storedParentSlugs = new Set(storedCategories.filter((category) => !category.parentSlug).map((category) => category.slug));
-    const legacyParents = parentSlug === undefined || parentSlug === null
-      ? LEGACY_CATEGORIES.filter((slug) => !storedParentSlugs.has(slug)).map((slug) => ({
-        _id: `legacy:${slug}`,
-        name: slug.replace(/-/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase()),
-        slug,
-        parentSlug: null,
-        description: '',
-        image: '',
-        active: true,
-        virtual: true,
-      }))
-      : [];
-    const categories = [...storedCategories, ...legacyParents].filter((category) => !search || new RegExp(search.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&'), 'i').test(`${category.name} ${category.slug}`));
+    const categories = storedCategories.filter((category) => !search || new RegExp(search.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&'), 'i').test(`${category.name} ${category.slug}`));
     const parents = categories.filter((category) => !category.parentSlug);
     const counts = await Promise.all(categories.map(async (category) => {
       const isParent = !category.parentSlug;
       const escapedSlug = category.slug.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&');
       const productFilter = isParent ? { $or: [{ category: { $regex: `^${escapedSlug}$`, $options: 'i' } }, { category: category.name }] } : { $or: [{ subcategory: { $regex: `^${escapedSlug}$`, $options: 'i' } }, { subcategory: category.name }] };
-      const [productCount, subcategoryCount] = await Promise.all([Product.countDocuments(productFilter), isParent && !category.virtual ? Category.countDocuments({ parentSlug: category.slug }) : Promise.resolve(0)]);
+      const [productCount, subcategoryCount] = await Promise.all([Product.countDocuments(productFilter), isParent ? Category.countDocuments({ parentSlug: category.slug }) : Promise.resolve(0)]);
       return [String(category._id), { productCount, subcategoryCount }];
     }));
     const countMap = new Map(counts);
     // Keep the management table visually hierarchical: every subcategory is
     // rendered directly after its parent instead of after all parent rows.
     const orderedCategories = parents.flatMap((parent) => [parent, ...categories.filter((category) => category.parentSlug === parent.slug)]);
-    return res.json({ data: orderedCategories.map((category) => categoryView(category, countMap.get(String(category._id))?.productCount || 0, countMap.get(String(category._id))?.subcategoryCount || 0, Boolean(category.virtual))), meta: { total: categories.length, parentCount: parents.length } });
+    return res.json({ data: orderedCategories.map((category) => categoryView(category, countMap.get(String(category._id))?.productCount || 0, countMap.get(String(category._id))?.subcategoryCount || 0)), meta: { total: categories.length, parentCount: parents.length } });
   } catch (error) { return next(error); }
 });
 
@@ -471,12 +444,12 @@ router.get('/products', requireAdminPermission('products.read'), async (req, res
     if (category === 'uncategorised' || category === 'uncategorized') and.push(uncategorisedFilter());
     else if (category && category !== 'all') {
       const parent = await Category.findOne({ slug: category, parentSlug: null }).lean();
-      const values = parent ? [parent.name, parent.slug] : [category, legacyCategoryName(category)];
+      const values = parent ? [parent.name, parent.slug] : [category];
       and.push({ $or: [categoryValuesFilter('category', values), categoryValuesFilter('categoryPath.0', values)] });
     }
     if (subcategory && subcategory !== 'all') {
       const child = await Category.findOne({ slug: subcategory }).lean();
-      const values = child ? [child.name, child.slug] : [subcategory, legacyCategoryName(subcategory)];
+      const values = child ? [child.name, child.slug] : [subcategory];
       and.push({ $or: [categoryValuesFilter('subcategory', values), categoryValuesFilter('categoryPath.1', values)] });
     }
     if (req.query.status && req.query.status !== 'all' && PRODUCT_STATUSES.has(String(req.query.status))) and.push({ status: String(req.query.status) });
@@ -501,15 +474,11 @@ router.post('/product-imports/preview', express.text({ type: ['text/csv', 'text/
   try {
     const requestedFormat = String(req.headers['x-import-format'] || '').toLowerCase();
     let categories = ['woocommerce', 'artomall'].includes(requestedFormat) ? await Category.find({ active: true }).lean() : [];
-    const storedParentSlugs = new Set(categories.filter((category) => !category.parentSlug).map((category) => category.slug));
-    const legacyCategories = LEGACY_CATEGORIES.filter((slug) => !storedParentSlugs.has(slug)).map((slug) => ({ name: legacyCategoryName(slug), slug, parentSlug: null, active: true, virtual: true }));
-    let availableCategories = [...categories, ...legacyCategories];
+    let availableCategories = categories;
     let built = buildEntries(req.body, { format: requestedFormat, categories: availableCategories });
     if (built.format === 'woocommerce' && requestedFormat !== 'woocommerce') {
       categories = await Category.find({ active: true }).lean();
-      const refreshParents = new Set(categories.filter((category) => !category.parentSlug).map((category) => category.slug));
-      const refreshLegacy = LEGACY_CATEGORIES.filter((slug) => !refreshParents.has(slug)).map((slug) => ({ name: legacyCategoryName(slug), slug, parentSlug: null, active: true, virtual: true }));
-      availableCategories = [...categories, ...refreshLegacy];
+      availableCategories = categories;
       built = buildEntries(req.body, { format: 'woocommerce', categories: availableCategories });
     }
     const { rows, entries } = built;
