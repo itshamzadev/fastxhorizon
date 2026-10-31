@@ -1058,3 +1058,14 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Added the non-deprecated `mobile-web-app-capable` meta tag alongside the existing Apple tag.
 - Frontend production build passed. No database records were changed and no deployment was performed.
 
+## Checkout 413 payload fix - 2026-10-31
+
+- Root cause: payment screenshots were sent as uncompressed base64 data inside the JSON checkout request, exceeding the live proxy/body limit and returning HTTP 413 before normal checkout validation.
+- Updated the frontend to resize/compress image screenshots to a maximum target of 900 KB before submission; oversized non-image evidence is rejected before the request is sent. TID-only checkout remains lightweight.
+- Frontend production build passed. Production deployment/restart is still required before the live site uses this fix.
+
+## Manual payment TID format clarification - 2026-10-31
+
+- Confirmed the Transaction ID/TID field is text-based and accepts alphanumeric bank/wallet references, not numbers only. No restrictive numeric regex was added.
+- Updated the admin preset hint and checkout wording to make alphabetic and numeric TIDs clear to administrators and customers.
+

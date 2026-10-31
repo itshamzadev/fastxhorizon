@@ -8,6 +8,7 @@ import { apiClient } from '../services/apiClient';
 import { useNotifier } from '../context/NotificationProvider';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const MAX_PAYMENT_IMAGE_BYTES = 900 * 1024;
 
 function CheckoutForm({ onSubmit, submitting = false }) {
   const [form, setForm] = useState({ name: '', email: '', shippingAddress: '', paymentMethod: 'manual', methodKey: '', paymentValues: {}, paymentEvidence: [] });
@@ -19,7 +20,25 @@ function CheckoutForm({ onSubmit, submitting = false }) {
   const selected = methods.find(method => method.key === form.methodKey);
   const setField = (name, value) => setForm(current => ({ ...current, [name]: value }));
   const setPaymentValue = (id, value) => setForm(current => ({ ...current, paymentValues: { ...current.paymentValues, [id]: value } }));
-  const fileToData = (file, fieldId) => new Promise(resolve => { const reader = new FileReader(); reader.onload = () => resolve({ fieldId, name: file.name, mimeType: file.type, data: reader.result }); reader.readAsDataURL(file) });
+  const fileToData = file => new Promise((resolve, reject) => {
+    if (!file.type.startsWith('image/')) {
+      if (file.size > MAX_PAYMENT_IMAGE_BYTES) return reject(new Error('Please upload a screenshot smaller than 900 KB.'));
+      const reader = new FileReader(); reader.onload = () => resolve({ mimeType: file.type, data: reader.result }); reader.onerror = () => reject(new Error('Unable to read payment evidence.')); reader.readAsDataURL(file); return;
+    }
+    const reader = new FileReader();
+    reader.onload = () => {
+      const image = new Image();
+      image.onload = () => {
+        const scale = Math.min(1, 1400 / Math.max(image.width, image.height));
+        const canvas = document.createElement('canvas'); canvas.width = Math.max(1, Math.round(image.width * scale)); canvas.height = Math.max(1, Math.round(image.height * scale));
+        canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
+        const encode = quality => canvas.toBlob(blob => { if (!blob) return reject(new Error('Unable to process payment screenshot.')); if (blob.size <= MAX_PAYMENT_IMAGE_BYTES || quality <= .45) { const output = new FileReader(); output.onload = () => resolve({ mimeType: 'image/jpeg', data: output.result, size: blob.size }); output.readAsDataURL(blob); } else encode(quality - .1); }, 'image/jpeg', quality);
+        encode(.78);
+      };
+      image.onerror = () => reject(new Error('Invalid payment screenshot.')); image.src = reader.result;
+    };
+    reader.onerror = () => reject(new Error('Unable to read payment screenshot.')); reader.readAsDataURL(file);
+  });
   const submit = async event => {
     event.preventDefault();
     const required = selected?.fields?.filter(field => field.required) || [];
@@ -53,7 +72,7 @@ function PaymentFields({ fields, form, setField, setPaymentValue, fileToData }) 
 }
 
 function PaymentField({ field, form, setField, setPaymentValue, fileToData }) {
-  if (field.type === 'file') return <><Button component="label" fullWidth variant="outlined" startIcon={<UploadFileOutlinedIcon />} sx={{ py: 1.4, justifyContent: 'flex-start' }}>{field.label}{field.required ? ' *' : ''}<input hidden type="file" accept={(field.acceptedMimeTypes || []).join(',')} onChange={async event => { const file = event.target.files?.[0]; if (file) setField('paymentEvidence', [await fileToData(file, field.id)]) }} /></Button>{form.paymentEvidence.some(file => file.fieldId === field.id) && <Typography variant="caption" color="success.main">Screenshot attached</Typography>}</>;
+  if (field.type === 'file') return <><Button component="label" fullWidth variant="outlined" startIcon={<UploadFileOutlinedIcon />} sx={{ py: 1.4, justifyContent: 'flex-start' }}>{field.label}{field.required ? ' *' : ''}<input hidden type="file" accept={(field.acceptedMimeTypes || []).join(',')} onChange={async event => { const file = event.target.files?.[0]; if (!file) return; try { const encoded = await fileToData(file); setField('paymentEvidence', [{ ...encoded, fieldId: field.id, name: file.name }]); } catch (error) { setField('paymentEvidence', []); window.alert(error.message); } }} /></Button>{form.paymentEvidence.some(file => file.fieldId === field.id) && <Typography variant="caption" color="success.main">Screenshot attached (compressed)</Typography>}</>;
   return <TextField fullWidth multiline={field.type === 'textarea'} type={field.type === 'number' ? 'number' : 'text'} label={`${field.label}${field.required ? ' *' : ''}`} placeholder={field.placeholder} helperText={field.helpText} value={form.paymentValues[field.id] || ''} onChange={event => setPaymentValue(field.id, event.target.value)} />;
 }
 
