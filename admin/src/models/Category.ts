@@ -6,6 +6,8 @@ export interface Category {
   description: string
   image: string
   active: boolean
+  /** Legacy product values shown in management until explicitly saved. */
+  virtual?: boolean
   productCount: number
   subcategoryCount: number
   createdAt?: string

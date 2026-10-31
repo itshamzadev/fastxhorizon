@@ -19,6 +19,9 @@ const router = express.Router();
 const MAX_PAGE_SIZE = 50;
 const PRODUCT_STATUSES = new Set(['active', 'draft', 'archived']);
 const ORDER_STATUSES = new Set(['pending', 'processing', 'shipped', 'delivered', 'cancelled']);
+// These are legacy values still used by existing product records. They are
+// surfaced in management without silently creating or changing DB records.
+const LEGACY_CATEGORIES = ['electronics', 'furniture', 'apparel', 'stationery', 'home', 'sports', 'jewellery'];
 
 router.use(requireAdminSession);
 
@@ -35,8 +38,8 @@ function validCategoryImage(value) {
   return !value || /^(https?:\/\/|data:image\/(png|jpeg|jpg|webp|gif);base64,)/i.test(value);
 }
 
-function categoryView(category, productCount = 0, subcategoryCount = 0) {
-  return { id: String(category._id), name: category.name, slug: category.slug, parentSlug: category.parentSlug || null, description: category.description || '', image: category.image || '', active: category.active !== false, productCount, subcategoryCount, createdAt: category.createdAt, updatedAt: category.updatedAt };
+function categoryView(category, productCount = 0, subcategoryCount = 0, virtual = false) {
+  return { id: String(category._id), name: category.name, slug: category.slug, parentSlug: category.parentSlug || null, description: category.description || '', image: category.image || '', active: category.active !== false, productCount, subcategoryCount, virtual, createdAt: category.createdAt, updatedAt: category.updatedAt };
 }
 
 async function findCategoryReference(value, parentSlug = null) {
@@ -207,16 +210,31 @@ router.get('/categories', requireSuperAdmin, async (req, res, next) => {
     const filter = {};
     if (parentSlug !== undefined) filter.parentSlug = parentSlug;
     if (search) filter.$or = [{ name: { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' } }, { slug: { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' } }];
-    const categories = await Category.find(filter).sort({ parentSlug: 1, name: 1 }).lean();
+    const storedCategories = await Category.find(filter).sort({ parentSlug: 1, name: 1 }).lean();
+    const storedParentSlugs = new Set(storedCategories.filter((category) => !category.parentSlug).map((category) => category.slug));
+    const legacyParents = parentSlug === undefined || parentSlug === null
+      ? LEGACY_CATEGORIES.filter((slug) => !storedParentSlugs.has(slug)).map((slug) => ({
+        _id: `legacy:${slug}`,
+        name: slug.replace(/-/g, ' ').replace(/\b\w/g, (letter) => letter.toUpperCase()),
+        slug,
+        parentSlug: null,
+        description: '',
+        image: '',
+        active: true,
+        virtual: true,
+      }))
+      : [];
+    const categories = [...storedCategories, ...legacyParents].filter((category) => !search || new RegExp(search.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&'), 'i').test(`${category.name} ${category.slug}`));
     const parents = categories.filter((category) => !category.parentSlug);
     const counts = await Promise.all(categories.map(async (category) => {
       const isParent = !category.parentSlug;
-      const productFilter = isParent ? { $or: [{ category: category.name }, { category: category.slug }] } : { $or: [{ subcategory: category.name }, { subcategory: category.slug }] };
-      const [productCount, subcategoryCount] = await Promise.all([Product.countDocuments(productFilter), isParent ? Category.countDocuments({ parentSlug: category.slug }) : Promise.resolve(0)]);
+      const escapedSlug = category.slug.replace(/[.*+?^${}()|[\\]\\]/g, '\\$&');
+      const productFilter = isParent ? { $or: [{ category: { $regex: `^${escapedSlug}$`, $options: 'i' } }, { category: category.name }] } : { $or: [{ subcategory: { $regex: `^${escapedSlug}$`, $options: 'i' } }, { subcategory: category.name }] };
+      const [productCount, subcategoryCount] = await Promise.all([Product.countDocuments(productFilter), isParent && !category.virtual ? Category.countDocuments({ parentSlug: category.slug }) : Promise.resolve(0)]);
       return [String(category._id), { productCount, subcategoryCount }];
     }));
     const countMap = new Map(counts);
-    return res.json({ data: categories.map((category) => categoryView(category, countMap.get(String(category._id))?.productCount || 0, countMap.get(String(category._id))?.subcategoryCount || 0)), meta: { total: categories.length, parentCount: parents.length } });
+    return res.json({ data: categories.map((category) => categoryView(category, countMap.get(String(category._id))?.productCount || 0, countMap.get(String(category._id))?.subcategoryCount || 0, Boolean(category.virtual))), meta: { total: categories.length, parentCount: parents.length } });
   } catch (error) { return next(error); }
 });
 
