@@ -106,10 +106,18 @@ app.use(express.json({ limit: '3mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Supplier images are re-encoded into this controlled, persistent media root
-// before they are referenced by public products. `index:false` prevents
-// directory listing; the source supplier URL is never served or redirected.
-const mediaRoot = path.resolve(process.env.MEDIA_STORAGE_ROOT || path.join(process.cwd(), 'data', 'media', 'products'));
-app.use('/media/products', express.static(mediaRoot, { index: false, redirect: false, fallthrough: true }));
+// before they are referenced by public products. MEDIA_STORAGE_ROOT is the
+// media directory itself (for example `/app/media`), not its `products`
+// child. Mounting only that child keeps unrelated files out of the public URL.
+const mediaRoot = path.resolve(process.env.MEDIA_STORAGE_ROOT || path.join(process.cwd(), 'data', 'media'));
+const productMediaRoot = path.join(mediaRoot, 'products');
+app.use('/media/products', express.static(productMediaRoot, {
+  dotfiles: 'deny',
+  extensions: [],
+  index: false,
+  redirect: false,
+  fallthrough: true,
+}));
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', service: 'fastxhorizon-api' });

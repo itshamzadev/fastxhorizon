@@ -67,6 +67,7 @@ const normalizeProduct = product => ({
   category: product.category,
   subcategory: product.subcategory,
   categoryPath: product.categoryPath,
+  sku: product.sku || '',
   productType: product.productType,
   tags: product.tags,
   slug: product.slug,

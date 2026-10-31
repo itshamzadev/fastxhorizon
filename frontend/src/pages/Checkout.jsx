@@ -26,6 +26,7 @@ import ShoppingBagIcon from '@mui/icons-material/ShoppingBag';
 import { useNotifier } from '../context/NotificationProvider';
 import { apiClient, withRetry } from '../services/apiClient';
 import { formatPrice } from '../utils/currency';
+import { resolveMediaUrl } from '../utils/media';
 
 function Checkout({ cartItems = [], onOrderComplete }) {
   const navigate = useNavigate();
@@ -191,7 +192,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
                   return (
                     <ListItem key={id} secondaryAction={<Checkbox edge="end" color="primary" checked={checked} onChange={() => toggleItem(id)} />}>
                       <ListItemAvatar>
-                        <Avatar src={item.image} alt={item.name} variant="rounded" />
+                        <Avatar src={resolveMediaUrl(item.image)} alt={item.name} variant="rounded" />
                       </ListItemAvatar>
                       <ListItemText primary={item.name} secondary={formatPrice(item.price || 0)} />
                     </ListItem>

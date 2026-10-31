@@ -1,0 +1,23 @@
+{
+  "generatedAt": "2026-10-31T15:57:24.854Z",
+  "mode": "READ_ONLY",
+  "package": {
+    "products": 210,
+    "categories": 11,
+    "readyMedia": 210
+  },
+  "production": {
+    "status": "blocked",
+    "database": "fastxhorizon_production"
+  },
+  "comparison": null,
+  "mediaReadiness": {
+    "status": "blocked",
+    "reason": "Production storage/persistent media volume cannot be verified from the local repository; no files were uploaded."
+  },
+  "blockers": [
+    "PRODUCTION_MONGO_URI is not configured in the local environment; no production connection was attempted.",
+    "Provide an authorized private Coolify MongoDB URI whose database path is /fastxhorizon_production, without committing it.",
+    "Confirm the production backend has persistent media storage mapped to the same media path/object storage before media transfer."
+  ]
+}

@@ -8,6 +8,7 @@ RUN npm ci --omit=dev
 
 COPY backend/ ./
 RUN mkdir -p /app/storage/payment-proof
+RUN mkdir -p /app/media/products
 
 EXPOSE 5000
 HEALTHCHECK --interval=30s --timeout=5s --start-period=30s --retries=3 \

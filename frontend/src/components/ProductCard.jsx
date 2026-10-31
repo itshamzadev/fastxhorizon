@@ -15,6 +15,7 @@ import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded
 import { useNavigate } from 'react-router-dom';
 import { useWishlist } from '../context/WishlistContext';
 import { formatPrice } from '../utils/currency';
+import { resolveMediaUrl } from '../utils/media';
 
 function resolveStoreName(product) {
   const sellerName = product?.seller?.storeName || product?.seller?.name || product?.sellerStoreName || product?.storeName;
@@ -22,11 +23,7 @@ function resolveStoreName(product) {
 }
 
 function resolveImageSource(value) {
-  if (typeof value !== 'string') return '';
-  const source = value.trim();
-  if (!source) return '';
-  if (/^(https?:|data:|blob:|\/)/i.test(source)) return source;
-  return `/${source.replace(/^\/+/, '')}`;
+  return resolveMediaUrl(value);
 }
 
 export default function ProductCard({ product, addToCart }) {

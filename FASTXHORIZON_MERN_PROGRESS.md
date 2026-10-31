@@ -851,3 +851,181 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Verification: backend syntax checks passed; backend Jest passed (14 suites, 63 tests), including ARTO parser, bulk separator, draft/source-price behavior, supplier URL validation and mocked WebP storage; Admin TypeScript/Vite production build and Vitest suite passed (7 files, 29 tests). No supplier CSV/TXT was imported and no production images or records were modified.
 - Follow-up fix: added the observed YouMart image host (`admin.yourmart.pk`) to the configurable local allowlist and returned per-product import errors to the Admin UI, so failed image fetches no longer appear only as `0 imported, 1 failed`.
 
+## V22 local catalog reset - 2026-10-31
+
+- Verified the reset target before mutation: loopback MongoDB `127.0.0.1`, database `fastxhorizon_local`. No remote, Atlas, VPS, Coolify or production URI was used.
+- Added guarded `backend/scripts/reset-local-database.js` and `npm run db:reset-local`. It rejects non-loopback hosts or any database name other than `fastxhorizon_local`, never calls `dropDatabase()`, preserves collections/indexes, and preserves Admin accounts plus `paymentconfigurations` and `storefrontsettings`.
+- Cleared local business/demo collections: products (757), categories (27), newsletter subscribers (3), admin audit logs (23), admin sessions (10); orders, customers/users, catalog imports, payment submissions and refunds were already empty. No products were seeded or imported.
+- Post-reset verification: products/categories/orders/users/catalog imports/payments/refunds/newsletters/audit logs/admin sessions are all 0; one active `super_admin` remains with a password hash. Required product/category/admin indexes remain present. MFA is not enrolled on the preserved local account, so an actual MFA login was not attempted.
+- Future export recommendation: use the existing local-only `npm run catalog:export-local` JSON shape (`schemaVersion`, category `slug`/`parentSlug`, product `slug`/`sku`/`supplierKey`/catalog fields and portable media references), excluding MongoDB `_id`, admin/session data and secrets; validate this payload before any separately approved production import.
+
+## V23 local ARTO Mall jewellery starter catalog - 2026-10-31
+
+- Verified the seed target before mutation: loopback MongoDB `127.0.0.1`, database `fastxhorizon_local`; no remote or production connection was used.
+- Added guarded, idempotent `backend/scripts/seed-arto-jewellery-local.js` and `npm run seed:arto:jewellery:local`. It creates/reuses only the two-level `Jewellery` category and the eight requested subcategories.
+- Seeded 22 supplied ARTO Mall products with unique `FXH-FXH-AT-0001` through `FXH-FXH-AT-0022` SKUs, source prices, explicit retail prices, category paths, image references, supplier metadata and draft/unpublished status.
+- All products use `pricingStatus: REVIEW_REQUIRED`, `confirmedSupplierCost: null`, `inventoryMode: SUPPLIER_BASED`, `AVAILABLE_TO_ORDER`, and are not publicly published. No fake brand, stock quantity or manufacturer was added.
+- First run result: 22 inserted, 0 duplicates skipped, 0 validation failures. Second run result: 0 inserted, 22 duplicates skipped, 0 validation failures, confirming idempotency.
+- No production records, product publication state outside this empty local catalog, payment configuration, admin records, GitHub or deployment were changed.
+
+## V23 local storefront preview - 2026-10-31
+
+- Published only the local ARTO Mall starter products for storefront UI review using the guarded `backend/scripts/publish-arto-local-preview.js` command.
+- Securely ingested all 22 supplied images through the existing supplier media pipeline into local WebP files under `/media/products/`; public product records now reference internal media paths rather than supplier URLs.
+- Local preview result: 22 active products, 22 successful image ingestions, 0 failures. Pricing remains marked `MANUAL_OVERRIDE`; ordering/payment controls were not changed.
+- Public API verification: `GET http://localhost:5000/api/products` returned 22 products and the first internal media URL returned HTTP 200. Storefront is available at `http://localhost:3000`.
+
+- Local preview follow-up: V24's 24 draft products were published locally for UI review using the guarded preview publisher. They are now active locally with internal media paths; no production setting or order/payment control changed. The publisher was corrected to reuse existing internal media paths on future runs instead of downloading them again.
+
+## Local media URL rendering fix - 2026-10-31
+
+- Root cause: public products correctly returned internal paths such as `/media/products/<id>.webp`, but the React app used them as relative URLs, so the browser requested them from frontend port 3000 instead of backend port 5000.
+- Added a shared frontend media URL resolver and applied it to ProductCard, homepage catalog imagery, Product Details gallery/zoom, cart, checkout, mini-cart and search suggestions.
+- Supplier/original URLs remain hidden; only backend-controlled `/media/products/...` paths are rendered. Frontend development server compiled successfully after the change.
+
+## V24 local ARTO Mall catalog expansion - 2026-10-31
+
+- Verified and used only loopback MongoDB `127.0.0.1/fastxhorizon_local`; existing catalog count before insertion was 22.
+- Added guarded idempotent `backend/scripts/seed-arto-expansion-local.js` and `npm run seed:arto:expansion:local`.
+- Inserted all 24 supplied products, preserving the original 22. Total local products are now 46; no duplicates and no validation failures.
+- Reused `Jewellery` plus `Earrings`, `Bracelets`, `Necklaces` and `Bangles`; no new duplicate or third-level categories were created.
+- Assigned unique sequential SKUs `FXH-FXH-AT-0023` through `FXH-FXH-AT-0046`. Exact requested source-to-selling price mappings were verified.
+- All new records are draft/unpublished with `REVIEW_REQUIRED` pricing, supplier source metadata, and real internally hosted WebP media paths. Supplier image URLs are retained only in protected metadata and are absent from public image fields.
+- First run: 24 inserted, 0 skipped, 0 failures. Second run: 0 inserted, 24 skipped, 0 failures. No existing product was updated or deleted, and no production/deployment/GitHub action was performed.
+
+## Homepage category total correction - 2026-10-31
+
+- Root cause: the homepage category cards calculated their counts from the bounded 24-product random discovery response, so the Jewellery card showed 24 instead of the complete public catalog total.
+- Fixed `HomePremium.jsx` to calculate category totals from the complete public products response while keeping the product-card discovery sections randomly selected.
+
+## Public product SKU display fix - 2026-10-31
+
+- Root cause: the product model stored SKU values correctly, but the public `normalizeProduct` serializer omitted `sku`, so Product Details displayed `SKU: Not specified`.
+- Added the safe public SKU field to the product response. Supplier costs and protected supplier metadata remain excluded.
+
+## V25 local ARTO Mall earrings catalog - 2026-10-31
+
+- Verified and used only `127.0.0.1/fastxhorizon_local`; existing product count before insertion was 46.
+- Added guarded idempotent `backend/scripts/seed-arto-earrings-v25-local.js` and `npm run seed:arto:earrings:v25:local`.
+- Inserted all 24 supplied Earrings products under `Jewellery → Earrings`, preserving all existing products. Total local catalog is now 70.
+- Assigned unique sequential SKUs `FXH-FXH-AT-0047` through `FXH-FXH-AT-0070`. Exact requested price mappings were verified: `1020→1199`, `1150→1299`, `1160→1299`, `1680→1849`.
+- All V25 records are draft/unpublished with `REVIEW_REQUIRED` pricing, source prices separated from selling prices, and `SUPPLIER_BASED` availability. All 24 images were securely ingested into internal WebP media paths; original supplier URLs remain protected metadata only.
+- First run: 24 inserted, 0 duplicates, 0 failures. Second run: 0 inserted, 24 duplicates skipped, 0 failures. No existing records, production data, deployment or GitHub state was changed.
+
+## Local ARTO catalog preview publication - 2026-10-31
+
+- Published the remaining 24 V25 draft products in the verified local database only using `npm run publish:arto:preview:local`.
+- Local ARTO totals are now 70 products: 70 active/public, 0 draft. `GET http://localhost:5000/api/products` returns 70 products.
+- Existing internal WebP media paths were reused; no supplier image was re-downloaded during this publication step. Production database, orders/payments, deployment and GitHub were not changed.
+
+## V26 local ARTO Mall catalog expansion - 2026-10-31
+
+- Verified and used only loopback MongoDB `127.0.0.1/fastxhorizon_local`; existing product count before insertion was 70.
+- Added guarded idempotent `backend/scripts/seed-arto-v26-local.js` and `npm run seed:arto:v26:local`. It parses the supplied V26 source file, validates the expected 47 source records, reuses the two-level Jewellery hierarchy, and creates/reuses Watches → Women's Watches.
+- Inserted 47 non-duplicate ARTO Mall products with unique SKUs `FXH-FXH-AT-0071` through `FXH-FXH-AT-0117`. The supplied source prices and exact V26 PKR selling-price mappings were preserved.
+- New products are active local preview records with internal WebP media paths, `MANUAL_OVERRIDE` pricing, supplier/source metadata and no exposed supplier URLs. No product, category, admin, order/payment or production records were deleted or overwritten.
+- First run: 47 inserted, 0 duplicates, 0 validation failures; local total is now 117. Repeat run: 0 inserted, 47 duplicates skipped, 0 failures, confirming idempotency. Public API verification returned 117 products.
+
+## V27 local ARTO Mall rings catalog - 2026-10-31
+
+- Verified and used only loopback MongoDB `127.0.0.1/fastxhorizon_local`; existing product count before insertion was 117.
+- Added guarded idempotent `backend/scripts/seed-arto-rings-v27-local.js` and `npm run seed:arto:rings:v27:local`.
+- Inserted all 24 supplied ring records under the existing two-level `Jewellery → Rings` hierarchy. No categories, existing products or admin data were changed.
+- Assigned unique sequential SKUs `FXH-FXH-AT-0118` through `FXH-FXH-AT-0141`; source cost is PKR 720 and selling price is PKR 849 for every record.
+- All 24 new products remain `draft`/unpublished as required. Images were successfully ingested into internal WebP media paths; source URLs remain protected metadata.
+- First run: 24 inserted, 0 duplicates, 0 failures; local total is now 141. Repeat run: 0 inserted, 24 duplicates skipped, 0 failures, confirming idempotency. No production, deployment or GitHub action was performed.
+- Local preview publication: all 24 V27 rings were changed from draft to active using the guarded local publisher; 24 published, 0 failures. Existing internal WebP media was reused and no supplier image was downloaded again.
+
+## V28 local ARTO Mall catalog expansion - 2026-10-31
+
+- Verified and used only loopback MongoDB `127.0.0.1/fastxhorizon_local`; existing product count before insertion was 141.
+- Added guarded idempotent `backend/scripts/seed-arto-v28-local.js` and `npm run seed:arto:v28:local`.
+- Processed all 24 supplied records across Jewellery/Rings, Jewellery Sets, Earrings, Bracelets and Necklaces. One confirmed duplicate (`Elegant Double Band Crystal Ring`) was skipped; 23 new products were inserted.
+- Assigned unique SKUs `FXH-FXH-AT-0142` through `FXH-FXH-AT-0164` for inserted products. Source costs and requested PKR selling prices were preserved separately.
+- All new V28 records remain `draft`/unpublished. All 23 images were securely ingested to internal WebP media paths; original supplier URLs remain protected metadata.
+- First run: 23 inserted, 1 duplicate skipped, 0 failures; local total is now 164. Repeat run: 0 inserted, 24 duplicates skipped, 0 failures. No production, deployment or GitHub action was performed.
+- Local preview publication: the 23 inserted V28 products were changed from draft to active; 23 published, 0 failures. Existing internal WebP media was reused.
+
+## V29 local ARTO Mall catalog expansion - 2026-10-31
+
+- Verified and used only loopback MongoDB `127.0.0.1/fastxhorizon_local`; existing product count before insertion was 164.
+- Added guarded idempotent `backend/scripts/seed-arto-v29-local.js` and targeted retry helper `backend/scripts/repair-arto-v29-local.js`; registered both local npm commands.
+- Processed all 19 supplied records across Jewellery Sets, Bracelets and Necklaces. Final result: 19 inserted, 0 duplicates, 0 failures; local total is now 183.
+- Assigned SKUs `FXH-FXH-AT-0165` through `FXH-FXH-AT-0183`; supplier prices and requested PKR selling prices were kept separate.
+- All V29 products remain draft/unpublished. All 19 images were verified through the secure supplier ingestion pipeline and stored as internal WebP media paths; source URLs remain protected metadata.
+- The initial run had four transient image-download failures; the targeted retry completed those records without creating partial products. Full rerun skipped all 19 as duplicates, confirming idempotency. No production, deployment or GitHub action was performed.
+- Local preview publication: all 19 V29 products were changed from draft to active; 19 published, 0 failures. Existing internal WebP media was reused.
+
+## V30 local ARTO Mall catalog expansion - 2026-10-31
+
+- Verified and used only loopback MongoDB `127.0.0.1/fastxhorizon_local`; existing product count before insertion was 183.
+- Added guarded idempotent `backend/scripts/seed-arto-v30-local.js` and targeted `backend/scripts/repair-arto-v30-local.js`; registered both local npm commands.
+- Processed all 24 supplied records across Necklaces, Jewellery Sets, Bracelets and Bangles. Final result: 24 inserted, 0 duplicates, 0 failures; local total is now 207.
+- Assigned SKUs `FXH-FXH-AT-0184` through `FXH-FXH-AT-0207`; source prices and requested PKR selling prices remain separate.
+- All V30 products remain draft/unpublished. All 24 images were securely ingested into internal WebP media paths; original supplier URLs remain protected metadata.
+- One transient image failure was completed by the targeted retry without partial product creation. Full rerun skipped all 24 as duplicates, confirming idempotency. No production, deployment or GitHub action was performed.
+- Local preview publication: all 24 V30 products were changed from draft to active; 24 published, 0 failures. Existing internal WebP media was reused.
+
+## V31 local ARTO Mall catalog expansion - 2026-10-31
+
+- Verified and used only loopback MongoDB `127.0.0.1/fastxhorizon_local`; existing product count before insertion was 207.
+- Added guarded idempotent `backend/scripts/seed-arto-v31-local.js` and `npm run seed:arto:v31:local`.
+- Inserted exactly 3 supplied products under Jewellery → Bridal Sets, Rings and Necklaces. Existing products, categories, prices and SKUs were preserved.
+- Assigned SKUs `FXH-FXH-AT-0208` through `FXH-FXH-AT-0210`; source costs and requested PKR selling prices remain separate.
+- All 3 products remain draft/unpublished. All 3 supplier images were securely ingested as internal WebP media paths; original URLs remain protected metadata.
+- First run: 3 inserted, 0 duplicates, 0 failures; local total is now 210. Repeat run: 0 inserted, 3 duplicates skipped, 0 failures. No production, deployment or GitHub action was performed.
+- Local preview publication: all 3 V31 products were changed from draft to active; 3 published, 0 failures. Existing internal WebP media was reused.
+
+## V32 local-to-production catalog migration preparation - 2026-10-31
+
+- Verified the source target as loopback MongoDB `127.0.0.1/fastxhorizon_local`; no Coolify, VPS, Atlas or remote connection was used.
+- Added `backend/scripts/export-catalog-migration-v32.js` and `backend/scripts/validate-catalog-migration-v32.js`, with npm commands `catalog:migration:export:v32` and `catalog:migration:validate:v32`.
+- Exported the actual ARTO-owned local catalog: 210 products, 11 active category records, SKUs `FXH-FXH-AT-0001` through `FXH-FXH-AT-0210`, and 210 verified internal media files.
+- Created portable package at `backend/others/docs/catalog-migration-v32/` containing `manifest.json`, `categories.json`, `products.json`, `media-manifest.json`, `media/`, and `reports/local-validation.json`. Media package size is approximately 19 MB.
+- Package validation passed: all SKUs are unique and portable, category relationships are two-level, media checksums/files are valid, PKR fields are preserved, and planned production status is draft for all 210 products.
+- Production dry-run/import was not executed because no authorized production connection was configured or verified. No production database, environment variables, deployment, GitHub or live business data was changed.
+- Verification: both migration scripts passed `node --check`, package export/validation passed, and backend Jest passed with 14 suites and 63 tests.
+
+## V33 production connection and read-only dry-run - 2026-10-31
+
+- Added `backend/scripts/catalog-production-dry-run-v33.js` and `npm run catalog:migration:dry-run:v33`. The command is explicitly read-only and requires `PRODUCTION_MONGO_URI`; it rejects any database other than `fastxhorizon_production` and never falls back to the local URI.
+- V32 package verification passed again: 210 products, 11 categories, 210 media files, valid checksums and category relationships.
+- Dry-run report saved at `backend/others/docs/catalog-migration-v32/reports/production-dry-run.json`.
+- Production comparison was safely blocked because no authorized production URI was configured or available locally. No production connection, collection read, write, media upload, deployment or Coolify restart was attempted.
+- Additional blockers recorded: production media persistence cannot be verified from repository files, and the reference production compose example uses database name `fastxhorizon` rather than the requested `fastxhorizon_production`; this must be confirmed through authorized Coolify configuration before any connection.
+
+## V34 production catalog import verification - 2026-10-31
+
+- The V34 import was explicitly authorized, but no production writes were performed.
+- The local V32 package was revalidated successfully: 210 products, 11 categories, 210 media files and valid checksums.
+- Live public API read-only checks returned healthy/ready responses and `GET /api/products` returned an empty list, but these responses do not disclose the connected MongoDB database name and therefore do not conclusively identify the live business database.
+- Repository deployment examples remain ambiguous: the reference Coolify configuration uses `fastxhorizon`, while the requested target is `fastxhorizon_production`. This cannot be resolved safely from local files.
+- Read-only SSH verification was attempted against the configured VPS host, but authentication failed (`Permission denied (publickey,password)`), so running backend container, actual `MONGO_URI`, admin/collection structure, production media volume and persistent storage could not be verified.
+- Docker Desktop is not running locally, so the supplied production container identifier cannot be inspected from this workstation.
+- Result: production import is safely blocked with zero production database/media writes. The importer must not run until authorized SSH/Coolify access or a secure redacted production connection is available, and persistent media storage is confirmed.
+
+## V34 simple production importer - 2026-10-31
+
+- Added guarded `backend/scripts/import-catalog-production-v34.js` and npm command `npm run catalog:import`.
+- The importer reads the existing V32 package, validates manifest counts and every media checksum, requires a non-loopback `PRODUCTION_MONGO_URI` whose database path is exactly `fastxhorizon_production`, and verifies the connected database name again after connection.
+- `--dry-run` performs database reads only and writes a JSON report; `--apply` additionally requires `PRODUCTION_MEDIA_PERSISTENT=YES` and an absolute `MEDIA_STORAGE_ROOT` so product media is copied only into an explicitly confirmed persistent production directory.
+- Category import is reuse-or-create by slug and parent slug. Product import is insert-only, preserves SKUs/prices/descriptions, forces `status: draft`, maps media to `/media/products/<filename>`, and skips existing SKU/sourceKey/slug matches. No deletes or product overwrites are present.
+- Local verification completed: script syntax passed and V32 package validation passed. The local dry-run stopped safely because `PRODUCTION_MONGO_URI` is not configured; no production connection or write occurred.
+
+## Complete local MongoDB catalog export - 2026-10-31
+
+- Added `backend/scripts/report-local-catalog-export-v34.js` and npm command `npm run catalog:export:full:v34`.
+- Verified only loopback MongoDB `127.0.0.1/fastxhorizon_local`; raw `products` and `categories` collection documents were not modified.
+- Created a real `mongodump` BSON archive containing only `fastxhorizon_local.products` and `fastxhorizon_local.categories`. Archive dry-run inspection confirmed both namespaces.
+- Export verification: 210 products, 11 categories, 210 unique SKUs and 210 referenced media paths. All products use `SUPPLIER_BASED` inventory mode and are currently `active` locally.
+- Created a separate tar.gz media archive containing exactly 210 referenced WebP files under `media/products/`; no supplier URLs or filenames were rewritten. The local media directory contains additional unreferenced files, which were intentionally excluded.
+- Output folder: `backend/others/docs/catalog-full-export-v34/`. No production connection, upload, deployment or GitHub action was performed.
+
+## Production product media serving fix - 2026-10-31
+
+- Root cause: Express treated `MEDIA_STORAGE_ROOT` as the directory mounted at `/media/products`, while production supplied the media root `/app/media` containing the actual files under `/app/media/products`. This made requests resolve to `/app/media/<filename>` and return 404.
+- Updated the backend to treat `MEDIA_STORAGE_ROOT` as the media root and serve only its `products` child at `/media/products/<filename>`. Dotfiles and directory listings remain disabled.
+- Added production configuration for `MEDIA_STORAGE_ROOT=/app/media` and the persistent mount `/opt/fastxhorizon/persistent-media/media:/app/media` in the deployment examples and guide. Product MongoDB paths were not changed.
+- Local verification passed: known WebP returned HTTP 200 with `image/webp` and 159,060 bytes; traversal probe returned 404. Backend Jest passed 14 suites / 63 tests.
+- Live production endpoint still returns 404 because the updated application has not been deployed/restarted in Coolify. No deployment was performed by this change.
+

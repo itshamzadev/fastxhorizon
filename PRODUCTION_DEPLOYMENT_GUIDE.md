@@ -65,6 +65,21 @@ it only to authorized admins. A production object-storage adapter with private
 bucket policy, malware scanning and retention rules is still required before
 launch; do not mark this item complete merely because the volume exists.
 
+Product media is served from `GET /media/products/<filename>` and must use the
+same persistent mount in every backend deployment:
+
+```text
+Host:      /opt/fastxhorizon/persistent-media/media
+Container: /app/media
+Environment: MEDIA_STORAGE_ROOT=/app/media
+Files:     /app/media/products/<filename>.webp
+```
+
+The Express route intentionally mounts only `/app/media/products`, so files
+outside the product-media directory are not publicly served. After a Coolify
+redeploy, verify the mount and request one known image before considering the
+media fix complete.
+
 ## Safe catalog migration
 
 The local catalog export is intentionally separate from application deployment:

@@ -16,8 +16,10 @@ services:
     environment:
       MONGO_URI: mongodb://mongo:27017/fastxhorizon
       PAYMENT_PROOF_STORAGE_PATH: /app/storage/payment-proof
+      MEDIA_STORAGE_ROOT: /app/media
     volumes:
       - payment_proof_data:/app/storage/payment-proof
+      - /opt/fastxhorizon/persistent-media/media:/app/media
     depends_on: [mongo]
     networks: [private]
     ports:

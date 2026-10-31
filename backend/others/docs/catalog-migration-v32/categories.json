@@ -1,0 +1,90 @@
+[
+  {
+    "name": "Jewellery",
+    "slug": "jewellery",
+    "parentSlug": null,
+    "description": "",
+    "image": "",
+    "active": true
+  },
+  {
+    "name": "Watches",
+    "slug": "watches",
+    "parentSlug": null,
+    "description": "",
+    "image": "",
+    "active": true
+  },
+  {
+    "name": "Bangles",
+    "slug": "bangles",
+    "parentSlug": "jewellery",
+    "description": "",
+    "image": "",
+    "active": true
+  },
+  {
+    "name": "Bracelets",
+    "slug": "bracelets",
+    "parentSlug": "jewellery",
+    "description": "",
+    "image": "",
+    "active": true
+  },
+  {
+    "name": "Bridal Sets",
+    "slug": "bridal-sets",
+    "parentSlug": "jewellery",
+    "description": "",
+    "image": "",
+    "active": true
+  },
+  {
+    "name": "Earrings",
+    "slug": "earrings",
+    "parentSlug": "jewellery",
+    "description": "",
+    "image": "",
+    "active": true
+  },
+  {
+    "name": "Jewellery Sets",
+    "slug": "jewellery-sets",
+    "parentSlug": "jewellery",
+    "description": "",
+    "image": "",
+    "active": true
+  },
+  {
+    "name": "Necklace & Bracelet Sets",
+    "slug": "necklace-bracelet-sets",
+    "parentSlug": "jewellery",
+    "description": "",
+    "image": "",
+    "active": true
+  },
+  {
+    "name": "Necklaces",
+    "slug": "necklaces",
+    "parentSlug": "jewellery",
+    "description": "",
+    "image": "",
+    "active": true
+  },
+  {
+    "name": "Rings",
+    "slug": "rings",
+    "parentSlug": "jewellery",
+    "description": "",
+    "image": "",
+    "active": true
+  },
+  {
+    "name": "Women's Watches",
+    "slug": "women-s-watches",
+    "parentSlug": "watches",
+    "description": "",
+    "image": "",
+    "active": true
+  }
+]

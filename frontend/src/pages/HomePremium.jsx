@@ -5,6 +5,7 @@ import NorthEastRoundedIcon from '@mui/icons-material/NorthEastRounded';
 import ProductCard from '../components/ProductCard';
 import { Link as RouterLink } from 'react-router-dom';
 import '../App.css';
+import { resolveMediaUrl } from '../utils/media';
 
 const MARKETPLACE_EDITORIAL = '/editorial/marketplace-tech.jpg';
 const CATEGORY_FALLBACKS = [MARKETPLACE_EDITORIAL];
@@ -12,8 +13,7 @@ const CATEGORY_FALLBACKS = [MARKETPLACE_EDITORIAL];
 function imageSource(product) {
   const value = String(product?.image || '').trim();
   if (!value) return MARKETPLACE_EDITORIAL;
-  if (/^(https?:|data:|blob:|\/)/i.test(value)) return value;
-  return `/${value.replace(/^\/+/, '')}`;
+  return resolveMediaUrl(value);
 }
 
 function categoryLabel(value) { return String(value || 'Collection').replace(/&/g, ' & ').replace(/\s+/g, ' ').trim(); }
@@ -36,7 +36,9 @@ function SectionIntro({ eyebrow, title, description, action, dark = false }) {
 
 export default function HomePremium({ products = [], randomProducts = [], addToCart, error, loading, randomLoading, randomError }) {
   const catalog = React.useMemo(() => (randomProducts.length ? randomProducts : products), [randomProducts, products]);
-  const categories = React.useMemo(() => buildCategories(catalog), [catalog]);
+  // Keep category totals based on the complete public catalog; only the product
+  // cards use the bounded random discovery selection.
+  const categories = React.useMemo(() => buildCategories(products.length ? products : catalog), [products, catalog]);
   const selectedProducts = catalog.slice(0, 8);
   const featureProduct = selectedProducts[1] || selectedProducts[0];
   if (loading && !products.length && !randomProducts.length) return <Box className="luxury-loading"><CircularProgress /></Box>;

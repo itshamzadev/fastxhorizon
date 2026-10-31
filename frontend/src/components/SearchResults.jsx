@@ -2,6 +2,7 @@ import React from 'react';
 import { Link } from 'react-router-dom';
 import { List, ListItem, ListItemText, ListItemAvatar, Avatar, Typography, Paper, CircularProgress, Button, Box, Alert } from '@mui/material';
 import { formatPrice } from '../utils/currency';
+import { resolveMediaUrl } from '../utils/media';
 
 function SearchResults({ results, onResultClick, setSearchResults, variant = 'popover', query = '', loading = false, error = '', onRetry, onViewAll }) {
   const handleItemClick = () => {
@@ -54,7 +55,7 @@ function SearchResults({ results, onResultClick, setSearchResults, variant = 'po
             return (
               <ListItem key={pid} alignItems="flex-start" component={Link} to={`/product/${pid}`} onClick={handleItemClick} sx={listItemSx}>
                 <ListItemAvatar>
-                  <Avatar alt={product.name} src={product.image} sx={{ borderRadius: '0' }} />
+                  <Avatar alt={product.name} src={resolveMediaUrl(product.image)} sx={{ borderRadius: '0' }} />
                 </ListItemAvatar>
                 <ListItemText
                   primary={highlight(product.name)}

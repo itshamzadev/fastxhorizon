@@ -3,6 +3,7 @@ import { List, ListItem, ListItemText, ListItemAvatar, Avatar, Button, Typograph
 import DeleteIcon from '@mui/icons-material/Delete';
 import { useNavigate } from 'react-router-dom';
 import { formatPrice } from '../utils/currency';
+import { resolveMediaUrl } from '../utils/media';
 
 function ShoppingCart({ cart, setCart }) {
   const navigate = useNavigate();
@@ -40,7 +41,7 @@ function ShoppingCart({ cart, setCart }) {
                   }
                 >
                   <ListItemAvatar>
-                    <Avatar src={item.image} alt={item.name} />
+                    <Avatar src={resolveMediaUrl(item.image)} alt={item.name} />
                   </ListItemAvatar>
                   <ListItemText primary={item.name} secondary={formatPrice(item.price)} />
                 </ListItem>
