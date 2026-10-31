@@ -1069,3 +1069,9 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Confirmed the Transaction ID/TID field is text-based and accepts alphanumeric bank/wallet references, not numbers only. No restrictive numeric regex was added.
 - Updated the admin preset hint and checkout wording to make alphabetic and numeric TIDs clear to administrators and customers.
 
+## Checkout request-size safety - 2026-10-31
+
+- Replaced the backend JSON body limit of 3 MB with a bounded 20 MB limit for checkout evidence; unbounded request bodies were intentionally not enabled because they create denial-of-service and database-storage risk.
+- Kept individual payment-evidence validation bounded and added a clearer frontend message for HTTP 413 responses.
+- Backend syntax and Jest passed: 14 suites / 63 tests. Coolify must be rebuilt/restarted for the live API to use the new limit; the compressed frontend must also be deployed.
+

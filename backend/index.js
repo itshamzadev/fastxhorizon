@@ -102,7 +102,11 @@ app.use(cors({
     return callback(new Error('Origin is not allowed by the API CORS policy.'));
   },
 }));
-app.use(express.json({ limit: '3mb' }));
+// Checkout payment evidence is sent as base64 JSON. Keep a bounded production
+// limit rather than accepting unbounded request bodies (which can exhaust the
+// API process and MongoDB). Individual evidence files remain capped by the
+// payment validation rules.
+app.use(express.json({ limit: '20mb' }));
 app.use(express.urlencoded({ extended: true }));
 
 // Supplier images are re-encoded into this controlled, persistent media root

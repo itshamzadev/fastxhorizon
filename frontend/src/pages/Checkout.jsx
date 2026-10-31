@@ -106,7 +106,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
     } catch (error) {
       console.error('Error creating order:', error);
       setLoading(false);
-      const message = error?.response?.data?.error || error?.response?.data?.message || (error?.response?.status === 409 ? 'This order could not be confirmed because the selected item is no longer available. Please refresh your cart and try again.' : 'Something went wrong while placing your order.');
+      const message = error?.response?.data?.error || error?.response?.data?.message || (error?.response?.status === 413 ? 'Payment evidence is too large. Please use a smaller screenshot or enter the TID instead.' : error?.response?.status === 409 ? 'This order could not be confirmed because the selected item is no longer available. Please refresh your cart and try again.' : 'Something went wrong while placing your order.');
       setErrorMessage(message);
       notify({ severity: 'error', message });
     }
