@@ -215,7 +215,11 @@ router.post('/create-order', auth, async (req, res) => {
       for (const item of normalizedItems) {
         const candidate = await Product.findById(item.productId).select('stock status inventoryMode availabilityStatus');
         const availabilityMode = ['AVAILABILITY_BASED', 'AVAILABILITY'].includes(candidate?.inventoryMode);
-        const updated = candidate && candidate.status !== 'archived' && ((availabilityMode && candidate.availabilityStatus === 'IN_STOCK') || (!availabilityMode && candidate.stock >= item.quantity))
+        // Supplier-based catalog items are available to order without a local
+        // numeric stock reservation. Numeric inventory modes still require an
+        // atomic stock check and decrement below.
+        const supplierBased = candidate?.inventoryMode === 'SUPPLIER_BASED';
+        const updated = candidate && candidate.status !== 'archived' && (supplierBased || (availabilityMode && candidate.availabilityStatus === 'IN_STOCK') || (!availabilityMode && candidate.stock >= item.quantity))
           ? (availabilityMode ? candidate : await Product.findOneAndUpdate({ _id: item.productId, stock: { $gte: item.quantity }, status: { $ne: 'archived' } }, { $inc: { stock: -item.quantity }, $set: { updatedAt: new Date() } }, { new: true }))
           : null;
         if (!updated) throw new Error('INSUFFICIENT_STOCK');

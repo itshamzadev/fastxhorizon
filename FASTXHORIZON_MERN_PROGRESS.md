@@ -1044,3 +1044,10 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Added client-side support for the configured Transaction ID-or-screenshot requirement while preserving server-side validation.
 - Frontend production build passed with `npm run build`.
 
+## Checkout order-placement fix and payment proof layout - 2026-10-31
+
+- Root cause found in `backend/routes/checkout.js`: `SUPPLIER_BASED` products with `stock: 0` were incorrectly treated as numeric-inventory products, so checkout rejected them as insufficient stock. Supplier-based products now bypass local numeric reservation while numeric and availability-based inventory protections remain enforced.
+- Updated the manual payment proof UI so Transaction ID/TID and Payment Screenshot appear in one responsive row with a clear `OR`; sender name and sender bank/wallet name remain visible below.
+- Client and server validation remain aligned with the Transaction ID-or-screenshot rule.
+- Backend Jest passed 14 suites / 63 tests. Frontend production build passed.
+
