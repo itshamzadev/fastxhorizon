@@ -1064,6 +1064,12 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Updated the frontend to resize/compress image screenshots to a maximum target of 900 KB before submission; oversized non-image evidence is rejected before the request is sent. TID-only checkout remains lightweight.
 - Frontend production build passed. Production deployment/restart is still required before the live site uses this fix.
 
+## Live 413 verification - 2026-10-31
+
+- The live storefront is still serving an older frontend bundle (`main.d44ef6e3.js`), while the current local build is newer; therefore local 413 fixes are not active on the live site yet.
+- Reduced the compressed screenshot target to 400 KB and 1200px maximum dimension so the base64 checkout request remains below common reverse-proxy limits. Backend remains bounded at 20 MB.
+- Local frontend build passed. Coolify frontend/backend rebuild and proxy configuration are still required; no deployment was executed.
+
 ## Manual payment TID format clarification - 2026-10-31
 
 - Confirmed the Transaction ID/TID field is text-based and accepts alphanumeric bank/wallet references, not numbers only. No restrictive numeric regex was added.

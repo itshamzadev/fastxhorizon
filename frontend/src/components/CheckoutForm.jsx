@@ -8,7 +8,8 @@ import { apiClient } from '../services/apiClient';
 import { useNotifier } from '../context/NotificationProvider';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-const MAX_PAYMENT_IMAGE_BYTES = 900 * 1024;
+// Keep the encoded checkout request below common reverse-proxy body limits.
+const MAX_PAYMENT_IMAGE_BYTES = 400 * 1024;
 
 function CheckoutForm({ onSubmit, submitting = false }) {
   const [form, setForm] = useState({ name: '', email: '', shippingAddress: '', paymentMethod: 'manual', methodKey: '', paymentValues: {}, paymentEvidence: [] });
@@ -22,17 +23,17 @@ function CheckoutForm({ onSubmit, submitting = false }) {
   const setPaymentValue = (id, value) => setForm(current => ({ ...current, paymentValues: { ...current.paymentValues, [id]: value } }));
   const fileToData = file => new Promise((resolve, reject) => {
     if (!file.type.startsWith('image/')) {
-      if (file.size > MAX_PAYMENT_IMAGE_BYTES) return reject(new Error('Please upload a screenshot smaller than 900 KB.'));
+      if (file.size > MAX_PAYMENT_IMAGE_BYTES) return reject(new Error('Please upload a screenshot smaller than 400 KB.'));
       const reader = new FileReader(); reader.onload = () => resolve({ mimeType: file.type, data: reader.result }); reader.onerror = () => reject(new Error('Unable to read payment evidence.')); reader.readAsDataURL(file); return;
     }
     const reader = new FileReader();
     reader.onload = () => {
       const image = new Image();
       image.onload = () => {
-        const scale = Math.min(1, 1400 / Math.max(image.width, image.height));
+        const scale = Math.min(1, 1200 / Math.max(image.width, image.height));
         const canvas = document.createElement('canvas'); canvas.width = Math.max(1, Math.round(image.width * scale)); canvas.height = Math.max(1, Math.round(image.height * scale));
         canvas.getContext('2d').drawImage(image, 0, 0, canvas.width, canvas.height);
-        const encode = quality => canvas.toBlob(blob => { if (!blob) return reject(new Error('Unable to process payment screenshot.')); if (blob.size <= MAX_PAYMENT_IMAGE_BYTES || quality <= .45) { const output = new FileReader(); output.onload = () => resolve({ mimeType: 'image/jpeg', data: output.result, size: blob.size }); output.readAsDataURL(blob); } else encode(quality - .1); }, 'image/jpeg', quality);
+        const encode = quality => canvas.toBlob(blob => { if (!blob) return reject(new Error('Unable to process payment screenshot.')); if (blob.size <= MAX_PAYMENT_IMAGE_BYTES || quality <= .35) { const output = new FileReader(); output.onload = () => resolve({ mimeType: 'image/jpeg', data: output.result, size: blob.size }); output.readAsDataURL(blob); } else encode(quality - .1); }, 'image/jpeg', quality);
         encode(.78);
       };
       image.onerror = () => reject(new Error('Invalid payment screenshot.')); image.src = reader.result;
