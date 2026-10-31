@@ -32,13 +32,13 @@ import { DeleteProductDialog } from '../components/DeleteProductDialog'
 const PAGE_SIZE = 10
 
 function productIsInStock(product: Product): boolean {
-  return product.inventoryMode === 'AVAILABILITY_BASED'
-    ? product.availabilityStatus === 'IN_STOCK'
-    : product.inventory > 0
+  if (product.inventoryMode === 'SUPPLIER_BASED') return product.availabilityStatus === 'AVAILABLE_TO_ORDER'
+  if (product.inventoryMode === 'AVAILABILITY_BASED') return product.availabilityStatus === 'IN_STOCK'
+  return product.inventory > 0
 }
 
 function inventoryTone(product: Product): 'destructive' | 'warning' | 'success' | 'neutral' {
-  if (productIsInStock(product)) return product.inventoryMode === 'AVAILABILITY_BASED' ? 'success' : product.inventory <= 10 ? 'warning' : 'neutral'
+  if (productIsInStock(product)) return ['AVAILABILITY_BASED', 'SUPPLIER_BASED'].includes(product.inventoryMode || '') ? 'success' : product.inventory <= 10 ? 'warning' : 'neutral'
   if (product.inventory === 0) return 'destructive'
   return 'neutral'
 }
@@ -285,8 +285,8 @@ export function ProductsPage() {
                     </Td>
                     <Td className="table__cell-num">
                       <Badge tone={inventoryTone(product)}>
-                        {product.inventoryMode === 'AVAILABILITY_BASED'
-                          ? (productIsInStock(product) ? 'In stock' : 'Out of stock')
+                        {['AVAILABILITY_BASED', 'SUPPLIER_BASED'].includes(product.inventoryMode || '')
+                          ? (productIsInStock(product) ? (product.inventoryMode === 'SUPPLIER_BASED' ? 'Available to order' : 'In stock') : 'Out of stock')
                           : product.inventory === 0
                             ? 'Out of stock'
                             : `${product.inventory} in stock`}

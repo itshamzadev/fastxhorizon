@@ -124,8 +124,10 @@ export function ProductDetailPage() {
                   <li className="meta-list__row">
                     <span className="meta-list__label">Inventory</span>
                     <span className="meta-list__value tabular">
-                      {product.data.inventoryMode === 'AVAILABILITY_BASED'
-                        ? (product.data.availabilityStatus === 'IN_STOCK' ? 'In stock' : 'Out of stock')
+                      {product.data.inventoryMode === 'SUPPLIER_BASED'
+                        ? (product.data.availabilityStatus === 'AVAILABLE_TO_ORDER' ? 'Available to order' : 'Out of stock')
+                        : product.data.inventoryMode === 'AVAILABILITY_BASED'
+                          ? (product.data.availabilityStatus === 'IN_STOCK' ? 'In stock' : 'Out of stock')
                         : product.data.inventory}
                     </span>
                   </li>
