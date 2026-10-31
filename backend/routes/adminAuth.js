@@ -212,6 +212,30 @@ router.post('/mfa/verify', [check('code').optional().isString(), check('recovery
 
 router.get('/me', requireAdminSession, (req, res) => res.json({ user: publicAdmin(req.admin) }));
 
+router.patch('/me', requireAdminSession, async (req, res, next) => {
+  try {
+    const name = String(req.body?.name || '').trim();
+    const email = String(req.body?.email || '').trim().toLowerCase();
+    if (name.length < 2 || name.length > 120 || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      return res.status(400).json({ code: 'validation_error', message: 'A valid name and email address are required.' });
+    }
+
+    const existing = await Admin.findOne({ email }).select('_id').lean();
+    if (existing && String(existing._id) !== String(req.admin._id)) {
+      return res.status(409).json({ code: 'conflict', message: 'That email address is already in use.' });
+    }
+
+    req.admin.name = name;
+    req.admin.email = email;
+    await req.admin.save();
+    await audit(req, { adminId: req.admin._id, email: req.admin.email, action: 'profile_updated', success: true });
+    return res.json({ user: publicAdmin(req.admin) });
+  } catch (error) {
+    if (error.code === 11000) return res.status(409).json({ code: 'conflict', message: 'That email address is already in use.' });
+    return next(error);
+  }
+});
+
 router.post('/logout', async (req, res) => {
   const current = await getSession(req).catch(() => null);
   if (current) {
