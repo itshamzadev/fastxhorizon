@@ -23,6 +23,62 @@ const ProductVariantSchema = new mongoose.Schema({
     enabled: { type: Boolean, default: true },
 }, { _id: true });
 
+const ProductSpecificationSchema = new mongoose.Schema({
+    key: { type: String, required: true, trim: true, maxlength: 60 },
+    label: { type: String, required: true, trim: true, maxlength: 80 },
+    value: { type: String, required: true, trim: true, maxlength: 500 },
+    type: { type: String, enum: ['text', 'long_text', 'number', 'decimal', 'boolean', 'url', 'measurement', 'date'], default: 'text' },
+    unit: { type: String, trim: true, maxlength: 20, default: '' },
+    public: { type: Boolean, default: true },
+    order: { type: Number, min: 0, max: 999, default: 0 },
+}, { _id: false });
+
+const ProductAttributeSchema = new mongoose.Schema({
+    key: { type: String, required: true, trim: true, lowercase: true, maxlength: 60 },
+    label: { type: String, required: true, trim: true, maxlength: 80 },
+    type: { type: String, enum: ['text', 'long_text', 'number', 'decimal', 'boolean', 'dropdown', 'multi_select', 'date', 'url', 'measurement', 'color'], default: 'text' },
+    required: { type: Boolean, default: false },
+    allowedValues: { type: [String], default: [] },
+    defaultValue: { type: String, trim: true, default: '' },
+    unit: { type: String, trim: true, maxlength: 20, default: '' },
+    public: { type: Boolean, default: true },
+    variant: { type: Boolean, default: false },
+    order: { type: Number, min: 0, max: 999, default: 0 },
+}, { _id: false });
+
+const PhysicalConfigurationSchema = new mongoose.Schema({
+    weight: { type: Number, min: 0, default: null },
+    weightUnit: { type: String, enum: ['g', 'kg', 'oz', 'lb'], default: 'g' },
+    dimensions: { length: { type: Number, min: 0, default: null }, width: { type: Number, min: 0, default: null }, height: { type: Number, min: 0, default: null }, unit: { type: String, enum: ['mm', 'cm', 'm', 'in'], default: 'cm' } },
+    warranty: { type: String, trim: true, maxlength: 200, default: '' },
+    condition: { type: String, enum: ['new', 'used', 'refurbished', 'other'], default: 'new' },
+    shippingInfo: { type: String, trim: true, maxlength: 500, default: '' },
+    trackingEnabled: { type: Boolean, default: false },
+    lowStockThreshold: { type: Number, min: 0, default: 0 },
+    supplierId: { type: mongoose.Schema.Types.ObjectId, ref: 'Supplier', default: null },
+    ownershipMode: { type: String, enum: ['PURCHASED', 'CONSIGNMENT', 'RETURNABLE_PURCHASE', 'OTHER_AGREED_TERMS'], default: 'PURCHASED' },
+}, { _id: false });
+
+const DigitalConfigurationSchema = new mongoose.Schema({
+    deliveryType: { type: String, enum: ['DOWNLOAD', 'LICENSE', 'EXTERNAL_ACCESS', 'MANUAL'], default: 'DOWNLOAD' },
+    version: { type: String, trim: true, maxlength: 60, default: '' },
+    releaseNotes: { type: String, trim: true, maxlength: 3000, default: '' },
+    supportedPlatforms: { type: [String], default: [] },
+    systemRequirements: { type: String, trim: true, maxlength: 3000, default: '' },
+    licenseType: { type: String, trim: true, maxlength: 80, default: '' },
+    downloadLimit: { type: Number, min: 1, default: null },
+    accessDurationDays: { type: Number, min: 1, default: null },
+    updatePolicy: { type: String, trim: true, maxlength: 500, default: '' },
+    instructions: { type: String, trim: true, maxlength: 3000, default: '' },
+    documentationUrl: { type: String, trim: true, maxlength: 500, default: '' },
+}, { _id: false });
+
+const ProductSeoSchema = new mongoose.Schema({
+    title: { type: String, trim: true, maxlength: 160, default: '' },
+    description: { type: String, trim: true, maxlength: 320, default: '' },
+    canonicalPath: { type: String, trim: true, maxlength: 300, default: '' },
+}, { _id: false });
+
 const productSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -45,7 +101,7 @@ const productSchema = new mongoose.Schema({
     },
     subcategory: { type: String, trim: true, default: '' },
     categoryPath: { type: [String], default: [] },
-    productType: { type: String, trim: true, default: '' },
+    productType: { type: String, enum: ['PHYSICAL', 'DIGITAL'], default: 'PHYSICAL' },
     shortDescription: { type: String, trim: true, maxlength: 300, default: '' },
     longDescription: { type: String, trim: true, maxlength: 5000, default: '' },
     tags: { type: [String], default: [] },
@@ -59,6 +115,11 @@ const productSchema = new mongoose.Schema({
     variantsEnabled: { type: Boolean, default: false },
     variantAttributes: { type: [VariantAttributeSchema], default: [] },
     variants: { type: [ProductVariantSchema], default: [] },
+    specifications: { type: [ProductSpecificationSchema], default: [] },
+    attributes: { type: [ProductAttributeSchema], default: [] },
+    physicalConfiguration: { type: PhysicalConfigurationSchema, default: () => ({}) },
+    digitalConfiguration: { type: DigitalConfigurationSchema, default: null },
+    seo: { type: ProductSeoSchema, default: () => ({}) },
     sku: { type: String, trim: true, uppercase: true, sparse: true, unique: true },
     brand: String,
     stock: {

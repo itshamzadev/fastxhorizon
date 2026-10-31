@@ -31,6 +31,7 @@ const allowedOrigins = new Set(
   [
     'http://localhost:3000',
     'http://localhost:5173',
+    ...(process.env.NODE_ENV !== 'production' ? ['http://127.0.0.1:3000', 'http://127.0.0.1:5173'] : []),
     'https://fastxhorizon.com',
     'https://www.fastxhorizon.com',
     'https://controlpanel.fastxhorizon.com',

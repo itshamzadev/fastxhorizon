@@ -38,6 +38,12 @@ interface FormValues {
   inventoryMode: 'NUMERIC' | 'AVAILABILITY_BASED' | 'SUPPLIER_BASED'
   availabilityStatus: 'IN_STOCK' | 'OUT_OF_STOCK' | 'AVAILABLE_TO_ORDER'
   variantJson: string
+  productType: 'PHYSICAL' | 'DIGITAL'
+  specificationsJson: string
+  attributesJson: string
+  digitalConfigJson: string
+  physicalConfigJson: string
+  seoJson: string
 }
 
 /** Create/edit product dialog with shared-schema validation. */
@@ -61,6 +67,12 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
     inventoryMode: 'NUMERIC',
     availabilityStatus: 'OUT_OF_STOCK',
     variantJson: '',
+    productType: 'PHYSICAL',
+    specificationsJson: '',
+    attributesJson: '',
+    digitalConfigJson: '',
+    physicalConfigJson: '',
+    seoJson: '',
   })
 
   useEffect(() => {
@@ -76,6 +88,12 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
       inventoryMode: product?.inventoryMode ?? 'NUMERIC',
       availabilityStatus: product?.availabilityStatus ?? 'OUT_OF_STOCK',
       variantJson: product?.variants?.length ? JSON.stringify({ attributes: product.variantAttributes || [], variants: product.variants }, null, 2) : '',
+      productType: product?.productType ?? 'PHYSICAL',
+      specificationsJson: product?.specifications?.length ? JSON.stringify(product.specifications, null, 2) : '',
+      attributesJson: product?.attributes?.length ? JSON.stringify(product.attributes, null, 2) : '',
+      digitalConfigJson: product?.digitalConfiguration ? JSON.stringify(product.digitalConfiguration, null, 2) : '',
+      physicalConfigJson: product?.physicalConfiguration ? JSON.stringify(product.physicalConfiguration, null, 2) : '',
+      seoJson: product?.seo ? JSON.stringify(product.seo, null, 2) : '',
     })
     form.setErrors({})
     setServerError(null)
@@ -99,7 +117,15 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
         const parsed = JSON.parse(form.values.variantJson) as { attributes?: unknown[]; variants?: unknown[] }
         variantPayload = { variantsEnabled: true, variantAttributes: parsed.attributes || [], variants: parsed.variants || [] }
       }
-      const payload = { ...result.data, ...variantPayload }
+      const parseJson = (value: string, label: string) => { if (!value.trim()) return undefined; try { return JSON.parse(value) } catch { throw new SyntaxError(`${label} JSON is invalid.`) } }
+      const payload = { ...result.data, ...variantPayload,
+        productType: form.values.productType,
+        specifications: parseJson(form.values.specificationsJson, 'Specifications'),
+        attributes: parseJson(form.values.attributesJson, 'Attributes'),
+        digitalConfiguration: form.values.productType === 'DIGITAL' ? (parseJson(form.values.digitalConfigJson, 'Digital configuration') || {}) : undefined,
+        physicalConfiguration: form.values.productType === 'PHYSICAL' ? (parseJson(form.values.physicalConfigJson, 'Physical configuration') || {}) : undefined,
+        seo: parseJson(form.values.seoJson, 'SEO'),
+      }
       if (isEdit && product) {
         await updateProduct.mutateAsync({ id: product.id, input: payload })
         toast.success('Changes saved', `${payload.name} was updated.`)
@@ -113,7 +139,7 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
       if (fields && Object.keys(fields).length > 0) {
         form.setErrors(fields)
       } else {
-        setServerError(error instanceof SyntaxError ? 'Variant JSON is invalid.' : getUserMessage(error))
+        setServerError(error instanceof SyntaxError ? error.message : getUserMessage(error))
       }
     }
   }
@@ -237,6 +263,28 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
           value={form.values.status}
           onChange={(event) => form.setField('status', event.target.value)}
         />
+      </Field>
+
+      <Field id="product-type" label="Product type" hint="Choose Digital only when secure delivery will be configured separately.">
+        <Select id="product-type" options={[{ value: 'PHYSICAL', label: 'Physical product' }, { value: 'DIGITAL', label: 'Digital product' }]} value={form.values.productType} onChange={(event) => form.setField('productType', event.target.value as FormValues['productType'])} />
+      </Field>
+
+      <Field id="product-specifications" label="Specifications (optional JSON)" hint={'Example: [{"key":"material","label":"Material","value":"Stainless steel","public":true}]. Only configured public fields appear on the storefront.'}>
+        <Textarea id="product-specifications" value={form.values.specificationsJson} onChange={(event) => form.setField('specificationsJson', event.target.value)} />
+      </Field>
+
+      <Field id="product-attributes" label="Dynamic attributes (optional JSON)" hint={'Example: [{"key":"color","label":"Color","type":"color","allowedValues":["Black","White"],"variant":true}].'}>
+        <Textarea id="product-attributes" value={form.values.attributesJson} onChange={(event) => form.setField('attributesJson', event.target.value)} />
+      </Field>
+
+      {form.values.productType === 'DIGITAL' ? <Field id="product-digital-config" label="Digital delivery metadata (optional JSON)" hint="Public metadata only. Never place files, private storage paths or license keys here.">
+        <Textarea id="product-digital-config" value={form.values.digitalConfigJson} onChange={(event) => form.setField('digitalConfigJson', event.target.value)} />
+      </Field> : <Field id="product-physical-config" label="Physical product metadata (optional JSON)" hint="Weight, dimensions, warranty and ownership metadata. Inventory remains controlled separately.">
+        <Textarea id="product-physical-config" value={form.values.physicalConfigJson} onChange={(event) => form.setField('physicalConfigJson', event.target.value)} />
+      </Field>}
+
+      <Field id="product-seo" label="SEO metadata (optional JSON)" hint={'Example: {"title":"Product title","description":"Short search description","canonicalPath":"/products/example"}.'}>
+        <Textarea id="product-seo" value={form.values.seoJson} onChange={(event) => form.setField('seoJson', event.target.value)} />
       </Field>
 
       <Field id="product-variants" label="Variants (optional JSON)" hint={'Use {"attributes":[{"name":"Color","type":"color","values":["Black","White"]}],"variants":[{"key":"Color=Black","options":{"Color":"Black"},"sku":"SKU-BLK","price":1290,"inventoryMode":"NUMERIC","stock":5,"availabilityStatus":"IN_STOCK"}]}'}>

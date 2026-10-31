@@ -74,6 +74,8 @@ export function SettingsPage() {
 
         <AnnouncementCard />
 
+        {user?.role === 'super_admin' ? <StoreOperationsCard /> : null}
+
         <AppearanceCard />
 
         <Card>
@@ -163,6 +165,45 @@ function AnnouncementCard() {
       </CardFooter>
     </Card>
   )
+}
+
+function StoreOperationsCard() {
+  const toast = useToast()
+  const [settings, setSettings] = useState<import('../settings.service').StoreOperationsSettings | null>(null)
+  const [loading, setLoading] = useState(true)
+  const [saving, setSaving] = useState(false)
+  const [error, setError] = useState<string | null>(null)
+  const [reason, setReason] = useState('')
+
+  useEffect(() => {
+    void settingsService.getStoreOperations().then(setSettings).catch((value) => setError(getUserMessage(value))).finally(() => setLoading(false))
+  }, [])
+
+  const save = async () => {
+    if (!settings) return
+    const action = settings.onlineOrderingEnabled ? 'close new orders' : 'open customer orders'
+    if (!window.confirm(`Confirm you want to ${action}? Existing orders remain available for management.`)) return
+    setSaving(true); setError(null)
+    try {
+      const saved = await settingsService.updateStoreOperations({ onlineOrderingEnabled: settings.onlineOrderingEnabled, message: settings.message, reason })
+      setSettings(saved); setReason(''); toast.success(saved.onlineOrderingEnabled ? 'Online ordering is now open' : 'Online ordering is now closed')
+    } catch (value) { setError(getUserMessage(value)) } finally { setSaving(false) }
+  }
+
+  return <Card>
+    <CardHeader><div><CardTitle>Online ordering</CardTitle><CardDescription>Master control for new customer orders. Payments remain separately controlled.</CardDescription></div></CardHeader>
+    <CardContent style={{ paddingTop: 8 }}>
+      {error && <div style={{ marginBottom: 14 }}><Alert tone="destructive">{error}</Alert></div>}
+      <label className="settings-row" htmlFor="online-ordering-enabled" style={{ cursor: loading || saving ? 'default' : 'pointer' }}>
+        <span><strong>{settings?.onlineOrderingEnabled ? 'ON — Orders Open' : 'OFF — Orders Closed'}</strong><span className="text-sm text-muted" style={{ display: 'block' }}>Only a Super Admin can change this persistent setting.</span></span>
+        <input id="online-ordering-enabled" type="checkbox" checked={settings?.onlineOrderingEnabled ?? false} disabled={loading || saving} onChange={(event) => setSettings((current) => current ? ({ ...current, onlineOrderingEnabled: event.target.checked }) : current)} />
+      </label>
+      <Field id="ordering-message" label="Customer closure message" hint="Used when orders are closed."><Input id="ordering-message" maxLength={240} disabled={!settings || loading || saving} value={settings?.message ?? ''} onChange={(event) => setSettings((current) => current ? ({ ...current, message: event.target.value }) : current)} /></Field>
+      <Field id="ordering-reason" label="Reason (optional)"><Input id="ordering-reason" maxLength={500} disabled={!settings || loading || saving} value={reason} onChange={(event) => setReason(event.target.value)} /></Field>
+      {settings?.updatedAt && <p className="text-sm text-muted">Last changed: {new Date(settings.updatedAt).toLocaleString()} {settings.updatedBy ? `by ${settings.updatedBy.email}` : ''}</p>}
+    </CardContent>
+    <CardFooter style={{ justifyContent: 'flex-end' }}><Button variant="primary" onClick={() => void save()} isLoading={saving} disabled={!settings || loading || saving}>Save order status</Button></CardFooter>
+  </Card>
 }
 
 function ProfileCard({ user }: { user: AuthUser }) {

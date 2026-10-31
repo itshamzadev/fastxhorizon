@@ -75,6 +75,12 @@ export const createProductSchema = z.object({
   image: z.string().trim().max(3_000_000, 'Image is too large').optional(),
   status: z.enum(PRODUCT_STATUSES).optional(),
   variantJson: z.string().max(100_000, 'Variant configuration is too large').optional(),
+  productType: z.enum(['PHYSICAL', 'DIGITAL']).optional(),
+  specificationsJson: z.string().max(50_000, 'Specifications are too large').optional(),
+  attributesJson: z.string().max(50_000, 'Attributes are too large').optional(),
+  digitalConfigJson: z.string().max(20_000, 'Digital configuration is too large').optional(),
+  physicalConfigJson: z.string().max(20_000, 'Physical configuration is too large').optional(),
+  seoJson: z.string().max(5_000, 'SEO configuration is too large').optional(),
 })
 
 export const updateProductSchema = createProductSchema.partial()

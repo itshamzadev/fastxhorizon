@@ -16,6 +16,9 @@ export type ProductStatus = (typeof PRODUCT_STATUSES)[number]
 
 export type InventoryMode = 'NUMERIC' | 'AVAILABILITY_BASED' | 'SUPPLIER_BASED'
 export type AvailabilityStatus = 'IN_STOCK' | 'OUT_OF_STOCK' | 'AVAILABLE_TO_ORDER'
+export type ProductType = 'PHYSICAL' | 'DIGITAL'
+export interface ProductSpecification { key: string; label: string; value: string; type?: string; unit?: string; public?: boolean; order?: number }
+export interface ProductAttribute { key: string; label: string; type?: string; required?: boolean; allowedValues: string[]; defaultValue?: string; unit?: string; public?: boolean; variant?: boolean; order?: number }
 
 export interface Product {
   id: string
@@ -29,6 +32,12 @@ export interface Product {
   inventoryMode?: InventoryMode
   availabilityStatus?: AvailabilityStatus
   status: ProductStatus
+  productType?: ProductType
+  specifications?: ProductSpecification[]
+  attributes?: ProductAttribute[]
+  physicalConfiguration?: Record<string, unknown> | null
+  digitalConfiguration?: Record<string, unknown> | null
+  seo?: { title?: string; description?: string; canonicalPath?: string } | null
   createdAt: string
   updatedAt: string
   image?: string | null
@@ -47,6 +56,12 @@ export interface CreateProductInput {
   availabilityStatus?: AvailabilityStatus
   status?: ProductStatus
   image?: string
+  productType?: ProductType
+  specifications?: ProductSpecification[]
+  attributes?: ProductAttribute[]
+  physicalConfiguration?: Record<string, unknown>
+  digitalConfiguration?: Record<string, unknown>
+  seo?: { title?: string; description?: string; canonicalPath?: string }
 }
 
 export type UpdateProductInput = Partial<CreateProductInput>

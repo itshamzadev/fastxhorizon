@@ -774,3 +774,39 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Search public filtering also excludes products without a positive public price or usable image. Supplier costs and private pricing fields remain absent from public responses.
 - Verification: real local MongoDB random API checks passed (same-seed page overlap 0; different seeds produced different order); backend product/search tests passed (14 tests); frontend Shop/Home tests passed (7 tests); frontend production build passed. No production systems were touched.
 
+# V12 Advanced Product Management Foundation - 2026-10-30
+
+- Audited the existing Product model, Admin product CRUD, permissions, variant validation, supplier pricing workflow, public product normalization, search API and Product Details page. Existing imported records, pricing, publication states and ordering/payment locks were preserved.
+- Extended the common Product schema additively with `PHYSICAL`/`DIGITAL` product type, public specifications, dynamic attributes, physical metadata, public digital-delivery metadata and SEO metadata. Existing records remain backward-compatible through defaults and storefront normalization.
+- Added server-side validation for flexible product fields and conditional physical/digital configuration in Admin product create/update APIs. Existing Admin authentication, RBAC, audit logging, supplier pricing safeguards and publication checks remain in force.
+- Extended the Vital Admin product editor with product type and optional JSON editors for specifications, dynamic attributes, physical/digital metadata and SEO. These values are persisted through the existing product API; no files, private storage paths, license keys or supplier financial fields are accepted as public metadata.
+- Public catalog and search responses now expose only configured public specifications/attributes and safe physical/digital metadata. Supplier costs, supplier contacts, private notes, files and license secrets remain excluded.
+- Product Details now renders configured specifications and safe digital metadata only when present; empty fields remain hidden and ordering/payment restrictions are unchanged.
+- Verification: backend syntax checks passed; backend Jest suite passed (10 suites, 50 tests); Admin Vitest suite passed (7 files, 29 tests); Admin production build passed; customer frontend production build passed. The initial Admin test command included unsupported Vitest `--runInBand` and was rerun with the correct `npm run test:run` command successfully.
+- Incomplete by design: secure digital file storage/download entitlements, license-key inventory/activation enforcement, supplier/stock-ledger collections, return workflows, media manager, templates and a visual variant matrix are not implemented in this foundation pass. No automatic imports, publication, orders, payments, database migration or deployment was performed.
+
+## Local UI Demo Catalog - 2026-10-30
+
+- Added an idempotent, local-only demo seeder at `backend/scripts/add-local-demo-products.js` and `npm run demo:products:local`.
+- Four clearly branded `FASTXHORIZON DEMO` products now exist in `fastxhorizon_local` for public UI preview: headphones with color variants, a numeric-stock home lamp, supplier-based beauty product and a digital metadata preview product.
+- Seeder refuses non-local/production-looking MongoDB URIs, uses stable `LOCAL_DEMO:*` identifiers, and does not modify existing catalog records. Local public API verification returned 27 products, including 4 demo products.
+
+## V13 Persistent Online Ordering Master Control - 2026-10-30
+
+- Reused the existing `PaymentConfiguration.ordersEnabled` field as the single authoritative order-open state, so the checkout API, payment configuration and storefront cannot drift into conflicting sources of truth.
+- Added Super Admin-only `GET/PATCH /api/admin/settings/store-operations` with validation, customer closure message, reason, last-change metadata and audit events. Existing payment-method editing no longer overwrites the master order state.
+- Added read-only public `GET /api/storefront/status` returning only `onlineOrderingEnabled` and a safe customer message.
+- Added the Admin Settings → Online ordering control with ON/OFF confirmation and last-modified display. The backend remains authoritative and continues to fail closed when the setting is unavailable or OFF.
+- Local verification confirms `/api/storefront/status` returns `onlineOrderingEnabled: false`; unauthenticated access to the admin control returns HTTP 401. The local order state was not activated.
+- Tests/builds: backend Jest 10 suites/50 tests passed; Admin Vitest 7 files/29 tests passed; Admin production build passed; backend syntax checks passed. No real order or payment was created, and no production setting was changed.
+- Fixed local Admin login CORS failure: development now allows `127.0.0.1:3000/5173` alongside localhost, while production does not add these origins. Preflight verification returned HTTP 204 with credentials enabled.
+
+## V14 Admin Command Center Foundation - 2026-10-30
+
+- Audited the current Admin dashboard, dashboard API, order/payment/product/customer models, settings, RBAC and existing analytics page. Existing dashboard overview and order management were retained.
+- Added authenticated `GET /api/admin/dashboard/analytics?range=` with bounded ranges (`today`, `yesterday`, `7d`, `30d`, `90d`, `month`, `year`) and Asia/Karachi daily grouping. Metrics are calculated server-side from real orders, payments, customers and products.
+- Added actual period GMV excluding cancelled orders, verified/pending payment totals, order/status counts, daily sales, top products by order line sales, new customers, catalog publication/type counts and numeric out-of-stock count.
+- Admin dashboard now includes a date-range selector, executive KPI section, daily sales table, top-products table, clear data limitations and retry/error handling. No fake chart values, traffic metrics, profit, refunds or supplier returns were generated.
+- V13 store-operations control remains integrated and Super Admin-only. Existing order/payment restrictions remain unchanged and local ordering is still OFF.
+- Verification: backend syntax checks passed; backend Jest passed (10 suites, 50 tests); Admin production build passed; unauthenticated analytics request correctly returned HTTP 401. Full V14 modules for supplier returns, inventory ledgers, seller analytics, digital entitlement analytics, traffic tracking, exports and dedicated chart visualizations remain blocked by missing underlying data/services and are explicitly not claimed complete.
+

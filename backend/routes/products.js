@@ -20,6 +20,13 @@ const RANK_SORT = { rating: -1, numReviews: -1, createdAt: -1 };
 
 const PUBLIC_PRODUCT_FIELDS = ['name', 'description', 'shortDescription', 'longDescription', 'category', 'subcategory', 'categoryPath', 'productType', 'tags', 'brand', 'sku'];
 const publicImageFilter = { $or: [{ image: { $type: 'string', $ne: '' } }, { images: { $elemMatch: { $type: 'string', $ne: '' } } }] };
+const publicFlexibleFields = product => ({
+  productType: product.productType === 'DIGITAL' ? 'DIGITAL' : 'PHYSICAL',
+  specifications: Array.isArray(product.specifications) ? product.specifications.filter(item => item.public !== false).map(({ key, label, value, type, unit, order }) => ({ key, label, value, type, unit, order })) : [],
+  attributes: Array.isArray(product.attributes) ? product.attributes.filter(item => item.public !== false).map(({ key, label, type, required, allowedValues, defaultValue, unit, variant, order }) => ({ key, label, type, required, allowedValues, defaultValue, unit, variant, order })) : [],
+  physicalConfiguration: product.productType === 'DIGITAL' ? null : (product.physicalConfiguration ? { weight: product.physicalConfiguration.weight, weightUnit: product.physicalConfiguration.weightUnit, dimensions: product.physicalConfiguration.dimensions, warranty: product.physicalConfiguration.warranty, condition: product.physicalConfiguration.condition, shippingInfo: product.physicalConfiguration.shippingInfo, ownershipMode: product.physicalConfiguration.ownershipMode } : null),
+  digitalConfiguration: product.productType === 'DIGITAL' && product.digitalConfiguration ? { deliveryType: product.digitalConfiguration.deliveryType, version: product.digitalConfiguration.version, releaseNotes: product.digitalConfiguration.releaseNotes, supportedPlatforms: product.digitalConfiguration.supportedPlatforms, systemRequirements: product.digitalConfiguration.systemRequirements, licenseType: product.digitalConfiguration.licenseType, downloadLimit: product.digitalConfiguration.downloadLimit, accessDurationDays: product.digitalConfiguration.accessDurationDays, updatePolicy: product.digitalConfiguration.updatePolicy, instructions: product.digitalConfiguration.instructions, documentationUrl: product.digitalConfiguration.documentationUrl } : null,
+});
 const hashSeed = value => {
   let hash = 2166136261;
   for (const char of String(value || 'default').slice(0, RANDOM_SEED_MAX_LENGTH)) {
@@ -75,6 +82,7 @@ const normalizeProduct = product => ({
   numReviews: product.numReviews,
   createdAt: product.createdAt,
   storeName: product.storeName || product.seller?.storeName || product.sellerStoreName || 'FASTXHORIZON',
+  ...publicFlexibleFields(product),
 });
 
 const tokenize = text =>

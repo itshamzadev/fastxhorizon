@@ -1,6 +1,6 @@
 import type { ListQuery } from '@/types/api'
 
-export const USER_ROLES = ['admin', 'manager', 'member', 'viewer'] as const
+export const USER_ROLES = ['super_admin', 'admin', 'manager', 'member', 'viewer'] as const
 export type UserRole = (typeof USER_ROLES)[number]
 
 export const USER_STATUSES = ['active', 'invited', 'suspended'] as const

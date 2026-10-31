@@ -1,5 +1,6 @@
 const express = require('express');
 const StorefrontSetting = require('../models/storefrontSetting');
+const PaymentConfiguration = require('../models/paymentConfiguration');
 
 const router = express.Router();
 const SETTING_KEY = 'storefront';
@@ -19,6 +20,13 @@ router.get('/announcement', async (req, res, next) => {
   } catch (error) {
     return next(error);
   }
+});
+
+router.get('/status', async (req, res, next) => {
+  try {
+    const setting = await PaymentConfiguration.findOne({ key: 'v1' }).select('ordersEnabled orderingDisabledMessage').lean();
+    return res.json({ onlineOrderingEnabled: setting?.ordersEnabled === true, message: setting?.orderingDisabledMessage || 'Online ordering is temporarily unavailable.' });
+  } catch (error) { return next(error); }
 });
 
 module.exports = { router, SETTING_KEY, DEFAULT_MESSAGE, publicAnnouncement };

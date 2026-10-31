@@ -45,6 +45,21 @@ export interface DashboardOverview {
   totalPrograms?: number
 }
 
+export interface DashboardAnalytics {
+  range: string
+  start: string
+  end: string
+  timezone: string
+  orderTotals: { orders: number; gmv: number; cancelled: number }
+  payments: Record<string, { amount: number; count: number }>
+  statusCounts: Array<{ status: string; count: number; amount: number }>
+  dailySales: Array<{ label: string; value: number; orders: number }>
+  topProducts: Array<{ id: string; name: string; quantity: number; sales: number }>
+  newCustomers: number
+  catalog: { total: number; published: number; drafts: number; archived: number; digital: number; numericOutOfStock: number }
+  limitations: string[]
+}
+
 export interface SeriesPoint { label: string; value: number }
 export interface Kpi { id: string; label: string; value: number; format: 'currency' | 'number' | 'percent'; changePct: number; series: SeriesPoint[] }
 export interface StackedSeriesPoint { label: string; infant: number; toddler: number; schoolAge: number }

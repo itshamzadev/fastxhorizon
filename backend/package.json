@@ -20,6 +20,7 @@
     "catalog:import": "node scripts/import-catalog-export.js",
     "yourmart:dry-run": "node scripts/import-yourmart-csv.js",
     "yourmart:import": "node scripts/import-yourmart-csv.js --import",
+    "demo:products:local": "node scripts/add-local-demo-products.js",
     "seed": "node seed/productSeeds.js dev",
     "dev": "nodemon index.js",
     "weaviate-upsert": "node scripts/weaviate-upsert.js",

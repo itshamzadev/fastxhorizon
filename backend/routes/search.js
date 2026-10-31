@@ -5,7 +5,7 @@ const Product = require('../models/product');
 const MAX_QUERY_LENGTH = 100;
 const MAX_PAGE_SIZE = 24;
 const MAX_MATCHES_FOR_RANKING = 200;
-const PUBLIC_FIELDS = 'name description shortDescription category subcategory categoryPath productType tags slug image images price currency brand sku storeName stock inventoryMode availabilityStatus rating numReviews createdAt';
+const PUBLIC_FIELDS = 'name description shortDescription category subcategory categoryPath productType tags slug image images price currency brand sku storeName stock inventoryMode availabilityStatus rating numReviews createdAt specifications attributes physicalConfiguration digitalConfiguration';
 const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const normalizeQuery = value => String(value || '').trim().slice(0, MAX_QUERY_LENGTH);
 const searchableFields = ['name', 'description', 'shortDescription', 'category', 'subcategory', 'categoryPath', 'productType', 'tags', 'brand', 'sku'];
@@ -34,6 +34,11 @@ const publicProduct = product => ({
   rating: product.rating || 0,
   numReviews: product.numReviews || 0,
   createdAt: product.createdAt,
+  productType: product.productType === 'DIGITAL' ? 'DIGITAL' : 'PHYSICAL',
+  specifications: Array.isArray(product.specifications) ? product.specifications.filter(item => item.public !== false) : [],
+  attributes: Array.isArray(product.attributes) ? product.attributes.filter(item => item.public !== false) : [],
+  physicalConfiguration: product.productType === 'DIGITAL' || !product.physicalConfiguration ? null : { weight: product.physicalConfiguration.weight, weightUnit: product.physicalConfiguration.weightUnit, dimensions: product.physicalConfiguration.dimensions, warranty: product.physicalConfiguration.warranty, condition: product.physicalConfiguration.condition, shippingInfo: product.physicalConfiguration.shippingInfo, ownershipMode: product.physicalConfiguration.ownershipMode },
+  digitalConfiguration: product.productType === 'DIGITAL' && product.digitalConfiguration ? { deliveryType: product.digitalConfiguration.deliveryType, version: product.digitalConfiguration.version, releaseNotes: product.digitalConfiguration.releaseNotes, supportedPlatforms: product.digitalConfiguration.supportedPlatforms, systemRequirements: product.digitalConfiguration.systemRequirements, licenseType: product.digitalConfiguration.licenseType, downloadLimit: product.digitalConfiguration.downloadLimit, accessDurationDays: product.digitalConfiguration.accessDurationDays, updatePolicy: product.digitalConfiguration.updatePolicy, instructions: product.digitalConfiguration.instructions, documentationUrl: product.digitalConfiguration.documentationUrl } : null,
 });
 
 const scoreProduct = (product, terms) => {

@@ -32,6 +32,9 @@ const schema = new mongoose.Schema({
   codEnabled: { type: Boolean, default: false },
   ordersEnabled: { type: Boolean, default: false },
   orderingDisabledMessage: { type: String, default: 'Online ordering is temporarily unavailable.', maxlength: 240 },
+  ordersUpdatedBy: { type: mongoose.Schema.Types.ObjectId, ref: 'Admin', default: null },
+  ordersUpdatedAt: { type: Date, default: null },
+  ordersUpdateReason: { type: String, trim: true, maxlength: 500, default: '' },
   manualMethods: { type: [MethodSchema], default: [] },
 }, { timestamps: true });
 

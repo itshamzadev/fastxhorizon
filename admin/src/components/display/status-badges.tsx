@@ -42,6 +42,7 @@ export function UserStatusBadge({ status }: { status: UserStatus }): ReactNode {
 }
 
 const USER_ROLE_TONES: Record<UserRole, BadgeTone> = {
+  super_admin: 'destructive',
   admin: 'primary',
   manager: 'warning',
   member: 'neutral',

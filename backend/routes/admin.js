@@ -11,6 +11,7 @@ const NewsletterSubscriber = require('../models/newsletterSubscriber');
 const Refund = require('../models/refund');
 const Category = require('../models/category');
 const CatalogImport = require('../models/catalogImport');
+const PaymentConfiguration = require('../models/paymentConfiguration');
 const { SUPPLIER, safeFilename, buildEntries, makeProductDocument } = require('../services/catalogImport');
 const { SETTING_KEY, DEFAULT_MESSAGE, publicAnnouncement } = require('./storefront');
 
@@ -20,6 +21,11 @@ const PRODUCT_STATUSES = new Set(['active', 'draft', 'archived']);
 const ORDER_STATUSES = new Set(['pending', 'processing', 'shipped', 'delivered', 'cancelled']);
 
 router.use(requireAdminSession);
+
+function requireSuperAdmin(req, res, next) {
+  if (req.admin?.role !== 'super_admin') return res.status(403).json({ code: 'admin_forbidden', message: 'Super Admin access is required to change online ordering.' });
+  return next();
+}
 
 function pageQuery(req) {
   const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
@@ -55,9 +61,43 @@ function validateVariants(attributes, variants) {
   return null;
 }
 
+function validateFlexibleFields(body) {
+  const productType = body.productType === undefined ? null : String(body.productType);
+  if (productType && !['PHYSICAL', 'DIGITAL'].includes(productType)) return 'Product type must be PHYSICAL or DIGITAL.';
+  for (const field of ['specifications', 'attributes']) {
+    if (body[field] !== undefined && (!Array.isArray(body[field]) || body[field].length > 100)) return `${field} must be an array with at most 100 entries.`;
+  }
+  if (Array.isArray(body.specifications)) {
+    for (const item of body.specifications) {
+      if (!item || typeof item.key !== 'string' || !item.key.trim() || typeof item.label !== 'string' || !item.label.trim() || typeof item.value !== 'string' || item.value.length > 500) return 'Each specification needs a key, label and value.';
+    }
+  }
+  if (Array.isArray(body.attributes)) {
+    const keys = new Set();
+    for (const item of body.attributes) {
+      const key = String(item?.key || '').trim().toLowerCase();
+      if (!key || keys.has(key) || typeof item.label !== 'string' || item.label.trim().length === 0 || !Array.isArray(item.allowedValues) || item.allowedValues.length > 50) return 'Attributes must have unique keys, labels and at most 50 allowed values.';
+      keys.add(key);
+    }
+  }
+  if (body.digitalConfiguration !== undefined && body.digitalConfiguration !== null && typeof body.digitalConfiguration !== 'object') return 'Invalid digital configuration.';
+  if (body.physicalConfiguration !== undefined && body.physicalConfiguration !== null && typeof body.physicalConfiguration !== 'object') return 'Invalid physical configuration.';
+  if (body.seo !== undefined && body.seo !== null && typeof body.seo !== 'object') return 'Invalid SEO configuration.';
+  if (productType === 'DIGITAL' && body.physicalConfiguration !== undefined && body.physicalConfiguration !== null) return 'Physical configuration is not valid for a digital product.';
+  return null;
+}
+
+function publicFlexibleFields(product) {
+  const specifications = Array.isArray(product.specifications) ? product.specifications.filter(item => item.public !== false).map(({ key, label, value, type, unit, order }) => ({ key, label, value, type, unit, order })) : [];
+  const attributes = Array.isArray(product.attributes) ? product.attributes.filter(item => item.public !== false).map(({ key, label, type, required, allowedValues, defaultValue, unit, variant, order }) => ({ key, label, type, required, allowedValues, defaultValue, unit, variant, order })) : [];
+  const physical = product.productType === 'DIGITAL' ? null : product.physicalConfiguration ? { weight: product.physicalConfiguration.weight, weightUnit: product.physicalConfiguration.weightUnit, dimensions: product.physicalConfiguration.dimensions, warranty: product.physicalConfiguration.warranty, condition: product.physicalConfiguration.condition, shippingInfo: product.physicalConfiguration.shippingInfo, ownershipMode: product.physicalConfiguration.ownershipMode } : null;
+  const digital = product.productType === 'DIGITAL' && product.digitalConfiguration ? { deliveryType: product.digitalConfiguration.deliveryType, version: product.digitalConfiguration.version, releaseNotes: product.digitalConfiguration.releaseNotes, supportedPlatforms: product.digitalConfiguration.supportedPlatforms, systemRequirements: product.digitalConfiguration.systemRequirements, licenseType: product.digitalConfiguration.licenseType, downloadLimit: product.digitalConfiguration.downloadLimit, accessDurationDays: product.digitalConfiguration.accessDurationDays, updatePolicy: product.digitalConfiguration.updatePolicy, instructions: product.digitalConfiguration.instructions, documentationUrl: product.digitalConfiguration.documentationUrl } : null;
+  return { productType: product.productType || 'PHYSICAL', specifications, attributes, physicalConfiguration: physical, digitalConfiguration: digital, seo: product.seo || null };
+}
+
 function productView(product) {
   const id = String(product._id);
-  return { id, name: product.name, sku: product.sku || `FXH-${id.slice(-8).toUpperCase()}`, description: product.description || null, shortDescription: product.shortDescription || null, longDescription: product.longDescription || product.description || null, category: product.category, subcategory: product.subcategory || null, categoryPath: product.categoryPath || [], tags: product.tags || [], slug: product.slug || null, price: product.price, currency: product.currency || null, inventory: product.stock || 0, inventoryMode: product.inventoryMode === 'SUPPLIER_BASED' ? 'SUPPLIER_BASED' : (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product.inventoryMode) ? 'AVAILABILITY_BASED' : 'NUMERIC'), availabilityStatus: product.availabilityStatus || (product.stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK'), status: product.status || 'active', image: product.image || null, images: product.images || [], variantsEnabled: Boolean(product.variantsEnabled), variantAttributes: product.variantAttributes || [], variants: product.variants || [], brand: product.brand || null, storeName: product.storeName || 'FASTXHORIZON', supplierName: product.supplierName || null, supplierSKU: product.supplierSKU || null, sourcePrice: product.sourcePrice ?? null, sellingPrice: product.sellingPrice ?? null, draftSellingPrice: product.draftSellingPrice ?? null, pricingStatus: product.pricingStatus || null, featured: Boolean(product.featured), createdAt: product.createdAt, updatedAt: product.updatedAt || product.createdAt };
+  return { id, name: product.name, sku: product.sku || `FXH-${id.slice(-8).toUpperCase()}`, description: product.description || null, shortDescription: product.shortDescription || null, longDescription: product.longDescription || product.description || null, category: product.category, subcategory: product.subcategory || null, categoryPath: product.categoryPath || [], tags: product.tags || [], slug: product.slug || null, price: product.price, currency: product.currency || null, inventory: product.stock || 0, inventoryMode: product.inventoryMode === 'SUPPLIER_BASED' ? 'SUPPLIER_BASED' : (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product.inventoryMode) ? 'AVAILABILITY_BASED' : 'NUMERIC'), availabilityStatus: product.availabilityStatus || (product.stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK'), status: product.status || 'active', image: product.image || null, images: product.images || [], variantsEnabled: Boolean(product.variantsEnabled), variantAttributes: product.variantAttributes || [], variants: product.variants || [], brand: product.brand || null, storeName: product.storeName || 'FASTXHORIZON', ...publicFlexibleFields(product), supplierName: product.supplierName || null, supplierSKU: product.supplierSKU || null, sourcePrice: product.sourcePrice ?? null, sellingPrice: product.sellingPrice ?? null, draftSellingPrice: product.draftSellingPrice ?? null, pricingStatus: product.pricingStatus || null, featured: Boolean(product.featured), createdAt: product.createdAt, updatedAt: product.updatedAt || product.createdAt };
 }
 
 function pricingView(product) {
@@ -104,6 +144,28 @@ router.get('/storefront/announcement', requireAdminPermission('settings.manage')
   try {
     const setting = await StorefrontSetting.findOne({ key: SETTING_KEY }).lean();
     return res.json({ data: publicAnnouncement(setting) });
+  } catch (error) { return next(error); }
+});
+
+router.get('/settings/store-operations', requireSuperAdmin, async (req, res, next) => {
+  try {
+    const setting = await PaymentConfiguration.findOneAndUpdate({ key: 'v1' }, { $setOnInsert: { key: 'v1', ordersEnabled: false, automaticEnabled: false, manualEnabled: false, codEnabled: false, manualMethods: [] } }, { upsert: true, new: true, setDefaultsOnInsert: true }).populate('ordersUpdatedBy', 'email name').lean();
+    return res.json({ data: { onlineOrderingEnabled: setting.ordersEnabled === true, message: setting.orderingDisabledMessage || 'Online ordering is temporarily unavailable.', updatedAt: setting.ordersUpdatedAt || setting.updatedAt || null, updatedBy: setting.ordersUpdatedBy ? { id: String(setting.ordersUpdatedBy._id), email: setting.ordersUpdatedBy.email, name: setting.ordersUpdatedBy.name } : null, reason: setting.ordersUpdateReason || '' } });
+  } catch (error) { return next(error); }
+});
+
+router.patch('/settings/store-operations', requireSuperAdmin, async (req, res, next) => {
+  try {
+    if (typeof req.body?.onlineOrderingEnabled !== 'boolean') return res.status(400).json({ code: 'validation_error', message: 'onlineOrderingEnabled must be a boolean.' });
+    const message = typeof req.body.message === 'string' && req.body.message.trim() ? req.body.message.trim().slice(0, 240) : 'Online ordering is temporarily unavailable.';
+    if (/[<>]/.test(message)) return res.status(400).json({ code: 'validation_error', message: 'The customer-facing message must be plain text.' });
+    const reason = String(req.body.reason || '').trim().slice(0, 500);
+    const current = await PaymentConfiguration.findOne({ key: 'v1' }).select('ordersEnabled').lean();
+    const previous = current?.ordersEnabled === true;
+    const enabled = req.body.onlineOrderingEnabled === true;
+    const saved = await PaymentConfiguration.findOneAndUpdate({ key: 'v1' }, { $set: { ordersEnabled: enabled, orderingDisabledMessage: message, ordersUpdatedBy: req.admin._id, ordersUpdatedAt: new Date(), ordersUpdateReason: reason } }, { upsert: true, new: true, setDefaultsOnInsert: true, runValidators: true }).lean();
+    await audit(req, enabled ? 'online_ordering_enabled' : 'online_ordering_disabled', true, { previous, next: enabled, reason });
+    return res.json({ data: { onlineOrderingEnabled: saved.ordersEnabled === true, message: saved.orderingDisabledMessage, updatedAt: saved.ordersUpdatedAt, updatedBy: { id: String(req.admin._id), email: req.admin.email, name: req.admin.name }, reason: saved.ordersUpdateReason || '' } });
   } catch (error) { return next(error); }
 });
 
@@ -170,6 +232,34 @@ router.get('/dashboard/overview', requireAdminPermission('dashboard.read'), asyn
       User.countDocuments(), User.countDocuments({ status: { $ne: 'suspended' } }), Product.countDocuments(), Product.countDocuments({ $or: [{ status: 'active' }, { status: { $exists: false } }] }), Product.countDocuments({ stock: { $lte: 0 } }), Order.countDocuments(), Order.countDocuments({ statusIndex: 0 }), Order.countDocuments({ statusIndex: { $gte: 9 } }), Order.countDocuments({ statusIndex: -1 }), Order.aggregate([{ $match: { statusIndex: { $gte: 0 } } }, { $group: { _id: null, value: { $sum: '$total' } } }]), Order.find().sort({ createdAt: -1 }).limit(5).lean(), User.find().select('name email date status').sort({ date: -1 }).limit(5).lean(),
     ]);
     return res.json({ data: { totalCustomers: customers, activeCustomers, totalSellers: 0, totalProducts: products, activeProducts, outOfStockProducts: outOfStock, totalOrders: orders, pendingOrders, completedOrders, cancelledOrders, grossMerchandiseValue: gross[0]?.value || 0, confirmedCollectedRevenue: 0, pendingManualPayments: 0, recentOrders: recentOrders.map(orderView), recentCustomers: recentCustomers.map((user) => ({ id: String(user._id), name: user.name, email: user.email, createdAt: user.date, status: user.status || 'active' })), topSellingProducts: [], revenueByMonth: [], orderCountByMonth: [] } });
+  } catch (error) { return next(error); }
+});
+
+router.get('/dashboard/analytics', requireAdminPermission('dashboard.read'), async (req, res, next) => {
+  try {
+    const allowedRanges = new Set(['today', 'yesterday', '7d', '30d', '90d', 'month', 'year']);
+    const range = allowedRanges.has(String(req.query.range)) ? String(req.query.range) : '30d';
+    const now = new Date();
+    const start = new Date(now);
+    if (range === 'today') start.setHours(0, 0, 0, 0);
+    else if (range === 'yesterday') { start.setDate(start.getDate() - 1); start.setHours(0, 0, 0, 0); }
+    else if (range === 'month') { start.setDate(1); start.setHours(0, 0, 0, 0); }
+    else if (range === 'year') { start.setMonth(0, 1); start.setHours(0, 0, 0, 0); }
+    else start.setDate(start.getDate() - (range === '7d' ? 7 : range === '90d' ? 90 : 30));
+    const end = now;
+    const dateFilter = { createdAt: { $gte: start, $lte: end } };
+    const [orderTotals, paymentTotals, statusCounts, dailySales, topProducts, newCustomers, catalog] = await Promise.all([
+      Order.aggregate([{ $match: dateFilter }, { $group: { _id: null, orders: { $sum: 1 }, gmv: { $sum: { $cond: [{ $gte: ['$statusIndex', 0] }, '$total', 0] } }, cancelled: { $sum: { $cond: [{ $lt: ['$statusIndex', 0] }, '$total', 0] } } } }]),
+      Order.aggregate([{ $match: dateFilter }, { $group: { _id: '$paymentStatus', amount: { $sum: '$total' }, count: { $sum: 1 } } }]),
+      Order.aggregate([{ $match: dateFilter }, { $group: { _id: '$statusIndex', count: { $sum: 1 }, amount: { $sum: '$total' } } }, { $sort: { _id: 1 } }]),
+      Order.aggregate([{ $match: { ...dateFilter, statusIndex: { $gte: 0 } } }, { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'Asia/Karachi' } }, value: { $sum: '$total' }, orders: { $sum: 1 } } }, { $sort: { _id: 1 } }]),
+      Order.aggregate([{ $match: { ...dateFilter, statusIndex: { $gte: 0 } } }, { $unwind: '$items' }, { $group: { _id: '$items.productId', name: { $first: '$items.name' }, quantity: { $sum: '$items.quantity' }, sales: { $sum: { $multiply: ['$items.price', '$items.quantity'] } } } }, { $sort: { sales: -1 } }, { $limit: 10 }]),
+      User.countDocuments({ date: { $gte: start, $lte: end } }),
+      Promise.all([Product.countDocuments(), Product.countDocuments({ status: 'active' }), Product.countDocuments({ status: 'draft' }), Product.countDocuments({ status: 'archived' }), Product.countDocuments({ productType: 'DIGITAL' }), Product.countDocuments({ productType: { $ne: 'DIGITAL' }, stock: { $lte: 0 }, inventoryMode: 'NUMERIC' })]),
+    ]);
+    const payments = Object.fromEntries(paymentTotals.map(item => [item._id || 'unknown', { amount: item.amount, count: item.count }]));
+    const statusLabels = { '-1': 'cancelled', '0': 'pending', '1': 'processing', '2': 'shipped', '9': 'delivered' };
+    return res.json({ data: { range, start, end, timezone: 'Asia/Karachi', orderTotals: orderTotals[0] || { orders: 0, gmv: 0, cancelled: 0 }, payments, statusCounts: statusCounts.map(item => ({ status: statusLabels[String(item._id)] || `status_${item._id}`, count: item.count, amount: item.amount })), dailySales: dailySales.map(item => ({ label: item._id, value: item.value, orders: item.orders })), topProducts: topProducts.map(item => ({ id: String(item._id), name: item.name, quantity: item.quantity, sales: item.sales })), newCustomers, catalog: { total: catalog[0], published: catalog[1], drafts: catalog[2], archived: catalog[3], digital: catalog[4], numericOutOfStock: catalog[5] }, limitations: ['Gross profit, net sales, refunds, supplier returns, commissions and traffic conversion are unavailable until their underlying records and accounting rules are implemented.'] } });
   } catch (error) { return next(error); }
 });
 
@@ -329,10 +419,11 @@ router.get('/products/:id', requireAdminPermission('products.read'), async (req,
 
 router.post('/products', requireAdminPermission('products.create'), async (req, res, next) => {
   try {
-    const body = req.body || {}; const name = String(body.name || '').trim(); const category = String(body.category || '').trim(); const price = Number(body.price); const stock = Number(body.inventory ?? body.stock ?? 0); const status = body.status || 'draft'; const inventoryMode = ['AVAILABILITY_BASED', 'SUPPLIER_BASED'].includes(body.inventoryMode) ? body.inventoryMode : 'NUMERIC'; const availabilityStatus = inventoryMode === 'SUPPLIER_BASED' ? 'AVAILABLE_TO_ORDER' : (body.availabilityStatus === 'IN_STOCK' ? 'IN_STOCK' : 'OUT_OF_STOCK');
+    const body = req.body || {}; const flexibleError = validateFlexibleFields(body); if (flexibleError) return res.status(400).json({ code: 'validation_error', message: flexibleError });
+    const name = String(body.name || '').trim(); const category = String(body.category || '').trim(); const price = Number(body.price); const stock = Number(body.inventory ?? body.stock ?? 0); const status = body.status || 'draft'; const inventoryMode = ['AVAILABILITY_BASED', 'SUPPLIER_BASED'].includes(body.inventoryMode) ? body.inventoryMode : 'NUMERIC'; const availabilityStatus = inventoryMode === 'SUPPLIER_BASED' ? 'AVAILABLE_TO_ORDER' : (body.availabilityStatus === 'IN_STOCK' ? 'IN_STOCK' : 'OUT_OF_STOCK');
     const variantError = validateVariants(body.variantAttributes, body.variants); if (variantError) return res.status(400).json({ code: 'validation_error', message: variantError });
     if (name.length < 2 || name.length > 120 || !category || !Number.isFinite(price) || price <= 0 || (inventoryMode === 'NUMERIC' && (!Number.isInteger(stock) || stock < 0)) || !PRODUCT_STATUSES.has(status) || !validImageValue(String(body.image || '').trim())) return res.status(400).json({ code: 'validation_error', message: 'Invalid product fields or image.' });
-    const product = await Product.create({ name, description: String(body.description || '').trim(), category, price, stock: inventoryMode === 'NUMERIC' ? stock : 0, inventoryMode, availabilityStatus, status, sku: body.sku ? String(body.sku).trim().toUpperCase() : undefined, image: String(body.image || '').trim(), brand: body.brand ? String(body.brand).trim() : undefined, variantsEnabled: body.variantsEnabled === true, variantAttributes: body.variantAttributes || [], variants: body.variants || [] });
+    const product = await Product.create({ name, description: String(body.description || '').trim(), category, price, stock: inventoryMode === 'NUMERIC' ? stock : 0, inventoryMode, availabilityStatus, status, productType: body.productType || 'PHYSICAL', sku: body.sku ? String(body.sku).trim().toUpperCase() : undefined, image: String(body.image || '').trim(), brand: body.brand ? String(body.brand).trim() : undefined, variantsEnabled: body.variantsEnabled === true, variantAttributes: body.variantAttributes || [], variants: body.variants || [], specifications: body.specifications || [], attributes: body.attributes || [], physicalConfiguration: body.productType === 'DIGITAL' ? undefined : (body.physicalConfiguration || undefined), digitalConfiguration: body.productType === 'DIGITAL' ? (body.digitalConfiguration || {}) : undefined, seo: body.seo || undefined });
     await audit(req, 'product_created', true, { productId: String(product._id) }); return res.status(201).json({ data: productView(product) });
   } catch (error) { if (error.code === 11000) return res.status(409).json({ code: 'conflict', message: 'A product with that name or SKU already exists.' }); return next(error); }
 });
@@ -340,13 +431,19 @@ router.post('/products', requireAdminPermission('products.create'), async (req, 
 router.patch('/products/:id', requireAdminPermission('products.update'), async (req, res, next) => {
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(404).json({ code: 'not_found', message: 'Product not found.' });
-    const allowed = ['name', 'description', 'category', 'price', 'sku', 'image', 'brand', 'featured', 'status', 'inventoryMode', 'availabilityStatus', 'variantsEnabled', 'variantAttributes', 'variants']; const update = {};
+    const flexibleError = validateFlexibleFields(req.body || {}); if (flexibleError) return res.status(400).json({ code: 'validation_error', message: flexibleError });
+    const allowed = ['name', 'description', 'category', 'price', 'sku', 'image', 'brand', 'featured', 'status', 'inventoryMode', 'availabilityStatus', 'variantsEnabled', 'variantAttributes', 'variants', 'productType', 'specifications', 'attributes', 'physicalConfiguration', 'digitalConfiguration', 'seo']; const update = {};
     for (const key of allowed) if (Object.prototype.hasOwnProperty.call(req.body || {}, key)) update[key] = req.body[key];
+    if (update.productType === 'DIGITAL') delete update.physicalConfiguration;
+    if (update.productType === 'PHYSICAL') delete update.digitalConfiguration;
     if (Object.prototype.hasOwnProperty.call(update, 'variantAttributes') || Object.prototype.hasOwnProperty.call(update, 'variants')) { const variantError = validateVariants(update.variantAttributes || [], update.variants || []); if (variantError) return res.status(400).json({ code: 'validation_error', message: variantError }); }
     if (Object.prototype.hasOwnProperty.call(req.body || {}, 'inventory')) update.stock = Number(req.body.inventory); if (Object.prototype.hasOwnProperty.call(update, 'inventoryMode') && !['NUMERIC', 'AVAILABILITY_BASED', 'SUPPLIER_BASED'].includes(update.inventoryMode)) return res.status(400).json({ code: 'validation_error', message: 'Invalid inventory mode.' }); if (Object.prototype.hasOwnProperty.call(update, 'availabilityStatus') && !['IN_STOCK', 'OUT_OF_STOCK', 'AVAILABLE_TO_ORDER'].includes(update.availabilityStatus)) return res.status(400).json({ code: 'validation_error', message: 'Invalid availability status.' }); if (Object.prototype.hasOwnProperty.call(update, 'price')) update.price = Number(update.price); if (Object.prototype.hasOwnProperty.call(update, 'image') && !validImageValue(String(update.image || '').trim())) return res.status(400).json({ code: 'validation_error', message: 'Invalid product image.' }); if (Object.prototype.hasOwnProperty.call(update, 'stock') && (!Number.isInteger(update.stock) || update.stock < 0)) return res.status(400).json({ code: 'validation_error', message: 'Inventory cannot be negative.' }); if (update.inventoryMode === 'AVAILABILITY_BASED' || update.inventoryMode === 'SUPPLIER_BASED') update.stock = 0; if (update.inventoryMode === 'SUPPLIER_BASED') update.availabilityStatus = 'AVAILABLE_TO_ORDER'; update.updatedAt = new Date();
     const current = await Product.findById(req.params.id).select('supplierName pricingStatus sellingPrice').lean(); if (!current) return res.status(404).json({ code: 'not_found', message: 'Product not found.' });
     if (update.status === 'active' && current.supplierName === 'YOURMART' && !['APPROVED', 'MANUAL_OVERRIDE'].includes(current.pricingStatus) && !['APPROVED', 'MANUAL_OVERRIDE'].includes(req.body?.pricingStatus)) return res.status(409).json({ code: 'pricing_review_required', message: 'Supplier products require approved pricing before publication.' });
-    const product = await Product.findByIdAndUpdate(req.params.id, { $set: update }, { new: true, runValidators: true }).lean();
+    const updateOperation = { $set: update };
+    if (req.body?.productType === 'DIGITAL') updateOperation.$unset = { physicalConfiguration: 1 };
+    if (req.body?.productType === 'PHYSICAL') updateOperation.$unset = { digitalConfiguration: 1 };
+    const product = await Product.findByIdAndUpdate(req.params.id, updateOperation, { new: true, runValidators: true }).lean();
     await audit(req, 'product_updated', true, { productId: req.params.id, fields: Object.keys(update) }); return res.json({ data: productView(product) });
   } catch (error) { if (error.code === 11000) return res.status(409).json({ code: 'conflict', message: 'A product with that name or SKU already exists.' }); return next(error); }
 });
