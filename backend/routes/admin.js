@@ -621,7 +621,7 @@ router.post('/product-imports/confirm', requireAdminPermission('products.import'
     }
     const completed = await CatalogImport.findByIdAndUpdate(history._id, { $set: { status: failed ? 'FAILED' : 'COMPLETED', mode, confirmedAt: new Date(), summary: { rows, uniqueProducts: entries.length, imageRows: entries.reduce((sum, entry) => sum + entry.item.images.length, 0), newProducts: imported, existingProducts: existingKeys.size, skippedProducts: skipped, failedProducts: failed, invalidRows: entries.filter((entry) => entry.preview.validation !== 'valid').length, missingPrices: entries.filter((entry) => entry.item.sourcePrice === null).length, missingImages: entries.filter((entry) => entry.item.images.length === 0).length, selectedProducts: entries.length }, errors: errors.slice(0, 100), stagedProducts: [] } }, { new: true });
     await audit(req, 'supplier_catalog_imported', failed === 0, { importId: String(completed._id), supplier: SUPPLIER, imported, skipped, failed, mode });
-    return res.status(201).json({ data: { id: String(completed._id), imported, skipped, failed, status: completed.status } });
+    return res.status(201).json({ data: { id: String(completed._id), imported, skipped, failed, status: completed.status, errors: errors.slice(0, 20) } });
   } catch (error) { return res.status(400).json({ code: 'validation_error', message: error.message }); }
 });
 
