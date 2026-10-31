@@ -23,6 +23,7 @@ const MethodSchema = new mongoose.Schema({
   order: { type: Number, min: 0, max: 100, default: 0 },
   version: { type: Number, min: 1, default: 1 },
   fields: { type: [FieldSchema], default: [] },
+  requiredAnyOf: { type: [[String]], default: [] },
 }, { _id: true });
 
 const schema = new mongoose.Schema({

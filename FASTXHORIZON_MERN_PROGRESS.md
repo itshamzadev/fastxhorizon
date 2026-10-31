@@ -1029,3 +1029,10 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Local verification passed: known WebP returned HTTP 200 with `image/webp` and 159,060 bytes; traversal probe returned 404. Backend Jest passed 14 suites / 63 tests.
 - Live production endpoint still returns 404 because the updated application has not been deployed/restarted in Coolify. No deployment was performed by this change.
 
+## Manual Easypaisa and bank-account payment forms - 2026-10-31
+
+- Extended manual payment configuration with `requiredAnyOf` groups so a payment method can require at least one of Transaction ID/TID or payment screenshot.
+- Added admin payment-setting presets for Easypaisa and Bank Account. Each preset includes required sender name, sender bank/wallet name, and the transaction-ID-or-screenshot rule; recipient account details remain administrator-entered.
+- Existing dynamic JSON configuration and payment review workflow were preserved. No payment configuration records were changed automatically.
+- Backend Jest passed 14 suites / 63 tests. Admin TypeScript/Vite production build passed.
+

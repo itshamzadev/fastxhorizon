@@ -15,7 +15,7 @@ async function getConfig() {
 }
 
 function publicMethod(method) {
-  return { id: String(method._id), key: method.key, name: method.name, enabled: method.enabled, instructions: method.instructions, recipientDetails: method.recipientDetails, order: method.order, version: method.version, fields: (method.fields || []).filter(field => field.enabled).sort((a, b) => a.order - b.order).map(({ id, label, type, required, placeholder, helpText, order, options, acceptedMimeTypes, maxFileSizeBytes }) => ({ id, label, type, required, placeholder, helpText, order, options, acceptedMimeTypes, maxFileSizeBytes })) };
+  return { id: String(method._id), key: method.key, name: method.name, enabled: method.enabled, instructions: method.instructions, recipientDetails: method.recipientDetails, order: method.order, version: method.version, requiredAnyOf: method.requiredAnyOf || [], fields: (method.fields || []).filter(field => field.enabled).sort((a, b) => a.order - b.order).map(({ id, label, type, required, placeholder, helpText, order, options, acceptedMimeTypes, maxFileSizeBytes }) => ({ id, label, type, required, placeholder, helpText, order, options, acceptedMimeTypes, maxFileSizeBytes })) };
 }
 
 function publicConfig(config) {
@@ -33,6 +33,16 @@ function validateFields(method, values, evidence) {
     if (field.type === 'number' && !Number.isFinite(Number(value))) return `${field.label} must be a number.`;
     if (['select', 'radio'].includes(field.type) && !field.options.includes(String(value))) return `${field.label} has an invalid option.`;
     if (field.type === 'file' && field.required && !evidence?.some(file => file.fieldId === field.id)) return `${field.label} is required.`;
+  }
+  for (const group of method.requiredAnyOf || []) {
+    if (!Array.isArray(group) || !group.length) continue;
+    const hasValue = group.some(id => {
+      const field = fields.find(item => item.id === id);
+      if (field?.type === 'file') return evidence?.some(file => file.fieldId === id);
+      const value = values?.[id];
+      return value !== undefined && value !== null && value !== '';
+    });
+    if (!hasValue) return `${group.join(' or ')} is required.`;
   }
   return null;
 }
@@ -88,7 +98,7 @@ admin.put('/config', requireAdminPermission('payments.manage'), async (req, res,
   try {
     const body = req.body || {};
     if (typeof body.automaticEnabled !== 'boolean' || typeof body.manualEnabled !== 'boolean' || typeof body.codEnabled !== 'boolean' || !Array.isArray(body.manualMethods) || body.manualMethods.length > 20) return res.status(400).json({ code: 'validation_error', message: 'Invalid payment configuration.' });
-    for (const method of body.manualMethods) { if (!/^[a-z0-9][a-z0-9_-]{1,39}$/.test(method.key || '') || !method.name || !Array.isArray(method.fields) || method.fields.length > 30) return res.status(400).json({ code: 'validation_error', message: 'Invalid manual payment method or fields.' }); for (const field of method.fields) if (!/^[a-zA-Z][a-zA-Z0-9_-]{0,39}$/.test(field.id || '') || !['text', 'textarea', 'number', 'select', 'radio', 'checkbox', 'file'].includes(field.type)) return res.status(400).json({ code: 'validation_error', message: 'Invalid dynamic payment field.' }); }
+    for (const method of body.manualMethods) { if (!/^[a-z0-9][a-z0-9_-]{1,39}$/.test(method.key || '') || !method.name || !Array.isArray(method.fields) || method.fields.length > 30 || (method.requiredAnyOf !== undefined && (!Array.isArray(method.requiredAnyOf) || method.requiredAnyOf.length > 10))) return res.status(400).json({ code: 'validation_error', message: 'Invalid manual payment method or fields.' }); for (const field of method.fields) if (!/^[a-zA-Z][a-zA-Z0-9_-]{0,39}$/.test(field.id || '') || !['text', 'textarea', 'number', 'select', 'radio', 'checkbox', 'file'].includes(field.type)) return res.status(400).json({ code: 'validation_error', message: 'Invalid dynamic payment field.' }); for (const group of method.requiredAnyOf || []) if (!Array.isArray(group) || group.length > 10 || group.some(id => !method.fields.some(field => field.id === id))) return res.status(400).json({ code: 'validation_error', message: 'Invalid required-any payment field group.' }); }
     const saved = await PaymentConfiguration.findOneAndUpdate({ key: 'v1' }, { $set: { automaticEnabled: body.automaticEnabled, manualEnabled: body.manualEnabled, codEnabled: body.codEnabled, manualMethods: body.manualMethods } }, { new: true, upsert: true, runValidators: true });
     await AdminAuditLog.create({ adminId: req.admin._id, email: req.admin.email, action: 'payment_configuration_updated', success: true, ip: req.ip, metadata: { methodCount: body.manualMethods.length } });
     return res.json({ data: saved });
