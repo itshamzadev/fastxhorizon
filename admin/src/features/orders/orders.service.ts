@@ -1,5 +1,5 @@
 import type { UpdateOrderPayload } from '@/models/schemas'
-import type { Order, OrdersQuery } from '@/models/Order'
+import type { Order, OrdersQuery, PaymentDetails } from '@/models/Order'
 import { apiClient } from '@/services/api/client'
 import type { Paginated } from '@/types/api'
 
@@ -11,6 +11,11 @@ export const orderService = {
 
   async get(id: string): Promise<Order> {
     const response = await apiClient.get<{ data: Order }>(`${import.meta.env.MODE === 'test' ? '/orders' : '/admin/orders'}/${id}`)
+    return response.data
+  },
+
+  async getPaymentDetails(id: string): Promise<PaymentDetails | null> {
+    const response = await apiClient.get<{ data: PaymentDetails | null }>(`${import.meta.env.MODE === 'test' ? '/orders' : '/admin/orders'}/${id}/payment-details`)
     return response.data
   },
 

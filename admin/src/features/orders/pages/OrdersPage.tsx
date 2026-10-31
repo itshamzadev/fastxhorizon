@@ -158,13 +158,14 @@ export function OrdersPage() {
                   state={colState('status', sortField, sortDirection)}
                   onToggle={() => toggleSort('status')}
                 />
+                <Th>Action</Th>
               </tr>
             </THead>
             <tbody>
               {orders.isPending &&
                 [1, 2, 3, 4, 5].map((row) => (
                   <tr key={row}>
-                    {[1, 2, 3, 4, 5, 6].map((cell) => (
+                    {[1, 2, 3, 4, 5, 6, 7].map((cell) => (
                       <Td key={cell}>
                         <Skeleton style={{ height: 16, width: cell === 1 ? 90 : 110 }} />
                       </Td>
@@ -174,7 +175,7 @@ export function OrdersPage() {
 
               {orders.isSuccess && orders.data.meta.total === 0 && (
                 <tr>
-                  <td colSpan={6}>
+                  <td colSpan={7}>
                     <EmptyState
                       icon={
                         hasFilters ? undefined : (
@@ -231,6 +232,11 @@ export function OrdersPage() {
                     </Td>
                     <Td>
                       <OrderStatusBadge status={order.status} />
+                    </Td>
+                    <Td>
+                      <Link className="btn btn--secondary btn--sm" to={`/dashboard/orders/${order.id}`}>
+                        View payment
+                      </Link>
                     </Td>
                   </Tr>
                 ))}

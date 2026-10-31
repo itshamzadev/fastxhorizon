@@ -20,6 +20,14 @@ export function useOrder(id: string | undefined) {
   })
 }
 
+export function useOrderPaymentDetails(id: string | undefined) {
+  return useQuery({
+    queryKey: [...queryKeys.orders.detail(id ?? ''), 'payment-details'],
+    queryFn: () => orderService.getPaymentDetails(id as string),
+    enabled: Boolean(id),
+  })
+}
+
 export function useUpdateOrder() {
   const queryClient = useQueryClient()
   return useMutation({

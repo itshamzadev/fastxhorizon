@@ -24,7 +24,7 @@ import {
   PaymentStatusBadge,
 } from '@/components/display/status-badges'
 import { useToast } from '@/components/feedback/ToastProvider'
-import { useOrder, useUpdateOrder } from '../hooks/use-orders'
+import { useOrder, useOrderPaymentDetails, useUpdateOrder } from '../hooks/use-orders'
 
 /**
  * Order detail with inline status management — the canonical example of a
@@ -36,6 +36,7 @@ export function OrderDetailPage() {
   const toast = useToast()
 
   const order = useOrder(orderId)
+  const paymentDetails = useOrderPaymentDetails(orderId)
   const updateOrder = useUpdateOrder()
   const isNotFound = order.error instanceof NotFoundError
 
@@ -231,6 +232,28 @@ export function OrderDetailPage() {
                     </span>
                   </li>
                 </ul>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader>
+                <div>
+                  <CardTitle>Payment details</CardTitle>
+                  <CardDescription>Review the customer&apos;s submitted payment proof before verification.</CardDescription>
+                </div>
+              </CardHeader>
+              <CardContent style={{ paddingTop: 8 }}>
+                {paymentDetails.isPending && <Skeleton style={{ height: 18 }} />}
+                {paymentDetails.isError && <p className="text-sm text-muted">Payment details could not be loaded.</p>}
+                {paymentDetails.isSuccess && !paymentDetails.data && <p className="text-sm text-muted">No payment details submitted yet.</p>}
+                {paymentDetails.data && <>
+                  <ul role="list" className="meta-list">
+                    <li className="meta-list__row"><span className="meta-list__label">Method</span><span className="meta-list__value">{paymentDetails.data.methodKey}</span></li>
+                    <li className="meta-list__row"><span className="meta-list__label">Verification</span><span className="meta-list__value">{paymentDetails.data.state}</span></li>
+                    {Object.entries(paymentDetails.data.values).map(([key, value]) => <li className="meta-list__row" key={key}><span className="meta-list__label">{key}</span><span className="meta-list__value">{String(value)}</span></li>)}
+                  </ul>
+                  {paymentDetails.data.evidence.map((file) => file.data?.startsWith('data:image/') ? <img key={file.index} src={file.data} alt="Customer payment proof" style={{ display: 'block', maxWidth: '100%', maxHeight: 360, objectFit: 'contain', marginTop: 16, borderRadius: 8 }} /> : null)}
+                </>}
               </CardContent>
             </Card>
           </div>

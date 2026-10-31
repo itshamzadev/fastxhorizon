@@ -37,6 +37,19 @@ export interface Order {
   updatedAt: string
 }
 
+export interface PaymentDetails {
+  id: string
+  methodKey: string
+  amount: number
+  currency: string
+  state: string
+  values: Record<string, string | boolean | number>
+  evidence: Array<{ name: string; mimeType: string; size: number; data?: string; index: number }>
+  createdAt: string
+  decidedAt: string | null
+  rejectionReason: string
+}
+
 export interface UpdateOrderInput {
   status?: OrderStatus
   paymentStatus?: OrderPaymentStatus

@@ -12,6 +12,7 @@ const Refund = require('../models/refund');
 const Category = require('../models/category');
 const CatalogImport = require('../models/catalogImport');
 const PaymentConfiguration = require('../models/paymentConfiguration');
+const PaymentSubmission = require('../models/paymentSubmission');
 const { SUPPLIER, safeFilename, buildEntries, makeProductDocument, wooPreview, artoPreview } = require('../services/catalogImport');
 const { ingestSupplierImages, auditExternalProductImages } = require('../services/supplierImageIngestion');
 const { SETTING_KEY, DEFAULT_MESSAGE, publicAnnouncement } = require('./storefront');
@@ -751,6 +752,20 @@ router.get('/orders', requireAdminPermission('orders.read'), async (req, res, ne
 
 router.get('/orders/:id', requireAdminPermission('orders.read'), async (req, res, next) => {
   try { if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(404).json({ code: 'not_found', message: 'Order not found.' }); const order = await Order.findById(req.params.id).lean(); return order ? res.json({ data: orderView(order) }) : res.status(404).json({ code: 'not_found', message: 'Order not found.' }); } catch (error) { return next(error); }
+});
+
+router.get('/orders/:id/payment-details', requireAdminPermission('payments.read'), async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(404).json({ code: 'not_found', message: 'Order not found.' });
+    const submission = await PaymentSubmission.findOne({ orderId: req.params.id }).select('+evidence.data').lean();
+    if (!submission) return res.json({ data: null });
+    return res.json({ data: {
+      id: String(submission._id), methodKey: submission.methodKey, amount: submission.amount,
+      currency: submission.currency, state: submission.state, values: submission.values || {},
+      evidence: (submission.evidence || []).map((file, index) => ({ name: file.name, mimeType: file.mimeType, size: file.size, data: file.data, index })),
+      createdAt: submission.createdAt, decidedAt: submission.decidedAt, rejectionReason: submission.rejectionReason || '',
+    } });
+  } catch (error) { return next(error); }
 });
 
 router.patch('/orders/:id', requireAdminPermission('orders.manage'), async (req, res, next) => {
