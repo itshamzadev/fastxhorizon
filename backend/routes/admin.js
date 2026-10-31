@@ -98,7 +98,11 @@ async function findCategoryReference(value, parentSlug = null) {
 
 async function validateProductCategoryPair(categoryValue, subcategoryValue) {
   const category = await findCategoryReference(categoryValue, null);
-  if (!category) return { error: 'A valid top-level category is required.' };
+  if (!category) {
+    const legacy = LEGACY_CATEGORIES.find((slug) => slug === slugify(categoryValue) || legacyCategoryName(slug).toLowerCase() === String(categoryValue || '').trim().toLowerCase());
+    if (legacy && !String(subcategoryValue || '').trim()) return { category: legacyCategoryName(legacy), subcategory: '', categoryPath: [legacyCategoryName(legacy)] };
+    return { error: 'A valid top-level category is required.' };
+  }
   const subcategoryValueNormalized = String(subcategoryValue || '').trim();
   if (!subcategoryValueNormalized) return { category: category.name, subcategory: '', categoryPath: [category.name] };
   const subcategory = await findCategoryReference(subcategoryValueNormalized, category.slug);
@@ -494,10 +498,16 @@ router.post('/product-imports/preview', express.text({ type: ['text/csv', 'text/
   try {
     const requestedFormat = String(req.headers['x-import-format'] || '').toLowerCase();
     let categories = ['woocommerce', 'artomall'].includes(requestedFormat) ? await Category.find({ active: true }).lean() : [];
-    let built = buildEntries(req.body, { format: requestedFormat, categories });
+    const storedParentSlugs = new Set(categories.filter((category) => !category.parentSlug).map((category) => category.slug));
+    const legacyCategories = LEGACY_CATEGORIES.filter((slug) => !storedParentSlugs.has(slug)).map((slug) => ({ name: legacyCategoryName(slug), slug, parentSlug: null, active: true, virtual: true }));
+    let availableCategories = [...categories, ...legacyCategories];
+    let built = buildEntries(req.body, { format: requestedFormat, categories: availableCategories });
     if (built.format === 'woocommerce' && requestedFormat !== 'woocommerce') {
       categories = await Category.find({ active: true }).lean();
-      built = buildEntries(req.body, { format: 'woocommerce', categories });
+      const refreshParents = new Set(categories.filter((category) => !category.parentSlug).map((category) => category.slug));
+      const refreshLegacy = LEGACY_CATEGORIES.filter((slug) => !refreshParents.has(slug)).map((slug) => ({ name: legacyCategoryName(slug), slug, parentSlug: null, active: true, virtual: true }));
+      availableCategories = [...categories, ...refreshLegacy];
+      built = buildEntries(req.body, { format: 'woocommerce', categories: availableCategories });
     }
     const { rows, entries } = built;
     const keys = entries.map((entry) => entry.supplierKey);
@@ -528,7 +538,7 @@ router.post('/product-imports/preview', express.text({ type: ['text/csv', 'text/
     const stagedBytes = Buffer.byteLength(JSON.stringify(entries), 'utf8');
     if (stagedBytes > 12 * 1024 * 1024) return res.status(400).json({ code: 'validation_error', message: 'CSV preview is too large to stage securely. Split the file into smaller imports.' });
     const preview = await CatalogImport.create({ supplier: SUPPLIER, filename: safeFilename(req.headers['x-source-filename']), uploadedBy: req.admin._id, status: 'PREVIEWED', previewExpiresAt: new Date(Date.now() + 30 * 60 * 1000), summary, stagedProducts: entries });
-    return res.json({ data: { id: String(preview._id), expiresAt: preview.previewExpiresAt, supplier: SUPPLIER, format: built.format || 'shopify', filename: preview.filename, summary, categoryOptions: categories.filter((category) => category.active !== false).map((category) => ({ name: category.name, slug: category.slug, parentSlug: category.parentSlug || null })), products: entries.slice(0, 1000).map((entry) => entry.preview) } });
+    return res.json({ data: { id: String(preview._id), expiresAt: preview.previewExpiresAt, supplier: SUPPLIER, format: built.format || 'shopify', filename: preview.filename, summary, categoryOptions: availableCategories.filter((category) => category.active !== false).map((category) => ({ name: category.name, slug: category.slug, parentSlug: category.parentSlug || null })), products: entries.slice(0, 1000).map((entry) => entry.preview) } });
   } catch (error) { return res.status(400).json({ code: 'validation_error', message: error.message || 'The CSV could not be validated.' }); }
 });
 
