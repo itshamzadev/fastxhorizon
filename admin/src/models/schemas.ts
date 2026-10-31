@@ -10,7 +10,7 @@
 import { z } from 'zod'
 import { INVOICE_STATUSES } from '@/models/Invoice'
 import { ORDER_PAYMENT_STATUSES, ORDER_STATUSES } from '@/models/Order'
-import { PRODUCT_CATEGORIES, PRODUCT_STATUSES } from '@/models/Product'
+import { PRODUCT_STATUSES } from '@/models/Product'
 import { PROJECT_STATUSES } from '@/models/Project'
 import { USER_ROLES, USER_STATUSES } from '@/models/User'
 
@@ -60,7 +60,8 @@ export const createProductSchema = z.object({
     .max(280, 'Keep the description under 280 characters')
     .nullable()
     .optional(),
-  category: z.enum(PRODUCT_CATEGORIES),
+  category: z.string().trim().min(1, 'Select a category'),
+  subcategory: z.string().trim().optional(),
   price: z.coerce
     .number('Enter a valid price')
     .positive('Price must be greater than zero')

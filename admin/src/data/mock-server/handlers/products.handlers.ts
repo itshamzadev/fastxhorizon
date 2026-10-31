@@ -80,7 +80,7 @@ export const productsHandlers = [
     const product: Product = {
       id: db.nextId('prd'),
       name: parsed.data.name,
-      sku: `${CATEGORY_PREFIX[parsed.data.category]}-${String(db.nextId('sku')).slice(1)}`,
+      sku: `${CATEGORY_PREFIX[parsed.data.category as ProductCategory] || 'FXH'}-${String(db.nextId('sku')).slice(1)}`,
       description: parsed.data.description ?? null,
       category: parsed.data.category,
       price: Math.round(parsed.data.price * 100) / 100,

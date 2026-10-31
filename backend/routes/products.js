@@ -2,6 +2,7 @@ require('dotenv').config();
 const express = require('express');
 const router = express.Router();
 const Product = require('../models/product');
+const Category = require('../models/category');
 
 const { queryById: queryPineconeById, queryByVector: queryPineconeByVector, fetchVectors: fetchPineconeVectors } = require('../pineconeClient');
 const { ensureProductSyncedWithPinecone } = require('../services/pineconeSync');
@@ -83,6 +84,16 @@ const normalizeProduct = product => ({
   createdAt: product.createdAt,
   storeName: product.storeName || product.seller?.storeName || product.sellerStoreName || 'FASTXHORIZON',
   ...publicFlexibleFields(product),
+});
+
+router.get('/categories', async (req, res) => {
+  try {
+    const categories = await Category.find({ active: true }).sort({ parentSlug: 1, name: 1 }).lean();
+    const parents = categories.filter((category) => !category.parentSlug).map((category) => ({ id: category._id, name: category.name, slug: category.slug, description: category.description || '', image: category.image || '', subcategories: [] }));
+    const parentMap = new Map(parents.map((category) => [category.slug, category]));
+    for (const category of categories.filter((item) => item.parentSlug && parentMap.has(item.parentSlug))) parentMap.get(category.parentSlug).subcategories.push({ id: category._id, name: category.name, slug: category.slug, description: category.description || '', image: category.image || '' });
+    return res.json({ data: parents });
+  } catch (error) { return res.status(500).json({ code: 'internal_error', message: 'Unable to load categories.' }); }
 });
 
 const tokenize = text =>

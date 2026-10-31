@@ -70,6 +70,7 @@ const PaymentsPage = lazy(() => import('@/features/payments/pages/PaymentsPage')
 const CsvImportPage = lazy(() => import('@/features/product-import/pages/CsvImportPage').then((m) => ({ default: m.CsvImportPage })))
 const ImportHistoryPage = lazy(() => import('@/features/product-import/pages/ImportHistoryPage').then((m) => ({ default: m.ImportHistoryPage })))
 const PricingApprovalPage = lazy(() => import('@/features/pricing/pages/PricingApprovalPage').then((m) => ({ default: m.PricingApprovalPage })))
+const CategoriesPage = lazy(() => import('@/features/categories/pages/CategoriesPage').then((m) => ({ default: m.CategoriesPage })))
 
 function PageFallback() {
   return (
@@ -224,6 +225,11 @@ export const router = createBrowserRouter([
             path: 'payments',
             element: <Suspense fallback={<PageFallback />}><PaymentsPage /></Suspense>,
             handle: { crumb: 'Payments' },
+          },
+          {
+            path: 'categories',
+            element: <Suspense fallback={<PageFallback />}><CategoriesPage /></Suspense>,
+            handle: { crumb: 'Categories' },
           },
           {
             path: 'projects',

@@ -25,7 +25,8 @@ export interface Product {
   name: string
   sku: string
   description: string | null
-  category: ProductCategory
+  category: string
+  subcategory?: string
   /** Price in major units (e.g. dollars), not cents. */
   price: number
   inventory: number
@@ -49,7 +50,8 @@ export interface Product {
 export interface CreateProductInput {
   name: string
   description?: string | null
-  category: ProductCategory
+  category: string
+  subcategory?: string
   price: number
   inventory: number
   inventoryMode?: InventoryMode
@@ -67,6 +69,6 @@ export interface CreateProductInput {
 export type UpdateProductInput = Partial<CreateProductInput>
 
 export interface ProductsQuery extends ListQuery {
-  category?: ProductCategory | 'all'
+  category?: string | 'all'
   status?: ProductStatus | 'all'
 }

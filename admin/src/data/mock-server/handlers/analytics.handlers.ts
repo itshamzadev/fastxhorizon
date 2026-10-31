@@ -71,7 +71,7 @@ function seriesFor(days: number): AnalyticsDailyPoint[] {
 }
 
 export const analyticsHandlers = [
-  http.get('/api/analytics/overview', async ({ request }) => {
+  http.get('/api/admin/dashboard/analytics', async ({ request }) => {
     await latency(250, 550)
     if (!getAuthUserId(request)) return unauthorized()
 
@@ -120,9 +120,13 @@ export const analyticsHandlers = [
 
     const overview: AnalyticsOverview = {
       range,
+      totalCustomers: 0,
       totals: {
         revenue: Math.round(revenueCurrent),
         orders: Math.round(ordersCurrent),
+        completedOrders: Math.round(ordersCurrent),
+        pendingOrders: 0,
+        cancelledOrders: 0,
         visitors: visitorsCurrent,
         conversionRate,
       },
@@ -142,6 +146,9 @@ export const analyticsHandlers = [
         country: c.country,
         share: Math.round(c.share * (days / 30) * 10) / 10,
       })),
+      statusCounts: [],
+      topProducts: [],
+      limitations: ['Mock analytics data is enabled for isolated UI tests only.'],
     }
 
     return HttpResponse.json({ data: overview })

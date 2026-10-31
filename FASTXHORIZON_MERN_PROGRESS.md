@@ -810,3 +810,18 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - V13 store-operations control remains integrated and Super Admin-only. Existing order/payment restrictions remain unchanged and local ordering is still OFF.
 - Verification: backend syntax checks passed; backend Jest passed (10 suites, 50 tests); Admin production build passed; unauthenticated analytics request correctly returned HTTP 401. Full V14 modules for supplier returns, inventory ledgers, seller analytics, digital entitlement analytics, traffic tracking, exports and dedicated chart visualizations remain blocked by missing underlying data/services and are explicitly not claimed complete.
 
+## V16 category and subcategory management - 2026-10-31
+
+- Extended the existing `Category` collection with optional description and image metadata while preserving the existing `parentSlug` relationship. The hierarchy is strictly two levels: top-level category (`parentSlug: null`) or subcategory whose parent is a top-level slug.
+- Added Super Admin-only category CRUD under `/api/admin/categories`, including scoped slug uniqueness, parent validation, safe deletion checks for child categories and linked products, status changes, audit events, search, and product/subcategory counts. Added public active category reads at `/api/products/categories` for storefront/admin product selection.
+- Added the existing Admin Panel Categories page at `/dashboard/categories`, shown in the sidebar only to `super_admin`. It supports category/subcategory creation, editing, status, search, image URL, parent selection, deletion confirmation, loading/error states and referential-integrity errors.
+- Product create/edit now loads the real two-level category tree and validates the selected parent/subcategory pair server-side; existing product references are not migrated or rewritten automatically.
+- Verification: Admin production build passed; targeted category authorization/hierarchy tests passed (3 tests); the pre-existing Admin Vitest suite and backend Jest suite remain available for the final full run. No MongoDB records, production settings, deployment or GitHub push changed.
+
+## V17 analytics endpoint and empty-state fix - 2026-10-31
+
+- Root cause: the code-split Analytics page requested `/api/analytics/overview`, but the authenticated backend route is `/api/admin/dashboard/analytics`; the request therefore returned HTTP 404. The frontend also expected an older `totals/series/topCountries` response while the backend returned `orderTotals/dailySales/statusCounts`.
+- Updated the Admin analytics service to call the existing authenticated endpoint and normalize its verified response. The page now displays revenue, order totals, completed/pending/cancelled orders, total customers, daily verified-sales trend, order-status distribution and top products using real records.
+- Backend analytics now returns valid zero-valued envelopes for empty collections, counts total customers, uses `paymentStatus=verified` for collected revenue, excludes cancelled orders from GMV/sales series, and explicitly reports visitor/conversion/profit/refund metrics as unavailable where no source data exists. MongoDB connection remains the single configured Mongoose connection; no database migration or production setting was changed.
+- Added regression coverage for authenticated access and empty analytics datasets. Verification: Admin build passed; Admin Vitest passed (7 files, 29 tests); backend Jest passed (12 suites, 55 tests). No GitHub push or deployment performed.
+

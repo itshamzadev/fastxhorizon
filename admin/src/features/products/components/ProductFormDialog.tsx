@@ -1,4 +1,4 @@
-import { useEffect, useState } from 'react'
+import { useEffect, useMemo, useState } from 'react'
 import { Dialog } from '@/components/ui/Dialog'
 import { Button } from '@/components/ui/Button'
 import { Field, Input, Select, Textarea } from '@/components/ui/Input'
@@ -10,6 +10,8 @@ import type { CreateProductPayload } from '@/models/schemas'
 import { createProductSchema, updateProductSchema } from '@/models/schemas'
 import { useToast } from '@/components/feedback/ToastProvider'
 import { useCreateProduct, useUpdateProduct } from '../hooks/use-products'
+import { categoryService } from '@/services/categories/categories.service'
+import type { Category } from '@/models/Category'
 
 const CATEGORY_OPTIONS = PRODUCT_CATEGORIES.map((category) => ({
   value: category,
@@ -31,6 +33,7 @@ interface FormValues {
   name: string
   description: string
   category: string
+  subcategory: string
   price: string
   inventory: string
   status: string
@@ -60,6 +63,7 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
     name: '',
     description: '',
     category: 'electronics',
+    subcategory: '',
     price: '',
     inventory: '0',
     status: 'draft',
@@ -81,6 +85,7 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
       name: product?.name ?? '',
       description: product?.description ?? '',
       category: product?.category ?? 'electronics',
+      subcategory: product?.subcategory ?? '',
       price: product !== undefined ? String(product.price) : '',
       inventory: product !== undefined ? String(product.inventory) : '0',
       status: product?.status ?? 'draft',
@@ -99,6 +104,10 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
     setServerError(null)
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [open, product?.id])
+
+  const [categories, setCategories] = useState<Category[]>([])
+  useEffect(() => { if (open) void categoryService.publicList().then((response) => setCategories(response.data)).catch(() => setCategories([])) }, [open])
+  const selectedCategory = useMemo(() => categories.find((category) => category.name === form.values.category || category.slug === form.values.category), [categories, form.values.category])
 
   const handleSubmit = async () => {
     setServerError(null)
@@ -223,10 +232,14 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
         <Field id="product-category" label="Category" required>
           <Select
             id="product-category"
-            options={CATEGORY_OPTIONS}
+            options={categories.length ? categories.filter((category) => !category.parentSlug).map((category) => ({ value: category.name, label: category.name })) : CATEGORY_OPTIONS}
             value={form.values.category}
-            onChange={(event) => form.setField('category', event.target.value)}
+            onChange={(event) => { form.setField('category', event.target.value); form.setField('subcategory', '') }}
           />
+        </Field>
+
+        <Field id="product-subcategory" label="Subcategory" hint="Only subcategories belonging to the selected category are shown.">
+          <Select id="product-subcategory" options={[{ value: '', label: 'No subcategory' }, ...(selectedCategory?.subcategories || []).map((subcategory) => ({ value: subcategory.name, label: subcategory.name }))]} value={form.values.subcategory} onChange={(event) => form.setField('subcategory', event.target.value)} />
         </Field>
 
         <Field id="product-price" label="Price (PKR)" required error={form.errors.price}>

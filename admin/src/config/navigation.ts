@@ -16,6 +16,7 @@ export interface NavItem {
   icon: LucideIcon
   /** When true, only this exact path is active (not nested routes). */
   end?: boolean
+  superAdminOnly?: boolean
 }
 
 export interface NavSection {
@@ -50,6 +51,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { label: 'Orders', to: '/dashboard/orders', icon: ShoppingCart },
       { label: 'Newsletter', to: '/dashboard/newsletter', icon: Mail },
       { label: 'Payments', to: '/dashboard/payments', icon: CreditCard },
+      { label: 'Categories', to: '/dashboard/categories', icon: Package, superAdminOnly: true },
     ],
   },
   {

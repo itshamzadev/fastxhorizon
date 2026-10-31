@@ -65,7 +65,7 @@ export function AnalyticsPage() {
       <>
         <PageHeader
           title="Analytics"
-          description="Traffic, revenue trends and conversion over time."
+          description="Verified revenue, order trends and catalog performance."
         />
         <div className="kpi-grid" style={{ marginBottom: 16 }}>
           {[1, 2, 3, 4].map((n) => (
@@ -88,7 +88,7 @@ export function AnalyticsPage() {
       <>
         <PageHeader
           title="Analytics"
-          description="Traffic, revenue trends and conversion over time."
+          description="Verified revenue, order trends and catalog performance."
         />
         <ErrorState
           message={getUserMessage(overview.error)}
@@ -104,13 +104,13 @@ export function AnalyticsPage() {
     label: shortDayLabel(point.date),
     value: point.revenue,
   }))
-  const visitorsSeries: SeriesPoint[] = data.series.map((point) => ({
+  const ordersSeries: SeriesPoint[] = data.series.map((point) => ({
     label: shortDayLabel(point.date),
-    value: point.visitors,
+    value: point.orders,
   }))
-  const countrySegments: DonutSegment[] = data.topCountries.map((country, index) => ({
-    label: country.country,
-    value: country.share,
+  const statusSegments: DonutSegment[] = data.statusCounts.map((status, index) => ({
+    label: status.status,
+    value: status.count,
     color: CHART_COLORS[index % CHART_COLORS.length],
   }))
 
@@ -139,17 +139,10 @@ export function AnalyticsPage() {
           value={formatNumber(data.totals.orders)}
           changePct={data.changes.orders}
         />
-        <MetricCard
-          label="Visitors"
-          value={formatNumber(data.totals.visitors)}
-          changePct={data.changes.visitors}
-        />
-        <MetricCard
-          label="Conversion rate"
-          value={`${data.totals.conversionRate}%`}
-          changePct={data.changes.conversionRate}
-          changeIsAbsolute
-        />
+        <MetricCard label="Completed orders" value={formatNumber(data.totals.completedOrders)} changePct={null} />
+        <MetricCard label="Pending orders" value={formatNumber(data.totals.pendingOrders)} changePct={null} />
+        <MetricCard label="Cancelled orders" value={formatNumber(data.totals.cancelledOrders)} changePct={null} />
+        <MetricCard label="Total customers" value={formatNumber(data.totalCustomers)} changePct={null} />
       </div>
 
       <div className="analytics-stack">
@@ -174,13 +167,13 @@ export function AnalyticsPage() {
           <Card>
             <CardHeader>
               <div>
-                <CardTitle>Visitors</CardTitle>
-                <CardDescription>Daily unique visitors.</CardDescription>
+                <CardTitle>Orders</CardTitle>
+                <CardDescription>Daily orders in the selected range.</CardDescription>
               </div>
             </CardHeader>
             <CardContent>
               <BarChart
-                data={visitorsSeries}
+                data={ordersSeries}
                 height={220}
                 formatValue={formatCompact}
                 ariaLabel="Daily unique visitors"
@@ -191,17 +184,17 @@ export function AnalyticsPage() {
           <Card>
             <CardHeader>
               <div>
-                <CardTitle>Sessions by country</CardTitle>
-                <CardDescription>Share of total sessions.</CardDescription>
+                <CardTitle>Order status</CardTitle>
+                <CardDescription>Orders grouped by current status.</CardDescription>
               </div>
             </CardHeader>
             <CardContent className="donut-layout">
               <DonutChart
-                segments={countrySegments}
-                ariaLabel="Session share by country"
+                segments={statusSegments}
+                ariaLabel="Order status distribution"
               />
               <ul role="list" className="legend-list">
-                {countrySegments.map((segment) => (
+                {statusSegments.map((segment) => (
                   <li key={segment.label} className="legend-list__item">
                     <span
                       className="legend-swatch"
@@ -222,31 +215,20 @@ export function AnalyticsPage() {
         <Card>
           <CardHeader>
             <div>
-              <CardTitle>Top pages</CardTitle>
+          <CardTitle>Top products</CardTitle>
               <CardDescription>
-                Most visited pages versus the previous period.
+                Products by verified sales in the selected range.
               </CardDescription>
             </div>
           </CardHeader>
           <CardContent>
             <ol role="list" className="rank-list">
-              {data.topPages.map((page) => (
-                <li key={page.path} className="rank-list__item">
-                  <span className="rank-list__path">{page.path}</span>
+              {data.topProducts.map((product) => (
+                <li key={product.id} className="rank-list__item">
+                  <span className="rank-list__path">{product.name}</span>
                   <span className="rank-list__meta">
                     <span className="rank-list__views">
-                      {formatNumber(page.views)} views
-                    </span>
-                    <span className={`kpi-change ${deltaToneClass(page.changePct)}`}>
-                      {page.changePct === 0 ? (
-                        <Minus size={12} aria-hidden="true" />
-                      ) : page.changePct > 0 ? (
-                        <ArrowUpRight size={12} aria-hidden="true" />
-                      ) : (
-                        <ArrowDownRight size={12} aria-hidden="true" />
-                      )}
-                      {Math.abs(page.changePct)}%
-                      <span className="visually-hidden">versus previous period</span>
+                      {formatNumber(product.quantity)} units · {formatCurrency(product.sales)}
                     </span>
                   </span>
                 </li>
@@ -262,7 +244,7 @@ export function AnalyticsPage() {
 interface MetricCardProps {
   label: string
   value: string
-  changePct: number
+  changePct: number | null
   /** Conversion moves in absolute points, so label its delta differently. */
   changeIsAbsolute?: boolean
 }
@@ -280,10 +262,7 @@ function MetricCard({
         <span className="kpi-card__value-row">
           <span className="kpi-card__value">{value}</span>
         </span>
-        <span
-          className={`kpi-change ${changeToneClass(changePct)}`}
-          style={{ marginTop: 4 }}
-        >
+        {changePct === null ? <span className="text-sm text-muted" style={{ marginTop: 4 }}>Comparison unavailable</span> : <span className={`kpi-change ${changeToneClass(changePct)}`} style={{ marginTop: 4 }}>
           {changePct === 0 ? (
             <Minus size={12} aria-hidden="true" />
           ) : changePct > 0 ? (
@@ -293,7 +272,7 @@ function MetricCard({
           )}
           {changeIsAbsolute ? `${Math.abs(changePct)} pts` : `${Math.abs(changePct)}%`}
           <span className="kpi-change__hint">vs prev.</span>
-        </span>
+        </span>}
       </CardContent>
     </Card>
   )
@@ -303,8 +282,4 @@ function changeToneClass(changePct: number): string {
   if (changePct > 0) return 'kpi-change--up'
   if (changePct < 0) return 'kpi-change--down'
   return 'kpi-change--neutral'
-}
-
-function deltaToneClass(changePct: number): string {
-  return changeToneClass(changePct)
 }

@@ -2,6 +2,7 @@ import { NavLink } from 'react-router-dom'
 import { PanelLeftClose, PanelLeftOpen } from 'lucide-react'
 import { NAV_SECTIONS } from '@/config/navigation'
 import { cn } from '@/lib/cn'
+import { useAuth } from '@/app/providers/AuthProvider'
 
 export interface SidebarProps {
   collapsed: boolean
@@ -20,6 +21,7 @@ export function Sidebar({
   onToggleCollapse,
   onCloseMobile,
 }: SidebarProps) {
+  const { user } = useAuth()
   return (
     <>
       {mobileOpen && (
@@ -49,7 +51,7 @@ export function Sidebar({
                 <p className="sidebar__section-label">{section.label}</p>
               )}
               <ul className="sidebar__list">
-                {section.items.map((item) => (
+                {section.items.filter((item) => !item.superAdminOnly || user?.role === 'super_admin').map((item) => (
                   <li key={item.to}>
                     <NavLink
                       to={item.to}

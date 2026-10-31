@@ -27,6 +27,34 @@ function requireSuperAdmin(req, res, next) {
   return next();
 }
 
+function slugify(value) {
+  return String(value || '').trim().toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 100);
+}
+
+function validCategoryImage(value) {
+  return !value || /^(https?:\/\/|data:image\/(png|jpeg|jpg|webp|gif);base64,)/i.test(value);
+}
+
+function categoryView(category, productCount = 0, subcategoryCount = 0) {
+  return { id: String(category._id), name: category.name, slug: category.slug, parentSlug: category.parentSlug || null, description: category.description || '', image: category.image || '', active: category.active !== false, productCount, subcategoryCount, createdAt: category.createdAt, updatedAt: category.updatedAt };
+}
+
+async function findCategoryReference(value, parentSlug = null) {
+  const normalized = String(value || '').trim();
+  if (!normalized) return null;
+  return Category.findOne({ parentSlug, $or: [{ slug: normalized.toLowerCase() }, { name: normalized }] }).lean();
+}
+
+async function validateProductCategoryPair(categoryValue, subcategoryValue) {
+  const category = await findCategoryReference(categoryValue, null);
+  if (!category) return { error: 'A valid top-level category is required.' };
+  const subcategoryValueNormalized = String(subcategoryValue || '').trim();
+  if (!subcategoryValueNormalized) return { category: category.name, subcategory: '', categoryPath: [category.name] };
+  const subcategory = await findCategoryReference(subcategoryValueNormalized, category.slug);
+  if (!subcategory) return { error: 'The selected subcategory does not belong to the selected category.' };
+  return { category: category.name, subcategory: subcategory.name, categoryPath: [category.name, subcategory.name] };
+}
+
 function pageQuery(req) {
   const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
   const pageSize = Math.min(MAX_PAGE_SIZE, Math.max(1, Number.parseInt(req.query.pageSize, 10) || 10));
@@ -169,6 +197,94 @@ router.patch('/settings/store-operations', requireSuperAdmin, async (req, res, n
   } catch (error) { return next(error); }
 });
 
+// Category management is deliberately Super Admin-only. parentSlug is either
+// null (category) or the slug of a top-level category (subcategory); a child
+// can never itself become a parent.
+router.get('/categories', requireSuperAdmin, async (req, res, next) => {
+  try {
+    const search = String(req.query.search || '').trim().slice(0, 100);
+    const parentSlug = req.query.parentSlug === undefined ? undefined : (String(req.query.parentSlug).trim().toLowerCase() || null);
+    const filter = {};
+    if (parentSlug !== undefined) filter.parentSlug = parentSlug;
+    if (search) filter.$or = [{ name: { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' } }, { slug: { $regex: search.replace(/[.*+?^${}()|[\]\\]/g, '\\$&'), $options: 'i' } }];
+    const categories = await Category.find(filter).sort({ parentSlug: 1, name: 1 }).lean();
+    const parents = categories.filter((category) => !category.parentSlug);
+    const counts = await Promise.all(categories.map(async (category) => {
+      const isParent = !category.parentSlug;
+      const productFilter = isParent ? { $or: [{ category: category.name }, { category: category.slug }] } : { $or: [{ subcategory: category.name }, { subcategory: category.slug }] };
+      const [productCount, subcategoryCount] = await Promise.all([Product.countDocuments(productFilter), isParent ? Category.countDocuments({ parentSlug: category.slug }) : Promise.resolve(0)]);
+      return [String(category._id), { productCount, subcategoryCount }];
+    }));
+    const countMap = new Map(counts);
+    return res.json({ data: categories.map((category) => categoryView(category, countMap.get(String(category._id))?.productCount || 0, countMap.get(String(category._id))?.subcategoryCount || 0)), meta: { total: categories.length, parentCount: parents.length } });
+  } catch (error) { return next(error); }
+});
+
+router.post('/categories', requireSuperAdmin, async (req, res, next) => {
+  try {
+    const name = String(req.body?.name || '').trim();
+    const slug = slugify(req.body?.slug || name);
+    const parentSlug = req.body?.parentSlug ? String(req.body.parentSlug).trim().toLowerCase() : null;
+    const description = String(req.body?.description || '').trim();
+    const image = String(req.body?.image || '').trim();
+    if (name.length < 2 || name.length > 100 || !slug || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(slug) || description.length > 1000 || !validCategoryImage(image)) return res.status(400).json({ code: 'validation_error', message: 'Valid category name, slug, description and image are required.' });
+    if (parentSlug && !(await Category.exists({ slug: parentSlug, parentSlug: null }))) return res.status(400).json({ code: 'validation_error', message: 'Subcategory parent must be an existing top-level category.' });
+    if (await Category.exists({ slug, parentSlug })) return res.status(409).json({ code: 'conflict', message: 'A category with this slug already exists at this level.' });
+    const category = await Category.create({ name, slug, parentSlug, description, image, active: req.body?.active !== false });
+    await audit(req, 'category_created', true, { categoryId: String(category._id), parentSlug });
+    return res.status(201).json({ data: categoryView(category) });
+  } catch (error) { if (error.code === 11000) return res.status(409).json({ code: 'conflict', message: 'A category with this slug already exists at this level.' }); return next(error); }
+});
+
+router.patch('/categories/:id', requireSuperAdmin, async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(404).json({ code: 'not_found', message: 'Category not found.' });
+    const current = await Category.findById(req.params.id).lean();
+    if (!current) return res.status(404).json({ code: 'not_found', message: 'Category not found.' });
+    const update = {};
+    if (req.body?.name !== undefined) update.name = String(req.body.name).trim();
+    if (req.body?.slug !== undefined) update.slug = slugify(req.body.slug);
+    if (req.body?.description !== undefined) update.description = String(req.body.description || '').trim();
+    if (req.body?.image !== undefined) update.image = String(req.body.image || '').trim();
+    if (req.body?.active !== undefined) update.active = req.body.active === true;
+    if (req.body?.parentSlug !== undefined) update.parentSlug = req.body.parentSlug ? String(req.body.parentSlug).trim().toLowerCase() : null;
+    const nextParent = update.parentSlug === undefined ? (current.parentSlug || null) : update.parentSlug;
+    if (!update.name && !current.name) return res.status(400).json({ code: 'validation_error', message: 'Category name is required.' });
+    if (current.parentSlug && nextParent && !(await Category.exists({ slug: nextParent, parentSlug: null }))) return res.status(400).json({ code: 'validation_error', message: 'Subcategory parent must be an existing top-level category.' });
+    if (!current.parentSlug && nextParent) {
+      if (await Category.exists({ parentSlug: current.slug })) return res.status(409).json({ code: 'conflict', message: 'A category with subcategories cannot be moved under another category.' });
+      return res.status(400).json({ code: 'validation_error', message: 'A top-level category cannot be converted into a subcategory.' });
+    }
+    if (nextParent === current.slug) return res.status(400).json({ code: 'validation_error', message: 'A category cannot be its own parent.' });
+    const nextSlug = update.slug || current.slug;
+    if (!nextSlug || (update.name && update.name.length < 2) || nextSlug.length > 100 || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(nextSlug) || (update.description && update.description.length > 1000) || (update.image && !validCategoryImage(update.image))) return res.status(400).json({ code: 'validation_error', message: 'Invalid category fields.' });
+    const identityChanged = (update.name && update.name !== current.name) || (update.slug && update.slug !== current.slug) || (update.parentSlug !== undefined && update.parentSlug !== (current.parentSlug || null));
+    if (identityChanged) {
+      const productFilter = current.parentSlug ? { $or: [{ subcategory: current.name }, { subcategory: current.slug }] } : { $or: [{ category: current.name }, { category: current.slug }] };
+      if (await Product.exists(productFilter)) return res.status(409).json({ code: 'conflict', message: 'Category identity cannot change while products reference it. Update product references first.' });
+    }
+    if (nextSlug !== current.slug && await Category.exists({ slug: nextSlug, parentSlug: nextParent, _id: { $ne: current._id } })) return res.status(409).json({ code: 'conflict', message: 'A category with this slug already exists at this level.' });
+    if (nextSlug !== current.slug && await Category.exists({ parentSlug: current.slug })) return res.status(409).json({ code: 'conflict', message: 'Rename is blocked while subcategories use the current parent slug.' });
+    const saved = await Category.findByIdAndUpdate(current._id, { $set: update }, { new: true, runValidators: true }).lean();
+    await audit(req, 'category_updated', true, { categoryId: String(current._id), fields: Object.keys(update) });
+    return res.json({ data: categoryView(saved) });
+  } catch (error) { if (error.code === 11000) return res.status(409).json({ code: 'conflict', message: 'A category with this slug already exists at this level.' }); return next(error); }
+});
+
+router.delete('/categories/:id', requireSuperAdmin, async (req, res, next) => {
+  try {
+    if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(404).json({ code: 'not_found', message: 'Category not found.' });
+    const category = await Category.findById(req.params.id).lean();
+    if (!category) return res.status(404).json({ code: 'not_found', message: 'Category not found.' });
+    if (await Category.exists({ parentSlug: category.slug })) return res.status(409).json({ code: 'conflict', message: 'Delete or move subcategories before deleting this category.' });
+    const productFilter = category.parentSlug ? { $or: [{ subcategory: category.name }, { subcategory: category.slug }] } : { $or: [{ category: category.name }, { category: category.slug }] };
+    if (await Product.exists(productFilter)) return res.status(409).json({ code: 'conflict', message: 'This category is linked to products and cannot be deleted.' });
+    await Category.deleteOne({ _id: category._id });
+    await audit(req, 'category_deleted', true, { categoryId: String(category._id), slug: category.slug });
+    return res.status(204).send();
+  } catch (error) { return next(error); }
+});
+
 router.put('/storefront/announcement', requireAdminPermission('settings.manage'), async (req, res, next) => {
   try {
     const enabled = req.body?.enabled;
@@ -248,18 +364,23 @@ router.get('/dashboard/analytics', requireAdminPermission('dashboard.read'), asy
     else start.setDate(start.getDate() - (range === '7d' ? 7 : range === '90d' ? 90 : 30));
     const end = now;
     const dateFilter = { createdAt: { $gte: start, $lte: end } };
-    const [orderTotals, paymentTotals, statusCounts, dailySales, topProducts, newCustomers, catalog] = await Promise.all([
-      Order.aggregate([{ $match: dateFilter }, { $group: { _id: null, orders: { $sum: 1 }, gmv: { $sum: { $cond: [{ $gte: ['$statusIndex', 0] }, '$total', 0] } }, cancelled: { $sum: { $cond: [{ $lt: ['$statusIndex', 0] }, '$total', 0] } } } }]),
+    const paidOrderFilter = { ...dateFilter, statusIndex: { $gte: 0 }, paymentStatus: 'verified' };
+    const [orderTotals, revenueTotals, paymentTotals, statusCounts, dailySales, topProducts, newCustomers, totalCustomers, catalog] = await Promise.all([
+      Order.aggregate([{ $match: dateFilter }, { $group: { _id: null, orders: { $sum: 1 }, gmv: { $sum: { $cond: [{ $gte: ['$statusIndex', 0] }, '$total', 0] } }, cancelled: { $sum: { $cond: [{ $lt: ['$statusIndex', 0] }, '$total', 0] } }, cancelledOrders: { $sum: { $cond: [{ $lt: ['$statusIndex', 0] }, 1, 0] } } } }]),
+      Order.aggregate([{ $match: paidOrderFilter }, { $group: { _id: null, revenue: { $sum: '$total' }, orders: { $sum: 1 } } }]),
       Order.aggregate([{ $match: dateFilter }, { $group: { _id: '$paymentStatus', amount: { $sum: '$total' }, count: { $sum: 1 } } }]),
       Order.aggregate([{ $match: dateFilter }, { $group: { _id: '$statusIndex', count: { $sum: 1 }, amount: { $sum: '$total' } } }, { $sort: { _id: 1 } }]),
-      Order.aggregate([{ $match: { ...dateFilter, statusIndex: { $gte: 0 } } }, { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'Asia/Karachi' } }, value: { $sum: '$total' }, orders: { $sum: 1 } } }, { $sort: { _id: 1 } }]),
-      Order.aggregate([{ $match: { ...dateFilter, statusIndex: { $gte: 0 } } }, { $unwind: '$items' }, { $group: { _id: '$items.productId', name: { $first: '$items.name' }, quantity: { $sum: '$items.quantity' }, sales: { $sum: { $multiply: ['$items.price', '$items.quantity'] } } } }, { $sort: { sales: -1 } }, { $limit: 10 }]),
+      Order.aggregate([{ $match: paidOrderFilter }, { $unwind: '$items' }, { $group: { _id: { $dateToString: { format: '%Y-%m-%d', date: '$createdAt', timezone: 'Asia/Karachi' } }, value: { $sum: { $multiply: ['$items.price', '$items.quantity'] } }, orders: { $addToSet: '$_id' } } }, { $project: { _id: 1, value: 1, orders: { $size: '$orders' } } }, { $sort: { _id: 1 } }]),
+      Order.aggregate([{ $match: paidOrderFilter }, { $unwind: '$items' }, { $group: { _id: '$items.productId', name: { $first: '$items.name' }, quantity: { $sum: '$items.quantity' }, sales: { $sum: { $multiply: ['$items.price', '$items.quantity'] } } } }, { $sort: { sales: -1 } }, { $limit: 10 }]),
       User.countDocuments({ date: { $gte: start, $lte: end } }),
+      User.countDocuments({}),
       Promise.all([Product.countDocuments(), Product.countDocuments({ status: 'active' }), Product.countDocuments({ status: 'draft' }), Product.countDocuments({ status: 'archived' }), Product.countDocuments({ productType: 'DIGITAL' }), Product.countDocuments({ productType: { $ne: 'DIGITAL' }, stock: { $lte: 0 }, inventoryMode: 'NUMERIC' })]),
     ]);
     const payments = Object.fromEntries(paymentTotals.map(item => [item._id || 'unknown', { amount: item.amount, count: item.count }]));
-    const statusLabels = { '-1': 'cancelled', '0': 'pending', '1': 'processing', '2': 'shipped', '9': 'delivered' };
-    return res.json({ data: { range, start, end, timezone: 'Asia/Karachi', orderTotals: orderTotals[0] || { orders: 0, gmv: 0, cancelled: 0 }, payments, statusCounts: statusCounts.map(item => ({ status: statusLabels[String(item._id)] || `status_${item._id}`, count: item.count, amount: item.amount })), dailySales: dailySales.map(item => ({ label: item._id, value: item.value, orders: item.orders })), topProducts: topProducts.map(item => ({ id: String(item._id), name: item.name, quantity: item.quantity, sales: item.sales })), newCustomers, catalog: { total: catalog[0], published: catalog[1], drafts: catalog[2], archived: catalog[3], digital: catalog[4], numericOutOfStock: catalog[5] }, limitations: ['Gross profit, net sales, refunds, supplier returns, commissions and traffic conversion are unavailable until their underlying records and accounting rules are implemented.'] } });
+    const statusLabels = { '-1': 'cancelled', '0': 'pending', '1': 'processing', '2': 'shipped', '9': 'delivered', '10': 'delivered' };
+    const totals = orderTotals[0] || { orders: 0, gmv: 0, cancelled: 0 };
+    const paid = revenueTotals[0] || { revenue: 0, orders: 0 };
+    return res.json({ data: { range, start, end, timezone: 'Asia/Karachi', orderTotals: { ...totals, revenue: paid.revenue || 0, paidOrders: paid.orders || 0, completed: statusCounts.filter((item) => Number(item._id) >= 9).reduce((sum, item) => sum + item.count, 0), pending: statusCounts.filter((item) => Number(item._id) === 0).reduce((sum, item) => sum + item.count, 0), cancelledOrders: totals.cancelledOrders || 0 }, payments, statusCounts: statusCounts.map(item => ({ status: statusLabels[String(item._id)] || `status_${item._id}`, count: item.count, amount: item.amount })), dailySales: dailySales.map(item => ({ label: item._id, value: item.value, orders: item.orders })), topProducts: topProducts.map(item => ({ id: String(item._id), name: item.name, quantity: item.quantity, sales: item.sales })), newCustomers, totalCustomers: totalCustomers || 0, catalog: { total: catalog[0] || 0, published: catalog[1] || 0, drafts: catalog[2] || 0, archived: catalog[3] || 0, digital: catalog[4] || 0, numericOutOfStock: catalog[5] || 0 }, limitations: ['Visitors, sessions, conversion rate, refunds, supplier returns, commissions and profit are unavailable because their underlying tracking/accounting records are not implemented.', 'Revenue includes only orders with paymentStatus=verified; GMV excludes cancelled orders but includes orders pending payment.'] } });
   } catch (error) { return next(error); }
 });
 
@@ -420,10 +541,11 @@ router.get('/products/:id', requireAdminPermission('products.read'), async (req,
 router.post('/products', requireAdminPermission('products.create'), async (req, res, next) => {
   try {
     const body = req.body || {}; const flexibleError = validateFlexibleFields(body); if (flexibleError) return res.status(400).json({ code: 'validation_error', message: flexibleError });
-    const name = String(body.name || '').trim(); const category = String(body.category || '').trim(); const price = Number(body.price); const stock = Number(body.inventory ?? body.stock ?? 0); const status = body.status || 'draft'; const inventoryMode = ['AVAILABILITY_BASED', 'SUPPLIER_BASED'].includes(body.inventoryMode) ? body.inventoryMode : 'NUMERIC'; const availabilityStatus = inventoryMode === 'SUPPLIER_BASED' ? 'AVAILABLE_TO_ORDER' : (body.availabilityStatus === 'IN_STOCK' ? 'IN_STOCK' : 'OUT_OF_STOCK');
+    const name = String(body.name || '').trim(); const category = String(body.category || '').trim(); const subcategory = String(body.subcategory || '').trim(); const price = Number(body.price); const stock = Number(body.inventory ?? body.stock ?? 0); const status = body.status || 'draft'; const inventoryMode = ['AVAILABILITY_BASED', 'SUPPLIER_BASED'].includes(body.inventoryMode) ? body.inventoryMode : 'NUMERIC'; const availabilityStatus = inventoryMode === 'SUPPLIER_BASED' ? 'AVAILABLE_TO_ORDER' : (body.availabilityStatus === 'IN_STOCK' ? 'IN_STOCK' : 'OUT_OF_STOCK');
     const variantError = validateVariants(body.variantAttributes, body.variants); if (variantError) return res.status(400).json({ code: 'validation_error', message: variantError });
     if (name.length < 2 || name.length > 120 || !category || !Number.isFinite(price) || price <= 0 || (inventoryMode === 'NUMERIC' && (!Number.isInteger(stock) || stock < 0)) || !PRODUCT_STATUSES.has(status) || !validImageValue(String(body.image || '').trim())) return res.status(400).json({ code: 'validation_error', message: 'Invalid product fields or image.' });
-    const product = await Product.create({ name, description: String(body.description || '').trim(), category, price, stock: inventoryMode === 'NUMERIC' ? stock : 0, inventoryMode, availabilityStatus, status, productType: body.productType || 'PHYSICAL', sku: body.sku ? String(body.sku).trim().toUpperCase() : undefined, image: String(body.image || '').trim(), brand: body.brand ? String(body.brand).trim() : undefined, variantsEnabled: body.variantsEnabled === true, variantAttributes: body.variantAttributes || [], variants: body.variants || [], specifications: body.specifications || [], attributes: body.attributes || [], physicalConfiguration: body.productType === 'DIGITAL' ? undefined : (body.physicalConfiguration || undefined), digitalConfiguration: body.productType === 'DIGITAL' ? (body.digitalConfiguration || {}) : undefined, seo: body.seo || undefined });
+    const categoryPair = await validateProductCategoryPair(category, subcategory); if (categoryPair.error) return res.status(400).json({ code: 'validation_error', message: categoryPair.error });
+    const product = await Product.create({ name, description: String(body.description || '').trim(), category: categoryPair.category, subcategory: categoryPair.subcategory, categoryPath: categoryPair.categoryPath, price, stock: inventoryMode === 'NUMERIC' ? stock : 0, inventoryMode, availabilityStatus, status, productType: body.productType || 'PHYSICAL', sku: body.sku ? String(body.sku).trim().toUpperCase() : undefined, image: String(body.image || '').trim(), brand: body.brand ? String(body.brand).trim() : undefined, variantsEnabled: body.variantsEnabled === true, variantAttributes: body.variantAttributes || [], variants: body.variants || [], specifications: body.specifications || [], attributes: body.attributes || [], physicalConfiguration: body.productType === 'DIGITAL' ? undefined : (body.physicalConfiguration || undefined), digitalConfiguration: body.productType === 'DIGITAL' ? (body.digitalConfiguration || {}) : undefined, seo: body.seo || undefined });
     await audit(req, 'product_created', true, { productId: String(product._id) }); return res.status(201).json({ data: productView(product) });
   } catch (error) { if (error.code === 11000) return res.status(409).json({ code: 'conflict', message: 'A product with that name or SKU already exists.' }); return next(error); }
 });
@@ -432,13 +554,14 @@ router.patch('/products/:id', requireAdminPermission('products.update'), async (
   try {
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) return res.status(404).json({ code: 'not_found', message: 'Product not found.' });
     const flexibleError = validateFlexibleFields(req.body || {}); if (flexibleError) return res.status(400).json({ code: 'validation_error', message: flexibleError });
-    const allowed = ['name', 'description', 'category', 'price', 'sku', 'image', 'brand', 'featured', 'status', 'inventoryMode', 'availabilityStatus', 'variantsEnabled', 'variantAttributes', 'variants', 'productType', 'specifications', 'attributes', 'physicalConfiguration', 'digitalConfiguration', 'seo']; const update = {};
+    const allowed = ['name', 'description', 'category', 'subcategory', 'categoryPath', 'price', 'sku', 'image', 'brand', 'featured', 'status', 'inventoryMode', 'availabilityStatus', 'variantsEnabled', 'variantAttributes', 'variants', 'productType', 'specifications', 'attributes', 'physicalConfiguration', 'digitalConfiguration', 'seo']; const update = {};
     for (const key of allowed) if (Object.prototype.hasOwnProperty.call(req.body || {}, key)) update[key] = req.body[key];
     if (update.productType === 'DIGITAL') delete update.physicalConfiguration;
     if (update.productType === 'PHYSICAL') delete update.digitalConfiguration;
     if (Object.prototype.hasOwnProperty.call(update, 'variantAttributes') || Object.prototype.hasOwnProperty.call(update, 'variants')) { const variantError = validateVariants(update.variantAttributes || [], update.variants || []); if (variantError) return res.status(400).json({ code: 'validation_error', message: variantError }); }
     if (Object.prototype.hasOwnProperty.call(req.body || {}, 'inventory')) update.stock = Number(req.body.inventory); if (Object.prototype.hasOwnProperty.call(update, 'inventoryMode') && !['NUMERIC', 'AVAILABILITY_BASED', 'SUPPLIER_BASED'].includes(update.inventoryMode)) return res.status(400).json({ code: 'validation_error', message: 'Invalid inventory mode.' }); if (Object.prototype.hasOwnProperty.call(update, 'availabilityStatus') && !['IN_STOCK', 'OUT_OF_STOCK', 'AVAILABLE_TO_ORDER'].includes(update.availabilityStatus)) return res.status(400).json({ code: 'validation_error', message: 'Invalid availability status.' }); if (Object.prototype.hasOwnProperty.call(update, 'price')) update.price = Number(update.price); if (Object.prototype.hasOwnProperty.call(update, 'image') && !validImageValue(String(update.image || '').trim())) return res.status(400).json({ code: 'validation_error', message: 'Invalid product image.' }); if (Object.prototype.hasOwnProperty.call(update, 'stock') && (!Number.isInteger(update.stock) || update.stock < 0)) return res.status(400).json({ code: 'validation_error', message: 'Inventory cannot be negative.' }); if (update.inventoryMode === 'AVAILABILITY_BASED' || update.inventoryMode === 'SUPPLIER_BASED') update.stock = 0; if (update.inventoryMode === 'SUPPLIER_BASED') update.availabilityStatus = 'AVAILABLE_TO_ORDER'; update.updatedAt = new Date();
-    const current = await Product.findById(req.params.id).select('supplierName pricingStatus sellingPrice').lean(); if (!current) return res.status(404).json({ code: 'not_found', message: 'Product not found.' });
+    const current = await Product.findById(req.params.id).select('supplierName pricingStatus sellingPrice category subcategory').lean(); if (!current) return res.status(404).json({ code: 'not_found', message: 'Product not found.' });
+    if (Object.prototype.hasOwnProperty.call(update, 'category') || Object.prototype.hasOwnProperty.call(update, 'subcategory')) { const categoryPair = await validateProductCategoryPair(update.category || current.category, Object.prototype.hasOwnProperty.call(update, 'subcategory') ? update.subcategory : current.subcategory); if (categoryPair.error) return res.status(400).json({ code: 'validation_error', message: categoryPair.error }); update.category = categoryPair.category; update.subcategory = categoryPair.subcategory; update.categoryPath = categoryPair.categoryPath; }
     if (update.status === 'active' && current.supplierName === 'YOURMART' && !['APPROVED', 'MANUAL_OVERRIDE'].includes(current.pricingStatus) && !['APPROVED', 'MANUAL_OVERRIDE'].includes(req.body?.pricingStatus)) return res.status(409).json({ code: 'pricing_review_required', message: 'Supplier products require approved pricing before publication.' });
     const updateOperation = { $set: update };
     if (req.body?.productType === 'DIGITAL') updateOperation.$unset = { physicalConfiguration: 1 };

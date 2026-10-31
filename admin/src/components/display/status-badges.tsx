@@ -13,7 +13,6 @@ import {
 } from '@/models/Order'
 import {
   PRODUCT_STATUSES,
-  type ProductCategory,
   type ProductStatus,
 } from '@/models/Product'
 import {
@@ -174,6 +173,6 @@ export const INVOICE_STATUS_OPTIONS = INVOICE_STATUSES.map((value) => ({
   label: value.charAt(0).toUpperCase() + value.slice(1),
 }))
 
-export function formatCategory(category: ProductCategory): string {
+export function formatCategory(category: string): string {
   return category.charAt(0).toUpperCase() + category.slice(1)
 }
