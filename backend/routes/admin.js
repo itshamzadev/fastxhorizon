@@ -286,7 +286,10 @@ router.get('/categories', requireSuperAdmin, async (req, res, next) => {
       return [String(category._id), { productCount, subcategoryCount }];
     }));
     const countMap = new Map(counts);
-    return res.json({ data: categories.map((category) => categoryView(category, countMap.get(String(category._id))?.productCount || 0, countMap.get(String(category._id))?.subcategoryCount || 0, Boolean(category.virtual))), meta: { total: categories.length, parentCount: parents.length } });
+    // Keep the management table visually hierarchical: every subcategory is
+    // rendered directly after its parent instead of after all parent rows.
+    const orderedCategories = parents.flatMap((parent) => [parent, ...categories.filter((category) => category.parentSlug === parent.slug)]);
+    return res.json({ data: orderedCategories.map((category) => categoryView(category, countMap.get(String(category._id))?.productCount || 0, countMap.get(String(category._id))?.subcategoryCount || 0, Boolean(category.virtual))), meta: { total: categories.length, parentCount: parents.length } });
   } catch (error) { return next(error); }
 });
 
