@@ -24,4 +24,27 @@ describe('admin catalog import workflow', () => {
     expect(document.price).toBeGreaterThan(0);
     expect(document.inventoryMode).toBe('SUPPLIER_BASED');
   });
+
+  test('parses WooCommerce CSV fields, multiline HTML and comma-separated images', () => {
+    const csv = [
+      'SKU,Type,Name,Published,Short description,Description,Regular price,In stock?,Images,Categories,Supplier,Parent',
+      'WC-001,simple,Demo headphones,1,"Short, quoted text","<p>Line one</p>\n<p>Line two, with comma</p>",2999,1,"https://example.com/one.jpg,https://example.com/two.jpg","Electronics > Headphones",,',
+    ].join('\n');
+    const result = buildEntries(csv, { format: 'woocommerce', categories: [
+      { name: 'Electronics', slug: 'electronics', parentSlug: null },
+      { name: 'Headphones', slug: 'headphones', parentSlug: 'electronics' },
+    ] });
+    expect(result.format).toBe('woocommerce');
+    expect(result.entries).toHaveLength(1);
+    expect(result.entries[0].item.images).toHaveLength(2);
+    expect(result.entries[0].item.sourcePrice).toBe(2999);
+    expect(result.entries[0].category).toMatchObject({ parent: 'Electronics', child: 'Headphones', matched: true });
+    expect(result.entries[0].preview.validation).toBe('valid');
+  });
+
+  test('keeps blank WooCommerce prices invalid instead of converting them to zero', () => {
+    const result = buildEntries('SKU,Name,Regular price,In stock?,Images,Categories\nWC-002,No price,,0,https://example.com/item.jpg,Electronics', { format: 'woocommerce', categories: [{ name: 'Electronics', slug: 'electronics', parentSlug: null }] });
+    expect(result.entries[0].item.sourcePrice).toBeNull();
+    expect(result.entries[0].preview.validation).toBe('review_required');
+  });
 });

@@ -22,6 +22,8 @@ const CatalogImportSchema = new mongoose.Schema(
       invalidRows: { type: Number, default: 0 },
       missingPrices: { type: Number, default: 0 },
       missingImages: { type: Number, default: 0 },
+      duplicateSkus: { type: Number, default: 0 },
+      selectedProducts: { type: Number, default: 0 },
     },
     errors: { type: [mongoose.Schema.Types.Mixed], default: [] },
   },

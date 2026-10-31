@@ -833,3 +833,10 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Updated the existing VitalAdmin Products page with dynamic category/subcategory selectors, dependent subcategory reset, count labels, uncategorised filtering, clear filters, category/subcategory columns and preserved product actions.
 - Updated the local mock API to follow the same filter/query contract for development and tests. Verification: backend syntax passed, Admin build passed, Admin Vitest passed (7 files, 29 tests), backend Jest passed (12 suites, 55 tests). No MongoDB records, production settings, deployment or GitHub push changed.
 
+## V20 YouMart WooCommerce CSV importer - 2026-10-31
+
+- Extended the existing supplier import service to detect and parse WooCommerce exports using the existing RFC-style CSV parser, including quoted commas, multiline HTML descriptions, comma-separated image URLs, SKU/source fields, publication/in-stock flags, supplier and parent metadata.
+- Added a YouMart-specific Admin import workflow with upload or raw CSV paste, preview pagination/search, selection, duplicate indicators, category/subcategory mapping, pending-product editing, image ordering/removal, source versus selling price fields, and an explicit draft-only confirmation step.
+- Preview staging remains private and expires; selected edits are revalidated server-side. WooCommerce imports do not auto-create categories, do not publish products, skip duplicate supplier/SKU records by default, sanitize descriptions before persistence, and keep new products in `draft` with `REVIEW_REQUIRED` pricing.
+- Preserved the existing Shopify/CLI importer path and Import History/audit integration. Added WooCommerce source metadata fields to the existing product schema without changing existing records or production settings.
+

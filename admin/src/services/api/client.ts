@@ -100,12 +100,13 @@ class HttpClient {
   async postText<TResponse>(
     path: string,
     body: string,
-    options: Omit<RequestOptions, 'body'> & { filename?: string; mode?: string } = {},
+    options: Omit<RequestOptions, 'body'> & { filename?: string; mode?: string; format?: string } = {},
   ): Promise<TResponse> {
     const url = this.buildUrl(path, options.query)
     const headers = new Headers({ Accept: 'application/json', 'Content-Type': 'text/csv; charset=utf-8' })
     if (options.filename) headers.set('X-Source-Filename', options.filename)
     if (options.mode) headers.set('X-Import-Mode', options.mode)
+    if (options.format) headers.set('X-Import-Format', options.format)
     if (readAuthToken()) headers.set('Authorization', `Bearer ${readAuthToken()}`)
     let response: Response
     try {
