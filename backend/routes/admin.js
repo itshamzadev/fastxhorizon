@@ -112,6 +112,10 @@ function sortQuery(value, allowed, fallback = { createdAt: -1 }) {
 function validImageValue(value) {
   if (!value) return true;
   if (typeof value !== 'string' || value.length > 3000000) return false;
+  // Imported catalog products use the backend-controlled media route. Keep
+  // this narrowly scoped so an admin cannot turn the image field into an
+  // arbitrary filesystem path or a path-traversal attempt.
+  if (/^\/media\/products\/[A-Za-z0-9][A-Za-z0-9._-]*$/i.test(value)) return true;
   return /^(https?:\/\/|data:image\/(png|jpeg|jpg|webp|gif);base64,)/i.test(value);
 }
 
