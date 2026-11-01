@@ -4,6 +4,8 @@ import { Visibility, VisibilityOff } from '@mui/icons-material';
 import { useNavigate } from 'react-router-dom';
 import { apiClient } from '../services/apiClient';
 import { useNotifier } from '../context/NotificationProvider';
+import { identifyTikTokCustomer, trackTikTokEvent } from '../analytics/tiktokPixel';
+import { TIKTOK_CURRENCY } from '../analytics/tiktokEvents';
 
 function Register() {
   const [name, setName] = useState('');
@@ -33,6 +35,8 @@ function Register() {
       const response = await apiClient.post('auth/register', { name, email, password });
       const token = response.data.token;
       sessionStorage.setItem('MERNEcommerceToken', token);
+      void identifyTikTokCustomer({ email });
+      trackTikTokEvent('CompleteRegistration', { contents: [], value: 0, currency: TIKTOK_CURRENCY }, `registration:${email.trim().toLowerCase()}`);
       // Keep the original key for existing integrations/tests while the
       // storefront uses MERNEcommerceToken for its session indicator.
       notify({ severity: 'success', message: 'Account created! Redirecting you home…' });

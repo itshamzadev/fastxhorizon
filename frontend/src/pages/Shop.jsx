@@ -26,6 +26,8 @@ import '../App.css';
 import { useNotifier } from '../context/NotificationProvider';
 import { apiClient } from '../services/apiClient';
 import { useLocation } from 'react-router-dom';
+import { trackTikTokEvent } from '../analytics/tiktokPixel';
+import { TIKTOK_CURRENCY } from '../analytics/tiktokEvents';
 
 const itemsPerPage = 6;
 
@@ -87,6 +89,12 @@ function Shop({ products, addToCart, loading, error }) {
       .finally(() => { if (active) setSearchLoading(false); });
     return () => { active = false; };
   }, [searchQuery, sortOption]);
+
+  React.useEffect(() => {
+    const query = searchQuery.trim();
+    if (!query) return;
+    trackTikTokEvent('Search', { contents: [], value: 0, currency: TIKTOK_CURRENCY, search_string: query }, `search:${query.toLowerCase()}`);
+  }, [searchQuery]);
 
   React.useEffect(() => {
     let active = true;

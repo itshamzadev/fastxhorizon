@@ -27,6 +27,8 @@ import { useNotifier } from '../context/NotificationProvider';
 import { apiClient, withRetry } from '../services/apiClient';
 import { formatPrice } from '../utils/currency';
 import { resolveMediaUrl } from '../utils/media';
+import { trackCartEvent } from '../analytics/tiktokEvents';
+import { identifyTikTokCustomer } from '../analytics/tiktokPixel';
 
 function Checkout({ cartItems = [], onOrderComplete }) {
   const navigate = useNavigate();
@@ -80,6 +82,13 @@ function Checkout({ cartItems = [], onOrderComplete }) {
       const { data } = await withRetry(() => apiClient.post('checkout/create-order', orderPayload));
 
       const normalizedEmail = formData.email?.trim() || '';
+      const orderItems = Array.isArray(data?.items) && data.items.length ? data.items : itemsToPurchase;
+      const orderEventId = data?.orderNumber ? `order:${data.orderNumber}` : `order:created:${Date.now()}`;
+      void identifyTikTokCustomer({ email: normalizedEmail });
+      trackCartEvent('PlaceAnOrder', orderItems, orderEventId);
+      if (data?.paymentStatus === 'verified' || data?.paymentLifecycle === 'VERIFIED') {
+        trackCartEvent('Purchase', orderItems, `${orderEventId}:purchase`, { payment_status: 'verified', payment_lifecycle: 'VERIFIED' });
+      }
 
       setLoading(false);
       setOrderCreated(true);
@@ -117,6 +126,9 @@ function Checkout({ cartItems = [], onOrderComplete }) {
     return id && selectedItems.has(id);
   });
   const total = itemsToShow.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1), 0);
+  React.useEffect(() => {
+    if (itemsToShow.length) trackCartEvent('InitiateCheckout', itemsToShow, `checkout:${itemsToShow.map(item => item._id || item.id).sort().join(',')}`);
+  }, [itemsToShow]);
   const allSelected = cartItems.every(item => selectedItems.has(item._id || item.id));
 
   const toggleItem = id => {
@@ -211,7 +223,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
           <Paper elevation={0} sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 4 }}>
             {loading && <CircularProgress size={22} sx={{ mb: 2 }} />}
             {errorMessage && <Box sx={{ mb: 3, p: 1.5, borderRadius: 2, bgcolor: 'error.main', color: 'error.contrastText' }}><Typography variant="body2">{errorMessage}</Typography></Box>}
-            <CheckoutForm onSubmit={handleSubmit} submitting={loading} />
+            <CheckoutForm onSubmit={handleSubmit} submitting={loading} cartItems={itemsToShow} />
             <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 3, color: 'text.secondary' }}><LockIcon fontSize="small" /><Typography variant="caption">Your order details are transmitted securely. Payment evidence is reviewed by our team.</Typography></Stack>
           </Paper>
           <Paper elevation={0} sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 4, position: { md: 'sticky' }, top: { md: 24 } }}>

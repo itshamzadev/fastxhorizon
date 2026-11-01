@@ -6,6 +6,7 @@ const Order = require('../models/order');
 const PaymentConfiguration = require('../models/paymentConfiguration');
 const PaymentSubmission = require('../models/paymentSubmission');
 const auth = require('../middleware/auth');
+const { sendTikTokEvent } = require('../services/tiktokEventsApi');
 
 const router = express.Router();
 
@@ -260,6 +261,12 @@ router.post('/create-order', auth, async (req, res) => {
       order.paymentSubmissionId = paymentSubmission._id;
       await order.save();
     }
+
+    void sendTikTokEvent({
+      eventName: 'PlaceAnOrder',
+      eventId: `order:${orderNumber}`,
+      properties: { contents: orderItems.map(item => ({ content_id: String(item.productId), content_type: 'product', content_name: item.name, quantity: item.quantity })), value: orderTotal, currency: 'PKR' },
+    }).catch(() => {});
 
     await new Promise(resolve => setTimeout(resolve, 1200));
 

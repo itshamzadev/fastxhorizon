@@ -27,6 +27,8 @@ import { WishlistProvider } from './context/WishlistContext';
 import WishlistPage from './pages/Wishlist';
 import RequireCustomerAuth from './components/RequireCustomerAuth';
 import { addWishlistItem, getCustomerToken, getGuestWishlistIds, getWishlist, mergeWishlist, removeWishlistItem, saveGuestWishlistIds } from './services/wishlist';
+import TikTokPixelPageViews from './analytics/TikTokPixelPageViews';
+import { trackProductEvent } from './analytics/tiktokEvents';
 
 const theme = createTheme({
   palette: {
@@ -266,6 +268,7 @@ function App() {
         const ids = getGuestWishlistIds();
         saveGuestWishlistIds(exists ? ids.filter(itemId => itemId !== key) : [...ids, key]);
       }
+      if (!exists) trackProductEvent('AddToWishlist', product, { eventId: `wishlist:${key}:add` });
     } catch (wishlistError) {
       setWishlist(previousWishlist);
       notify({ severity: 'error', message: 'Unable to update wishlist. Please try again.' });
@@ -286,10 +289,14 @@ function App() {
         notify({ severity: 'error', message: 'Unable to add this product right now.' });
         return;
       }
+      if (cart.some(item => item.id === canonicalId || item._id === canonicalId)) {
+        notify({ severity: 'info', message: 'Item is already in your cart.' });
+        return;
+      }
+      trackProductEvent('AddToCart', product, { eventId: `cart:${canonicalId}:${Date.now()}` });
       setCart(prevCart => {
         const alreadyInCart = prevCart.some(item => item.id === canonicalId || item._id === canonicalId);
         if (alreadyInCart) {
-          notify({ severity: 'info', message: 'Item is already in your cart.' });
           return prevCart;
         }
         notify({ severity: 'success', message: 'Added to cart!' });
@@ -297,7 +304,7 @@ function App() {
         return [...prevCart, normalized];
       });
     },
-    [notify]
+    [cart, notify]
   );
 
   const handleOrderComplete = React.useCallback(() => {
@@ -309,6 +316,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
+        <TikTokPixelPageViews />
         <WishlistProvider value={wishlistContext}>
         <ScrollToTop />
         <NavigationBar cartItemCount={cart.length} />

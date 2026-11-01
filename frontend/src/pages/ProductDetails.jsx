@@ -34,6 +34,7 @@ import ShoppingCartRoundedIcon from '@mui/icons-material/ShoppingCartRounded';
 import CloseRoundedIcon from '@mui/icons-material/CloseRounded';
 import { useWishlist } from '../context/WishlistContext';
 import ProductCard from '../components/ProductCard';
+import { trackProductEvent } from '../analytics/tiktokEvents';
 
 function SimilarProductsError({ onRetry }) {
   const [showDetails, setShowDetails] = React.useState(false);
@@ -194,6 +195,7 @@ function ProductDetails({ addToCart }) {
       }
       setProduct(normalized);
       recordVisit(normalized);
+      trackProductEvent('ViewContent', normalized, { eventId: `view-content:${normalized.id}` });
       fetchRecommended();
     } catch (err) {
       console.error('Error fetching product details:', err);

@@ -1081,3 +1081,26 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Kept individual payment-evidence validation bounded and added a clearer frontend message for HTTP 413 responses.
 - Backend syntax and Jest passed: 14 suites / 63 tests. Coolify must be rebuilt/restarted for the live API to use the new limit; the compressed frontend must also be deployed.
 
+## TikTok Pixel integration - 2026-11-01
+
+- Added the configurable TikTok Pixel to the public storefront's actual CRA/CRACO entry path. The storefront uses React Router in `frontend/src/App.jsx`; the separate admin app is Vite and was not modified.
+- Added a guarded dynamic loader that initializes the official `ttq` queue once, sends one initial page view, and sends page views on React Router pathname/query/hash changes without duplicate Strict Mode events.
+- Explicit cookie-consent denials are honored through the existing/common consent storage names and the `fastxhorizon:cookie-consent-changed` event. No consent manager was present in the storefront, so no new backend, checkout, payment or order behavior was introduced.
+- Pixel ID is configured through `REACT_APP_TIKTOK_PIXEL_ID`; production/local builds must provide it at frontend build time.
+- Frontend production build passed. The full existing frontend Jest run completed with 19 passing suites and 5 pre-existing/unrelated failures (two missing test API env assumptions and three stale snapshots, including prior checkout UI changes).
+
+## TikTok commerce events - 2026-11-01
+
+- Added consent-aware, deduplicated event helpers for `ViewContent`, `Search`, `AddToWishlist`, `AddToCart`, `InitiateCheckout`, `AddPaymentInfo`, `PlaceAnOrder`, `CompleteRegistration` and conditional `Purchase`.
+- Events use real product IDs/SKUs, quantities, prices and PKR. Registration email is SHA-256 hashed before TikTok identify; raw PII is not sent.
+- `PlaceAnOrder` fires only after the order API succeeds. `Purchase` is intentionally limited to responses reporting `paymentStatus=verified` or `paymentLifecycle=VERIFIED`; pending COD/manual orders are not counted as purchases.
+- Event IDs are stable for product/order/search actions and are deduplicated in the browser session. Backend, checkout validation, payment processing and order business logic were not changed.
+
+## TikTok Events API server delivery - 2026-11-01
+
+- Added backend TikTok Events API v1.3 delivery through `/open_api/v1.3/event/track/` using backend-only `TIKTOK_EVENTS_API_ACCESS_TOKEN` and `TIKTOK_PIXEL_ID`.
+- Added sanitized public event intake at `/api/analytics/tiktok/events`, allowlisted event names, PKR-only commerce values, HTTPS page URLs, payload bounds, and a basic IP rate limit. Passwords, payment evidence, card data and OTPs are not accepted or forwarded.
+- Added MongoDB event records for idempotency/retry protection. Existing successful event IDs are skipped; failed deliveries can be retried after the cooldown without blocking customer actions.
+- Backend sends PlaceAnOrder after order persistence and Purchase only after admin payment verification. Frontend delivery remains a fallback/deduplicated path for browser actions.
+- Backend syntax checks and Jest passed: 14 suites / 63 tests. Frontend production build passed after the Events API changes.
+

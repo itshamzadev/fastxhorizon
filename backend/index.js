@@ -149,6 +149,7 @@ app.use('/api/search', require('./routes/search'));
 app.use('/api/storefront', require('./routes/storefront').router);
 app.use('/api/wishlist', require('./routes/wishlist'));
 app.use('/api/newsletter', require('./routes/newsletter'));
+app.use('/api/analytics/tiktok', require('./routes/tiktokEvents'));
 app.use('/api/payments', paymentRoutes.publicRouter);
 app.use('/api/auth', authRoutes);
 app.use('/api/admin/auth', adminAuthRoutes);

@@ -9,12 +9,13 @@ import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
 import { apiClient } from '../services/apiClient';
 import { useNotifier } from '../context/NotificationProvider';
+import { trackCartEvent } from '../analytics/tiktokEvents';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Keep the encoded checkout request below common reverse-proxy body limits.
 const MAX_PAYMENT_IMAGE_BYTES = 400 * 1024;
 
-function CheckoutForm({ onSubmit, submitting = false }) {
+function CheckoutForm({ onSubmit, submitting = false, cartItems = [] }) {
   const [form, setForm] = useState({ name: '', email: '', shippingAddress: '', paymentMethod: 'manual', methodKey: '', paymentValues: {}, paymentEvidence: [] });
   const [config, setConfig] = useState(null);
   const [step, setStep] = useState(1);
@@ -63,6 +64,9 @@ function CheckoutForm({ onSubmit, submitting = false }) {
     if (contactInvalid || (paymentNeedsProof && (!form.methodKey || missing || anyMissing))) { notify({ severity: 'error', message: missing ? `${missing.label} is required.` : anyMissing ? 'Enter a Transaction ID or upload a payment screenshot.' : 'Please complete the required checkout fields.' }); return; }
     await onSubmit(form);
   };
+  useEffect(() => {
+    if (step >= 3) trackCartEvent('AddPaymentInfo', cartItems, `payment-info:${form.paymentMethod}:${cartItems.map(item => item._id || item.id).sort().join(',')}`);
+  }, [cartItems, form.paymentMethod, step]);
   if (error) return <Alert severity="error">{error}</Alert>;
   if (!config) return <Box className="luxury-route-loading"><CircularProgress size={24} /><Typography variant="body2">Loading secure checkout…</Typography></Box>;
   if (!config.ordersEnabled) return <Alert severity="info" className="luxury-checkout-lock">Online ordering is temporarily unavailable. Please return to your cart when checkout is reopened.</Alert>;
