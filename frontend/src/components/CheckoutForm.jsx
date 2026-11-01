@@ -1,8 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { Alert, Box, Button, CircularProgress, Divider, FormControl, FormControlLabel, FormLabel, Grid, Paper, Radio, RadioGroup, TextField, Typography } from '@mui/material';
+import { Alert, Box, Button, CircularProgress, Divider, FormControl, FormControlLabel, Grid, Paper, Radio, RadioGroup, TextField, Typography } from '@mui/material';
 import PersonOutlineIcon from '@mui/icons-material/PersonOutline';
-import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
 import PaymentsOutlinedIcon from '@mui/icons-material/PaymentsOutlined';
+import CreditCardOutlinedIcon from '@mui/icons-material/CreditCardOutlined';
+import AccountBalanceWalletOutlinedIcon from '@mui/icons-material/AccountBalanceWalletOutlined';
+import LocalShippingOutlinedIcon from '@mui/icons-material/LocalShippingOutlined';
+import CheckCircleOutlinedIcon from '@mui/icons-material/CheckCircleOutlined';
 import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
 import { apiClient } from '../services/apiClient';
 import { useNotifier } from '../context/NotificationProvider';
@@ -56,10 +59,33 @@ function CheckoutForm({ onSubmit, submitting = false }) {
     <Grid container spacing={2.25}><Grid item xs={12} sm={6}><TextField required fullWidth label="Full name" value={form.name} onChange={e => setField('name', e.target.value)} /></Grid><Grid item xs={12} sm={6}><TextField required fullWidth type="email" label="Email address" value={form.email} onChange={e => setField('email', e.target.value)} /></Grid></Grid>
     <SectionTitle icon={<LocalShippingOutlinedIcon />} title="Delivery address" caption="Enter the address where you want your order delivered." />
     <TextField required fullWidth multiline minRows={3} label="Complete shipping address" value={form.shippingAddress} onChange={e => setField('shippingAddress', e.target.value)} />
-    <SectionTitle icon={<PaymentsOutlinedIcon />} title="Payment method" caption="Choose an available method and follow its instructions." />
-    <FormControl fullWidth><FormLabel sx={{ mb: 1 }}>Available payment methods</FormLabel><RadioGroup value={form.paymentMethod} onChange={e => setField('paymentMethod', e.target.value)}>{[['automatic', 'Automatic payment', config?.automatic?.enabled], ['manual', 'Manual payment', config?.manual?.enabled && methods.length > 0], ['cod', 'Cash on delivery', config?.cod?.enabled]].map(([value, label, enabled]) => <Paper key={value} variant="outlined" sx={{ mb: 1, borderColor: form.paymentMethod === value ? 'primary.main' : 'divider', bgcolor: form.paymentMethod === value ? 'action.selected' : 'transparent' }}><FormControlLabel sx={{ m: 0, px: 1.5, py: .5, width: '100%' }} value={value} disabled={!enabled} control={<Radio />} label={<Box><Typography fontWeight={600}>{label}</Typography><Typography variant="caption" color="text.secondary">{enabled ? (value === 'manual' ? 'Pay by transfer and submit proof' : 'Available at checkout') : 'Currently unavailable'}</Typography></Box>} /></Paper>)}</RadioGroup></FormControl>
-    {form.paymentMethod === 'manual' && <Box sx={{ mt: 2.5, p: { xs: 2, md: 2.5 }, borderRadius: 3, bgcolor: 'action.hover' }}><TextField select SelectProps={{ native: true }} fullWidth label="Select payment account" value={form.methodKey} onChange={e => setField('methodKey', e.target.value)}>{methods.map(method => <option key={method.key} value={method.key}>{method.name}</option>)}</TextField>{selected && <><Box sx={{ mt: 2, p: 1.5, borderRadius: 2, bgcolor: 'background.paper' }}><Typography variant="caption" color="text.secondary">Send payment to</Typography><Typography sx={{ whiteSpace: 'pre-wrap', fontWeight: 600 }}>{selected.recipientDetails || 'Payment account details will be shown here.'}</Typography><Typography variant="body2" color="text.secondary" sx={{ mt: 1, whiteSpace: 'pre-wrap' }}>{selected.instructions}</Typography></Box><PaymentFields fields={selected.fields} form={form} setField={setField} setPaymentValue={setPaymentValue} fileToData={fileToData} /></>}</Box>}
-    <Divider sx={{ my: 3 }} /><Button type="submit" fullWidth variant="contained" size="large" disabled={submitting || !config || !config.ordersEnabled} sx={{ py: 1.5, borderRadius: 2 }}>{submitting ? <CircularProgress size={20} /> : 'Place order securely'}</Button>
+    <SectionTitle icon={<PaymentsOutlinedIcon />} title="Step 2: Choose Payment Type" caption="How would you like to pay?" />
+    <FormControl fullWidth>
+      <RadioGroup value={form.paymentMethod} onChange={e => setField('paymentMethod', e.target.value)}>
+        <Grid container spacing={1.5}>
+          {[
+            ['automatic', 'Card', 'Automatic / online payment', config?.automatic?.enabled, <CreditCardOutlinedIcon />],
+            ['manual', 'Manual', 'Easypaisa, JazzCash or bank transfer', config?.manual?.enabled && methods.length > 0, <AccountBalanceWalletOutlinedIcon />],
+            ['cod', 'Cash on Delivery (COD)', 'Place order directly', config?.cod?.enabled, <LocalShippingOutlinedIcon />],
+          ].map(([value, label, caption, enabled, icon]) => <Grid item xs={12} md={4} key={value}>
+            <Paper variant="outlined" sx={{ height: '100%', borderRadius: 2.5, borderWidth: form.paymentMethod === value ? 2 : 1, borderColor: form.paymentMethod === value ? 'primary.main' : 'divider', bgcolor: form.paymentMethod === value ? 'action.selected' : 'background.paper', opacity: enabled ? 1 : .55, transition: 'all .2s ease' }}>
+              <FormControlLabel sx={{ m: 0, p: 1.5, width: '100%', height: '100%', alignItems: 'flex-start' }} value={value} disabled={!enabled} control={<Radio sx={{ display: 'none' }} />} label={<Box sx={{ display: 'flex', gap: 1.25, alignItems: 'flex-start' }}><Box sx={{ color: 'primary.main', mt: .25 }}>{icon}</Box><Box><Typography fontWeight={800}>{label}</Typography><Typography variant="caption" color="text.secondary">{enabled ? caption : 'Currently unavailable'}</Typography></Box>{form.paymentMethod === value && <CheckCircleOutlinedIcon color="primary" sx={{ ml: 'auto', fontSize: 19 }} />}</Box>} />
+            </Paper>
+          </Grid>)}
+        </Grid>
+      </RadioGroup>
+    </FormControl>
+    {form.paymentMethod === 'automatic' && <Box sx={{ mt: 2, p: 2, borderRadius: 2.5, bgcolor: 'action.hover' }}><Typography fontWeight={700}>Automatic / online payment</Typography><Typography variant="body2" color="text.secondary" sx={{ mt: .5 }}>Your card payment will be processed securely online.</Typography></Box>}
+    {form.paymentMethod === 'cod' && <Box sx={{ mt: 2, p: 2, borderRadius: 2.5, bgcolor: 'action.hover' }}><Typography fontWeight={700}>Place order directly</Typography><Typography variant="body2" color="text.secondary" sx={{ mt: .5 }}>Pay when your order is delivered to your address.</Typography></Box>}
+    {form.paymentMethod === 'manual' && <Box sx={{ mt: 2.5, p: { xs: 2, md: 2.5 }, borderRadius: 3, bgcolor: 'action.hover' }}>
+      <SectionTitle icon={<AccountBalanceWalletOutlinedIcon />} title="Step 3: Choose Payment Method" caption="Select a manual payment account, then submit your payment proof." />
+      <Grid container spacing={1.25} sx={{ mb: 2 }}>
+        {methods.map(method => <Grid item xs={12} sm={6} md={4} key={method.key}><Paper onClick={() => setField('methodKey', method.key)} variant="outlined" sx={{ cursor: 'pointer', p: 1.5, height: '100%', borderRadius: 2, borderColor: form.methodKey === method.key ? 'primary.main' : 'divider', bgcolor: form.methodKey === method.key ? 'background.paper' : 'transparent' }}><Typography fontWeight={700}>{method.name}</Typography><Typography variant="caption" color="text.secondary">Manual transfer</Typography></Paper></Grid>)}<Grid item xs={12} sm={6} md={4}><Paper variant="outlined" sx={{ p: 1.5, height: '100%', borderRadius: 2, opacity: .65 }}><Typography fontWeight={700}>More methods coming soon</Typography><Typography variant="caption" color="text.secondary">Additional payment options</Typography></Paper></Grid>
+      </Grid>
+      {selected && <><Box sx={{ mt: 2, p: 1.5, borderRadius: 2, bgcolor: 'background.paper' }}><Typography variant="caption" color="text.secondary">Send payment to</Typography><Typography sx={{ whiteSpace: 'pre-wrap', fontWeight: 600 }}>{selected.recipientDetails || 'Payment account details will be shown here.'}</Typography><Typography variant="body2" color="text.secondary" sx={{ mt: 1, whiteSpace: 'pre-wrap' }}>{selected.instructions}</Typography></Box><PaymentFields fields={selected.fields} form={form} setField={setField} setPaymentValue={setPaymentValue} fileToData={fileToData} /></>}
+    </Box>}
+    <SectionTitle icon={<CheckCircleOutlinedIcon />} title="Step 4: Confirm Order" caption="Review your details, then place your order securely." />
+    <Divider sx={{ my: 3 }} /><Button type="submit" fullWidth variant="contained" size="large" disabled={submitting || !config || !config.ordersEnabled} sx={{ py: 1.5, borderRadius: 2 }}>{submitting ? <CircularProgress size={20} /> : 'Place Order'}</Button>
   </form>;
 }
 

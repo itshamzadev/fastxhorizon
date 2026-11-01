@@ -35,7 +35,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
   const [loading, setLoading] = useState(false);
   const { notify } = useNotifier();
 
-  const [showCartSummary, setShowCartSummary] = useState(false);
+  const [showCartSummary, setShowCartSummary] = useState(true);
   const [selectedItems, setSelectedItems] = useState(() => {
     const defaults = cartItems.map(item => item._id || item.id).filter(Boolean);
     return new Set(defaults);
@@ -153,7 +153,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
           </Box>
         </Stack>
         <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
-          {['1  Cart review', '2  Delivery details', '3  Payment confirmation'].map((step, index) => <Box key={step} sx={{ px: 1.5, py: .75, borderRadius: 10, bgcolor: index === 0 ? 'primary.main' : 'action.hover', color: index === 0 ? 'primary.contrastText' : 'text.secondary', fontSize: 13, fontWeight: 600 }}>{step}</Box>)}
+          {['Step 1: Cart', 'Step 2: Choose Payment Type', 'Step 3: Choose Payment Method', 'Step 4: Confirm Order'].map((step, index) => <Box key={step} sx={{ px: 1.5, py: .75, borderRadius: 10, bgcolor: index === 0 ? 'primary.main' : 'action.hover', color: index === 0 ? 'primary.contrastText' : 'text.secondary', fontSize: 13, fontWeight: 600 }}>{step}</Box>)}
         </Stack>
       </Box>
 
@@ -162,7 +162,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
             <Stack direction="row" spacing={1} alignItems="center">
               <ShoppingBagIcon color="primary" />
               <Typography variant="subtitle1" fontWeight={600}>
-                Selected items ({itemsToShow.length}/{cartItems.length})
+                Step 1: Cart · Selected items ({itemsToShow.length}/{cartItems.length})
               </Typography>
               <Tooltip title={allSelected ? 'Deselect all items' : 'Select all items'}>
                 <Checkbox
