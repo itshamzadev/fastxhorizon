@@ -17,6 +17,7 @@ const MAX_PAYMENT_IMAGE_BYTES = 400 * 1024;
 function CheckoutForm({ onSubmit, submitting = false }) {
   const [form, setForm] = useState({ name: '', email: '', shippingAddress: '', paymentMethod: 'manual', methodKey: '', paymentValues: {}, paymentEvidence: [] });
   const [config, setConfig] = useState(null);
+  const [step, setStep] = useState(1);
   const [error, setError] = useState('');
   const { notify } = useNotifier();
   useEffect(() => { apiClient.get('payments/config').then(({ data: response }) => { const data = response?.data || response; setConfig(data); const first = data?.manual?.methods?.[0]; if (first) setForm(current => ({ ...current, methodKey: first.key })) }).catch(() => setError('Payment options are currently unavailable.')) }, []);
@@ -45,20 +46,34 @@ function CheckoutForm({ onSubmit, submitting = false }) {
   });
   const submit = async event => {
     event.preventDefault();
-    const required = selected?.fields?.filter(field => field.required) || [];
+    const contactInvalid = !form.name.trim() || !emailPattern.test(form.email) || !form.shippingAddress.trim();
+    if (step === 1) {
+      if (contactInvalid) { notify({ severity: 'error', message: 'Please complete your contact and delivery details.' }); return; }
+      setStep(2); return;
+    }
+    if (step === 2) { setStep(3); return; }
+    if (step === 3) {
+      if (form.paymentMethod === 'manual' && !form.methodKey) { notify({ severity: 'error', message: 'Select a manual payment method.' }); return; }
+      setStep(4); return;
+    }
+    const paymentNeedsProof = form.paymentMethod === 'manual';
+    const required = paymentNeedsProof ? (selected?.fields?.filter(field => field.required) || []) : [];
     const missing = required.find(field => field.type !== 'file' && !String(form.paymentValues[field.id] || '').trim());
-    const anyMissing = (selected?.requiredAnyOf || []).some(group => !group.some(id => String(form.paymentValues[id] || '').trim() || form.paymentEvidence.some(file => file.fieldId === id)));
-    if (!form.name.trim() || !emailPattern.test(form.email) || !form.shippingAddress.trim() || !form.methodKey || missing || anyMissing) { notify({ severity: 'error', message: missing ? `${missing.label} is required.` : anyMissing ? 'Enter a Transaction ID or upload a payment screenshot.' : 'Please complete the required checkout fields.' }); return; }
+    const anyMissing = paymentNeedsProof && (selected?.requiredAnyOf || []).some(group => !group.some(id => String(form.paymentValues[id] || '').trim() || form.paymentEvidence.some(file => file.fieldId === id)));
+    if (contactInvalid || (paymentNeedsProof && (!form.methodKey || missing || anyMissing))) { notify({ severity: 'error', message: missing ? `${missing.label} is required.` : anyMissing ? 'Enter a Transaction ID or upload a payment screenshot.' : 'Please complete the required checkout fields.' }); return; }
     await onSubmit(form);
   };
   if (error) return <Alert severity="error">{error}</Alert>;
   if (!config) return <Box className="luxury-route-loading"><CircularProgress size={24} /><Typography variant="body2">Loading secure checkout…</Typography></Box>;
   if (!config.ordersEnabled) return <Alert severity="info" className="luxury-checkout-lock">Online ordering is temporarily unavailable. Please return to your cart when checkout is reopened.</Alert>;
   return <form onSubmit={submit}>
-    <SectionTitle icon={<PersonOutlineIcon />} title="Contact information" caption="We will use these details for order updates." />
+    {step === 1 && <>
+    <SectionTitle icon={<PersonOutlineIcon />} title="Step 1: Contact & Delivery" caption="We will use these details for order updates." />
     <Grid container spacing={2.25}><Grid item xs={12} sm={6}><TextField required fullWidth label="Full name" value={form.name} onChange={e => setField('name', e.target.value)} /></Grid><Grid item xs={12} sm={6}><TextField required fullWidth type="email" label="Email address" value={form.email} onChange={e => setField('email', e.target.value)} /></Grid></Grid>
     <SectionTitle icon={<LocalShippingOutlinedIcon />} title="Delivery address" caption="Enter the address where you want your order delivered." />
     <TextField required fullWidth multiline minRows={3} label="Complete shipping address" value={form.shippingAddress} onChange={e => setField('shippingAddress', e.target.value)} />
+    </>}
+    {step === 2 && <>
     <SectionTitle icon={<PaymentsOutlinedIcon />} title="Step 2: Choose Payment Type" caption="How would you like to pay?" />
     <FormControl fullWidth>
       <RadioGroup value={form.paymentMethod} onChange={e => setField('paymentMethod', e.target.value)}>
@@ -75,6 +90,8 @@ function CheckoutForm({ onSubmit, submitting = false }) {
         </Grid>
       </RadioGroup>
     </FormControl>
+    </>}
+    {step === 3 && <>
     {form.paymentMethod === 'automatic' && <Box sx={{ mt: 2, p: 2, borderRadius: 2.5, bgcolor: 'action.hover' }}><Typography fontWeight={700}>Automatic / online payment</Typography><Typography variant="body2" color="text.secondary" sx={{ mt: .5 }}>Your card payment will be processed securely online.</Typography></Box>}
     {form.paymentMethod === 'cod' && <Box sx={{ mt: 2, p: 2, borderRadius: 2.5, bgcolor: 'action.hover' }}><Typography fontWeight={700}>Place order directly</Typography><Typography variant="body2" color="text.secondary" sx={{ mt: .5 }}>Pay when your order is delivered to your address.</Typography></Box>}
     {form.paymentMethod === 'manual' && <Box sx={{ mt: 2.5, p: { xs: 2, md: 2.5 }, borderRadius: 3, bgcolor: 'action.hover' }}>
@@ -84,8 +101,16 @@ function CheckoutForm({ onSubmit, submitting = false }) {
       </Grid>
       {selected && <><Box sx={{ mt: 2, p: 1.5, borderRadius: 2, bgcolor: 'background.paper' }}><Typography variant="caption" color="text.secondary">Send payment to</Typography><Typography sx={{ whiteSpace: 'pre-wrap', fontWeight: 600 }}>{selected.recipientDetails || 'Payment account details will be shown here.'}</Typography><Typography variant="body2" color="text.secondary" sx={{ mt: 1, whiteSpace: 'pre-wrap' }}>{selected.instructions}</Typography></Box><PaymentFields fields={selected.fields} form={form} setField={setField} setPaymentValue={setPaymentValue} fileToData={fileToData} /></>}
     </Box>}
-    <SectionTitle icon={<CheckCircleOutlinedIcon />} title="Step 4: Confirm Order" caption="Review your details, then place your order securely." />
-    <Divider sx={{ my: 3 }} /><Button type="submit" fullWidth variant="contained" size="large" disabled={submitting || !config || !config.ordersEnabled} sx={{ py: 1.5, borderRadius: 2 }}>{submitting ? <CircularProgress size={20} /> : 'Place Order'}</Button>
+    </>}
+    {step === 4 && <>
+      <SectionTitle icon={<CheckCircleOutlinedIcon />} title="Step 4: Confirm Order" caption="Review your details, then place your order securely." />
+      <Paper variant="outlined" sx={{ p: 2, borderRadius: 2.5, bgcolor: 'action.hover' }}><Typography variant="body2"><strong>{form.name}</strong> · {form.email}</Typography><Typography variant="body2" color="text.secondary" sx={{ mt: .5, whiteSpace: 'pre-wrap' }}>{form.shippingAddress}</Typography><Typography variant="body2" sx={{ mt: 1 }}>Payment: <strong>{form.paymentMethod === 'manual' ? selected?.name : form.paymentMethod === 'automatic' ? 'Card / online payment' : 'Cash on Delivery (COD)'}</strong></Typography></Paper>
+    </>}
+    <Divider sx={{ my: 3 }} />
+    <Box sx={{ display: 'flex', gap: 1.25 }}>
+      {step > 1 && <Button type="button" variant="outlined" fullWidth onClick={() => setStep(current => current - 1)} disabled={submitting}>Back</Button>}
+      <Button type="submit" fullWidth variant="contained" size="large" disabled={submitting || !config || !config.ordersEnabled} sx={{ py: 1.5, borderRadius: 2 }}>{submitting ? <CircularProgress size={20} /> : step === 4 ? 'Place Order' : 'Continue'}</Button>
+    </Box>
   </form>;
 }
 
