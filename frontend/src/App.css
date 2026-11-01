@@ -321,8 +321,21 @@
 .luxury-checkout-lock { max-width: 650px; padding: 24px !important; border-radius: 2px !important; border: 1px solid var(--fxh-border) !important; }
 .luxury-route-loading { min-height: 42vh; display: flex; flex-direction: column; gap: 16px; align-items: center; justify-content: center; color: var(--fxh-muted); }
 .luxury-route-error { max-width: 720px; margin: 80px auto; }
+.luxury-checkout-v10 { max-width: 1180px !important; }
+.luxury-checkout-v10 > .MuiBox-root:first-child { padding-bottom: 18px; }
+.luxury-checkout-v10 > .MuiBox-root:first-child h3 { font-size: clamp(32px, 4vw, 54px); line-height: .98; }
+.luxury-checkout-v10 > .MuiBox-root:first-child .MuiStack-root { gap: 6px; }
+.luxury-checkout-v10 > .MuiPaper-root,
+.luxury-checkout-v10 > .MuiBox-root > .MuiPaper-root { padding: 18px !important; }
+.luxury-checkout-v10 .checkout-section-title { margin-top: 6px; margin-bottom: 14px; }
+.luxury-checkout-v10 .checkout-section-title .MuiTypography-h6 { font-size: 18px; letter-spacing: -.01em; }
+.luxury-checkout-v10 .MuiTextField-root { margin-bottom: 2px; }
+.luxury-checkout-v10 .MuiFormControlLabel-root { min-height: 72px; }
+.luxury-checkout-v10 .MuiListItem-root { padding-top: 8px; padding-bottom: 8px; }
+.luxury-checkout-v10 .MuiAvatar-root { width: 46px; height: 46px; }
+.luxury-checkout-v10 .MuiDivider-root { margin-top: 18px; margin-bottom: 18px; }
 @media (max-width: 899px) { .luxury-cart-v10__layout { grid-template-columns: 1fr; } .luxury-cart-v10__summary { position: static; } }
-@media (max-width: 599px) { .luxury-cart-v10__intro { padding-top: 26px; } .luxury-cart-v10__item .MuiAvatar-root { width: 68px; height: 68px; margin-right: 12px; } .luxury-cart-v10__item .MuiListItemText-primary { font-size: 19px; } .luxury-cart-v10__summary { padding: 24px 18px; } .luxury-checkout { padding-top: 18px; } }
+@media (max-width: 599px) { .luxury-cart-v10__intro { padding-top: 26px; } .luxury-cart-v10__item .MuiAvatar-root { width: 68px; height: 68px; margin-right: 12px; } .luxury-cart-v10__item .MuiListItemText-primary { font-size: 19px; } .luxury-cart-v10__summary { padding: 24px 18px; } .luxury-checkout { padding-top: 18px; } .luxury-checkout-v10 { padding-left: 12px; padding-right: 12px; } .luxury-checkout-v10 > .MuiBox-root:first-child h3 { font-size: 34px; } .luxury-checkout-v10 > .MuiPaper-root, .luxury-checkout-v10 > .MuiBox-root > .MuiPaper-root { padding: 14px !important; } .luxury-checkout-v10 .checkout-section-title { margin-top: 4px; margin-bottom: 10px; } }
 
 /* General Styles */
 body {

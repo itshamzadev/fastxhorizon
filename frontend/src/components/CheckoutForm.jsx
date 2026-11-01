@@ -89,7 +89,7 @@ function CheckoutForm({ onSubmit, submitting = false }) {
   </form>;
 }
 
-function SectionTitle({ icon, title, caption }) { return <Box sx={{ mt: 1, mb: 2 }}><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><Box sx={{ color: 'primary.main', display: 'flex' }}>{icon}</Box><Typography variant="h6" fontWeight={800}>{title}</Typography></Box><Typography variant="body2" color="text.secondary" sx={{ ml: 4 }}>{caption}</Typography></Box> }
+function SectionTitle({ icon, title, caption }) { return <Box className="checkout-section-title" sx={{ mt: 1, mb: 2 }}><Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}><Box sx={{ color: 'primary.main', display: 'flex' }}>{icon}</Box><Typography variant="h6" fontWeight={800}>{title}</Typography></Box><Typography variant="body2" color="text.secondary" sx={{ ml: 4 }}>{caption}</Typography></Box> }
 
 function PaymentFields({ fields, form, setField, setPaymentValue, fileToData }) {
   const transaction = fields.find(field => field.id === 'transactionId');
