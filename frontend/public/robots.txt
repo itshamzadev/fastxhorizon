@@ -1,3 +1,13 @@
-# https://www.robotstxt.org/robotstxt.html
+User-agent: *
+Allow: /
+Disallow: /login
+Disallow: /register
+Disallow: /forgot-password
+Disallow: /reset-password
+Disallow: /cart
+Disallow: /checkout
+Disallow: /order-success
+Disallow: /admin
+Sitemap: https://www.fastxhorizon.com/sitemap.xml
 User-agent: *
 Disallow:

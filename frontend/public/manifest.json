@@ -1,9 +1,9 @@
 {
-  "short_name": "Fusion",
-  "name": "Fusion Electronics",
+  "short_name": "FASTXHORIZON",
+  "name": "FASTXHORIZON",
   "lang": "en",
   "dir": "ltr",
-  "description": "Fusion Electronics delivers a production-ready MERN commerce experience with curated hardware, AI recommendations, and secure checkout.",
+  "description": "FASTXHORIZON online store with curated products, secure checkout and reliable delivery.",
   "start_url": "/",
   "scope": "/",
   "display": "standalone",
@@ -11,7 +11,7 @@
   "orientation": "portrait-primary",
   "theme_color": "#0f172a",
   "background_color": "#0b1120",
-  "categories": ["shopping", "technology", "electronics"],
+  "categories": ["shopping"],
   "icons": [
     {
       "src": "favicon.ico",
@@ -33,7 +33,7 @@
   ],
   "shortcuts": [
     {
-      "name": "Shop Electronics",
+      "name": "Shop products",
       "short_name": "Shop",
       "url": "/shop",
       "icons": [

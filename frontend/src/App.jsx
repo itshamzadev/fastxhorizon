@@ -29,6 +29,7 @@ import RequireCustomerAuth from './components/RequireCustomerAuth';
 import { addWishlistItem, getCustomerToken, getGuestWishlistIds, getWishlist, mergeWishlist, removeWishlistItem, saveGuestWishlistIds } from './services/wishlist';
 import TikTokPixelPageViews from './analytics/TikTokPixelPageViews';
 import { trackProductEvent } from './analytics/tiktokEvents';
+import SeoMeta from './components/SeoMeta';
 
 const theme = createTheme({
   palette: {
@@ -316,6 +317,7 @@ function App() {
     <ThemeProvider theme={theme}>
       <CssBaseline />
       <BrowserRouter>
+        <SeoMeta />
         <TikTokPixelPageViews />
         <WishlistProvider value={wishlistContext}>
         <ScrollToTop />

@@ -1104,3 +1104,11 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Backend sends PlaceAnOrder after order persistence and Purchase only after admin payment verification. Frontend delivery remains a fallback/deduplicated path for browser actions.
 - Backend syntax checks and Jest passed: 14 suites / 63 tests. Frontend production build passed after the Events API changes.
 
+## Production sitemap and SEO configuration — 2026-11-02
+
+- Replaced the stale frontend sitemap with a database-backed Express `/sitemap.xml` route.
+- Added active product/category/subcategory URLs, XML escaping, real `updatedAt` values, five-minute response caching, and exclusion of private/checkout routes.
+- Added production-domain `/robots.txt`, removed the stale static sitemap, and updated frontend canonical/Open Graph/Twitter/JSON-LD metadata to `https://www.fastxhorizon.com`.
+- Added nginx exact-path proxying from the public frontend to the API SEO endpoints and configurable `PUBLIC_SITE_URL`.
+- Backend tests: 14 suites, 63 tests passed. Frontend production build passed.
+- Local sitemap endpoint could not be smoke-tested because no service was listening on `localhost:8000`; verify `https://www.fastxhorizon.com/sitemap.xml` after rebuilding the frontend and restarting the API.

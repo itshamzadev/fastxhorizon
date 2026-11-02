@@ -132,6 +132,10 @@ app.get('/ready', (req, res) => {
   res.status(ready ? 200 : 503).json({ status: ready ? 'ready' : 'not_ready', database: ready ? 'connected' : 'disconnected' });
 });
 
+// Public SEO endpoints must be handled by the API so the sitemap reflects
+// the current database rather than a stale frontend build artifact.
+app.use(require('./routes/seo'));
+
 // Redirect root to /api-docs
 app.get('/', (req, res) => {
   res.redirect('/api-docs');
