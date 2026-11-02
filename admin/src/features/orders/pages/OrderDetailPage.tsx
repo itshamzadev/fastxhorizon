@@ -1,6 +1,6 @@
 import { useNavigate, useParams } from 'react-router-dom'
 import { ArrowLeft } from 'lucide-react'
-import type { OrderPaymentStatus, OrderStatus } from '@/models/Order'
+import type { OrderStatus } from '@/models/Order'
 import { PageHeader } from '@/components/layout/PageHeader'
 import {
   Card,
@@ -19,7 +19,6 @@ import { NotFoundError } from '@/services/api/errors'
 import { formatCurrency, formatDateTime } from '@/lib/format'
 import {
   ORDER_STATUS_OPTIONS,
-  PAYMENT_STATUS_OPTIONS,
   OrderStatusBadge,
   PaymentStatusBadge,
 } from '@/components/display/status-badges'
@@ -40,10 +39,7 @@ export function OrderDetailPage() {
   const updateOrder = useUpdateOrder()
   const isNotFound = order.error instanceof NotFoundError
 
-  const handleUpdate = async (patch: {
-    status?: OrderStatus
-    paymentStatus?: OrderPaymentStatus
-  }) => {
+  const handleUpdate = async (patch: { status?: OrderStatus }) => {
     if (!orderId) return
     try {
       await updateOrder.mutateAsync({ id: orderId, input: patch })
@@ -183,17 +179,15 @@ export function OrderDetailPage() {
                   />
                 </Field>
                 <Field id="payment-status" label="Payment status">
-                  <Select
-                    id="payment-status"
-                    options={PAYMENT_STATUS_OPTIONS}
-                    value={data.paymentStatus}
-                    disabled={updateOrder.isPending}
-                    onChange={(event) =>
-                      void handleUpdate({
-                        paymentStatus: event.target.value as OrderPaymentStatus,
-                      })
-                    }
-                  />
+                  <div style={{ display: 'flex', alignItems: 'center', gap: 12, flexWrap: 'wrap' }}>
+                    <PaymentStatusBadge status={data.paymentStatus} />
+                    <Button variant="secondary" size="sm" onClick={() => navigate('/dashboard/payments')}>
+                      Review payment evidence
+                    </Button>
+                  </div>
+                  <p className="text-xs text-muted" style={{ margin: '8px 0 0' }}>
+                    Payments are marked paid only from the payment-evidence approval flow.
+                  </p>
                 </Field>
                 <p className="text-xs text-muted" role="status" aria-live="polite">
                   {updateOrder.isPending ? 'Saving…' : 'Changes save instantly.'}

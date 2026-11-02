@@ -1179,3 +1179,15 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 
 - Added public `/owners` leadership page for Muhammad Younas (CEO & Director) and Muhammad Hamza (Head of Technology & Operations), using the supplied `mdyounas.png` and `mdhamza.png` assets.
 - Added Owners links to desktop/mobile navigation and footer, plus Organization/Person structured data and sitemap inclusion.
+
+### Legacy storefront logo cleanup â€” 2026-11-02
+
+- Replaced the remaining old storefront favicon/PWA icon asset contents with the supplied FASTXHORIZON brand asset and updated the manifest to reference `fastxhorizon.png`.
+- Verified active public frontend references no longer point to the old favicon asset names; a production rebuild plus browser cache refresh is required to see the new icon everywhere.
+
+### Admin payment status workflow â€” 2026-11-02
+
+- Fixed the misleading Orders detail payment-status control: payment cannot be changed by sending an unsupported order patch, which caused the HTTP 400 error.
+- Orders now show the backend `verified` payment state as the admin-facing `paid` state and provide a direct Review payment evidence link to the secure approval workflow.
+- Payment approval remains restricted to the existing Payments page evidence decision route, preserving Purchase-event and audit-log behavior.
+- Admin production build passed after the fix.
