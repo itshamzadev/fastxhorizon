@@ -7,6 +7,7 @@ const PIXEL_ID = String(process.env.META_PIXEL_ID || '').trim();
 const ACCESS_TOKEN = String(process.env.META_CAPI_ACCESS_TOKEN || '').trim();
 const ENABLED = String(process.env.META_CAPI_ENABLED || '').toLowerCase() === 'true';
 const API_VERSION = String(process.env.META_GRAPH_API_VERSION || 'v21.0').trim();
+const TEST_EVENT_CODE = String(process.env.META_CAPI_TEST_EVENT_CODE || '').trim();
 
 const hash = value => { const normalized = String(value || '').trim().toLowerCase(); return normalized ? crypto.createHash('sha256').update(normalized).digest('hex') : undefined; };
 function safeUserData(userData = {}) { const result = {}; if (userData.email) result.em = [hash(userData.email)]; if (userData.phone) result.ph = [hash(String(userData.phone).replace(/[^0-9+]/g, ''))]; return result; }
@@ -28,6 +29,7 @@ async function sendMetaEvent({ eventName, eventId, consent = false, eventTime, e
     if (existing) await MetaEvent.updateOne({ _id: existing._id }, { $set: { status: 'sending', lastAttemptAt: new Date() }, $inc: { attempts: 1 } });
     else { try { await MetaEvent.create({ eventId, eventName, status: 'sending', attempts: 1 }); } catch (error) { if (error?.code === 11000) return { skipped: true, reason: 'duplicate' }; throw error; } }
     const payload = { data: [{ event_name: eventName, event_time: Number.isInteger(Number(eventTime)) ? Number(eventTime) : Math.floor(Date.now() / 1000), event_id: String(eventId), action_source: 'website', event_source_url: /^https:\/\//i.test(String(eventSourceUrl || '')) ? String(eventSourceUrl) : 'https://www.fastxhorizon.com/', user_data: safeUserData(userData), custom_data: safeCustomData(customData) }] };
+    if (TEST_EVENT_CODE) payload.test_event_code = TEST_EVENT_CODE;
     const response = await axios.post(`https://graph.facebook.com/${API_VERSION}/${encodeURIComponent(PIXEL_ID)}/events`, payload, { params: { access_token: ACCESS_TOKEN }, timeout: 5000 });
     if (response.status < 200 || response.status >= 300 || response.data?.error) throw new Error('Meta API rejected event.');
     await MetaEvent.updateOne({ eventId }, { $set: { status: 'sent', sentAt: new Date(), lastError: '' } });

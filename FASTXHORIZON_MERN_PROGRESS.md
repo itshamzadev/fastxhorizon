@@ -1128,6 +1128,7 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Added MongoDB `MetaEvent` idempotency records to prevent duplicate delivery/replay of the same event ID.
 - Server-authoritative events: `CompleteRegistration`, `OrderPlaced`, and verified-payment `Purchase`. Existing browser Pixel continues to cover product/search/cart/checkout actions; order IDs match for deduplication.
 - Purchase is emitted only from the admin payment-verification transition and never for pending COD/manual payments. Consent is captured on the order and rejected consent blocks server delivery.
-- Backend tests: 14 suites / 63 tests passed. Frontend production build passed.
+- Backend tests: 15 suites / 65 tests passed. Frontend production build passed.
 - Backend Coolify variables: `META_PIXEL_ID`, `META_CAPI_ACCESS_TOKEN`, `META_CAPI_ENABLED=true`, optional `META_GRAPH_API_VERSION`.
 - Added a rate-limited `/api/analytics/meta/events` bridge for consented browser events; authoritative order totals/statuses are reloaded from MongoDB before `OrderPlaced`/`Purchase` delivery.
+- Added optional runtime-only `META_CAPI_TEST_EVENT_CODE`; when set, it is added to the CAPI request body for Meta Events Manager Test Events and is never exposed to frontend code or logs.
