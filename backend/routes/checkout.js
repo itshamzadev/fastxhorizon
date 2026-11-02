@@ -204,7 +204,8 @@ router.post('/create-order', auth, async (req, res) => {
     const fulfillableItems = requestedItems.map(item => {
       const product = productMap.get(item.productId);
       const availabilityMode = ['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode);
-      const supplierBased = product?.inventoryMode === 'SUPPLIER_BASED';
+      const availableToOrder = product?.availabilityStatus === 'AVAILABLE_TO_ORDER';
+      const supplierBased = product?.inventoryMode === 'SUPPLIER_BASED' || availableToOrder;
       if (availabilityMode || supplierBased) return item;
 
       const available = Math.max(0, Number(product?.stock) || 0);
@@ -235,11 +236,11 @@ router.post('/create-order', auth, async (req, res) => {
     try {
       for (const item of fulfillableItems) {
         const candidate = await Product.findById(item.productId).select('stock status inventoryMode availabilityStatus');
-        const availabilityMode = ['AVAILABILITY_BASED', 'AVAILABILITY'].includes(candidate?.inventoryMode);
+        const availabilityMode = ['AVAILABILITY_BASED', 'AVAILABILITY'].includes(candidate?.inventoryMode) || candidate?.availabilityStatus === 'AVAILABLE_TO_ORDER';
         // Supplier-based catalog items are available to order without a local
         // numeric stock reservation. Numeric inventory modes still require an
         // atomic stock check and decrement below.
-        const supplierBased = candidate?.inventoryMode === 'SUPPLIER_BASED';
+        const supplierBased = candidate?.inventoryMode === 'SUPPLIER_BASED' || candidate?.availabilityStatus === 'AVAILABLE_TO_ORDER';
         const availabilityConfirmed = ['IN_STOCK', 'AVAILABLE_TO_ORDER'].includes(candidate?.availabilityStatus);
         const updated = candidate && candidate.status !== 'archived' && (supplierBased || (availabilityMode && availabilityConfirmed) || (!availabilityMode && candidate.stock >= item.quantity))
           ? (availabilityMode ? candidate : await Product.findOneAndUpdate({ _id: item.productId, stock: { $gte: item.quantity }, status: { $ne: 'archived' } }, { $inc: { stock: -item.quantity }, $set: { updatedAt: new Date() } }, { new: true }))
