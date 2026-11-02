@@ -40,6 +40,8 @@ describe('Meta Conversions API delivery', () => {
   test('adds the optional test event code without exposing it elsewhere', async () => {
     await sendMetaEvent({ eventName: 'ViewContent', eventId: 'view:123', consent: true, customData: { value: 849 } });
     expect(axios.post).toHaveBeenCalledTimes(1);
+    expect(axios.post.mock.calls[0][0]).toBe('https://graph.facebook.com/v23.0/1318803496970561/events');
+    expect(axios.post.mock.calls[0][2]).toEqual(expect.objectContaining({ timeout: 5000, params: { access_token: 'test-token' } }));
     const payload = axios.post.mock.calls[0][1];
     expect(payload.test_event_code).toBe('TEST123');
     expect(payload.data[0].custom_data.currency).toBe('PKR');

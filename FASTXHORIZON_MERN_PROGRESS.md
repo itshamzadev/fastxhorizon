@@ -1132,3 +1132,10 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Backend Coolify variables: `META_PIXEL_ID`, `META_CAPI_ACCESS_TOKEN`, `META_CAPI_ENABLED=true`, optional `META_GRAPH_API_VERSION`.
 - Added a rate-limited `/api/analytics/meta/events` bridge for consented browser events; authoritative order totals/statuses are reloaded from MongoDB before `OrderPlaced`/`Purchase` delivery.
 - Added optional runtime-only `META_CAPI_TEST_EVENT_CODE`; when set, it is added to the CAPI request body for Meta Events Manager Test Events and is never exposed to frontend code or logs.
+
+### Meta CAPI production diagnostics — 2026-11-02
+
+- Confirmed Meta CAPI was already implemented; the previous default Graph API version was `v21.0`. The configurable default is now `v23.0`, with the endpoint `https://graph.facebook.com/{version}/{pixel_id}/events`.
+- Added safe delivery diagnostics for HTTP status, Meta `events_received`, event name, truncated event ID and sanitized error fields. Tokens and customer data are never logged.
+- `META_CAPI_TEST_EVENT_CODE` support is present and runtime-only; it is included only when configured in the backend environment.
+- Backend tests now verify the endpoint, timeout, access-token parameter handling and optional test event code without exposing the secret in application output.
