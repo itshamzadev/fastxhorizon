@@ -189,7 +189,10 @@ router.post('/create-order', auth, async (req, res) => {
       });
     }
 
-    const productIds = [...new Set(normalizedItems.map(item => item.productId))];
+    const mergedItems = new Map();
+    normalizedItems.forEach(item => mergedItems.set(item.productId, { productId: item.productId, quantity: (mergedItems.get(item.productId)?.quantity || 0) + item.quantity }));
+    const requestedItems = [...mergedItems.values()];
+    const productIds = requestedItems.map(item => item.productId);
     const products = await Product.find({ _id: { $in: productIds }, status: { $ne: 'archived' } }).lean();
 
     if (products.length !== productIds.length) {
@@ -197,8 +200,23 @@ router.post('/create-order', auth, async (req, res) => {
     }
 
     const productMap = new Map(products.map(product => [String(product._id), product]));
+    const quantityAdjustments = [];
+    const fulfillableItems = requestedItems.map(item => {
+      const product = productMap.get(item.productId);
+      const availabilityMode = ['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode);
+      const supplierBased = product?.inventoryMode === 'SUPPLIER_BASED';
+      if (availabilityMode || supplierBased) return item;
 
-    const orderItems = normalizedItems.map(item => {
+      const available = Math.max(0, Number(product?.stock) || 0);
+      const quantity = Math.min(item.quantity, available);
+      if (quantity !== item.quantity) quantityAdjustments.push({ productId: item.productId, requested: item.quantity, fulfilled: quantity });
+      return { ...item, quantity };
+    });
+    if (fulfillableItems.some(item => item.quantity < 1)) {
+      return res.status(409).json({ error: 'One or more products are out of stock.' });
+    }
+
+    const orderItems = fulfillableItems.map(item => {
       const product = productMap.get(item.productId);
       return {
         productId: product._id,
@@ -215,7 +233,7 @@ router.post('/create-order', auth, async (req, res) => {
     // earlier reservations if a later line cannot be fulfilled.
     const reserved = [];
     try {
-      for (const item of normalizedItems) {
+      for (const item of fulfillableItems) {
         const candidate = await Product.findById(item.productId).select('stock status inventoryMode availabilityStatus');
         const availabilityMode = ['AVAILABILITY_BASED', 'AVAILABILITY'].includes(candidate?.inventoryMode);
         // Supplier-based catalog items are available to order without a local
@@ -289,6 +307,7 @@ router.post('/create-order', auth, async (req, res) => {
       paymentLifecycle: order.paymentLifecycle,
       availabilityStatus: order.availabilityStatus,
       paymentSubmissionState: paymentSubmission?.state || null,
+      quantityAdjustments,
       statusHistory: order.statusHistory,
       statusFlow: STATUS_FLOW,
       items: orderItems,

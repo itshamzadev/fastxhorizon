@@ -109,6 +109,9 @@ function Checkout({ cartItems = [], onOrderComplete }) {
       }
 
       notify({ severity: 'success', message: 'Order placed successfully! Redirecting…' });
+      if (Array.isArray(data?.quantityAdjustments) && data.quantityAdjustments.length) {
+        notify({ severity: 'info', message: 'Your order was adjusted to the available stock quantity.' });
+      }
 
       navigate('/order-success', {
         state: {
