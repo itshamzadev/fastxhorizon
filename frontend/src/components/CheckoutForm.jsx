@@ -10,6 +10,7 @@ import UploadFileOutlinedIcon from '@mui/icons-material/UploadFileOutlined';
 import { apiClient } from '../services/apiClient';
 import { useNotifier } from '../context/NotificationProvider';
 import { trackCartEvent } from '../analytics/tiktokEvents';
+import { trackMetaCart } from '../analytics/metaEvents';
 
 const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Keep the encoded checkout request below common reverse-proxy body limits.
@@ -65,7 +66,11 @@ function CheckoutForm({ onSubmit, submitting = false, cartItems = [] }) {
     await onSubmit(form);
   };
   useEffect(() => {
-    if (step >= 3) trackCartEvent('AddPaymentInfo', cartItems, `payment-info:${form.paymentMethod}:${cartItems.map(item => item._id || item.id).sort().join(',')}`);
+    if (step >= 3) {
+      const eventId = `payment-info:${form.paymentMethod}:${cartItems.map(item => item._id || item.id).sort().join(',')}`;
+      trackCartEvent('AddPaymentInfo', cartItems, eventId);
+      trackMetaCart('AddPaymentInfo', cartItems, eventId, { payment_method: form.paymentMethod });
+    }
   }, [cartItems, form.paymentMethod, step]);
   if (error) return <Alert severity="error">{error}</Alert>;
   if (!config) return <Box className="luxury-route-loading"><CircularProgress size={24} /><Typography variant="body2">Loading secure checkout…</Typography></Box>;

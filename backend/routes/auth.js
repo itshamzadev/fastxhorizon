@@ -5,6 +5,7 @@ const { check, validationResult } = require('express-validator');
 const User = require('../models/user');
 const router = express.Router();
 const auth = require('../middleware/auth');
+const { sendMetaEvent } = require('../services/metaConversionsApi');
 
 const JWT_SECRET = process.env.JWT_SECRET;
 
@@ -94,6 +95,8 @@ router.post(
     }
 
     const { name, email, password } = req.body;
+    const marketingConsent = req.body?.marketingConsent === true;
+    const metaEventId = String(req.body?.metaEventId || '').match(/^registration:[A-Za-z0-9_-]{1,100}$/)?.[0];
 
     try {
       let user = await User.findOne({ email });
@@ -111,6 +114,8 @@ router.post(
       user.password = await bcrypt.hash(password, salt);
 
       await user.save();
+
+      void sendMetaEvent({ eventName: 'CompleteRegistration', eventId: metaEventId || `registration:${user.id}`, consent: marketingConsent, userData: { email: user.email }, customData: { value: 0 } }).catch(() => {});
 
       const payload = {
         user: {

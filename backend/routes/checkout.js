@@ -7,6 +7,7 @@ const PaymentConfiguration = require('../models/paymentConfiguration');
 const PaymentSubmission = require('../models/paymentSubmission');
 const auth = require('../middleware/auth');
 const { sendTikTokEvent } = require('../services/tiktokEventsApi');
+const { sendMetaEvent } = require('../services/metaConversionsApi');
 
 const router = express.Router();
 
@@ -244,6 +245,7 @@ router.post('/create-order', auth, async (req, res) => {
       paymentStatus: 'pending',
       paymentLifecycle: 'PENDING_PAYMENT_VERIFICATION',
       availabilityStatus: orderItems.some(item => productMap.get(String(item.productId))?.inventoryMode === 'AVAILABILITY_BASED') ? 'PENDING_CONFIRMATION' : 'CONFIRMED',
+      marketingConsent: req.body?.marketingConsent === true,
     });
 
     order.ensureInitialStatus();
@@ -266,6 +268,14 @@ router.post('/create-order', auth, async (req, res) => {
       eventName: 'PlaceAnOrder',
       eventId: `order:${orderNumber}`,
       properties: { contents: orderItems.map(item => ({ content_id: String(item.productId), content_type: 'product', content_name: item.name, quantity: item.quantity })), value: orderTotal, currency: 'PKR' },
+    }).catch(() => {});
+
+    void sendMetaEvent({
+      eventName: 'OrderPlaced',
+      eventId: `order:${orderNumber}`,
+      consent: order.marketingConsent,
+      userData: { email: order.email },
+      customData: { content_ids: orderItems.map(item => String(item.productId)), contents: orderItems.map(item => ({ content_id: String(item.productId), content_name: item.name, quantity: item.quantity })), value: orderTotal, order_id: orderNumber },
     }).catch(() => {});
 
     await new Promise(resolve => setTimeout(resolve, 1200));

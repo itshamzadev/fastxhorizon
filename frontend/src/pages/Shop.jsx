@@ -27,6 +27,7 @@ import { useNotifier } from '../context/NotificationProvider';
 import { apiClient } from '../services/apiClient';
 import { useLocation } from 'react-router-dom';
 import { trackTikTokEvent } from '../analytics/tiktokPixel';
+import { trackMetaEvent } from '../analytics/metaPixel';
 import { TIKTOK_CURRENCY } from '../analytics/tiktokEvents';
 
 const itemsPerPage = 6;
@@ -93,7 +94,9 @@ function Shop({ products, addToCart, loading, error }) {
   React.useEffect(() => {
     const query = searchQuery.trim();
     if (!query) return;
-    trackTikTokEvent('Search', { contents: [], value: 0, currency: TIKTOK_CURRENCY, search_string: query }, `search:${query.toLowerCase()}`);
+    const eventId = `search:${query.toLowerCase()}`;
+    trackTikTokEvent('Search', { contents: [], value: 0, currency: TIKTOK_CURRENCY, search_string: query }, eventId);
+    trackMetaEvent('Search', { content_type: 'product', search_string: query, value: 0, currency: TIKTOK_CURRENCY }, eventId);
   }, [searchQuery]);
 
   React.useEffect(() => {

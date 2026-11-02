@@ -1112,3 +1112,22 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Added nginx exact-path proxying from the public frontend to the API SEO endpoints and configurable `PUBLIC_SITE_URL`.
 - Backend tests: 14 suites, 63 tests passed. Frontend production build passed.
 - Local sitemap endpoint could not be smoke-tested because no service was listening on `localhost:8000`; verify `https://www.fastxhorizon.com/sitemap.xml` after rebuilding the frontend and restarting the API.
+
+## Production Meta Pixel integration — 2026-11-02
+
+- Added consent-gated Meta Pixel loading with one-time initialization and React Router page-view tracking; admin/private routes are excluded.
+- Added `ViewContent`, `Search`, `AddToWishlist`, `AddToCart`, `InitiateCheckout`, `AddPaymentInfo`, `CompleteRegistration`, custom `OrderPlaced`, and verified-only `Purchase` browser events.
+- Added stable browser event IDs and no Conversions API/token implementation. No passwords, payment evidence, card data or other sensitive fields are sent.
+- Added an explicit accept/decline marketing-consent banner because the storefront had no consent UI; declining blocks Meta tracking and users can change the stored preference through Privacy choices.
+- Frontend build passed. Existing frontend Jest run: 19 suites passed, 5 unrelated existing failures (stale snapshots and missing API env in Cart/Checkout tests).
+- Coolify frontend build variable: `VITE_META_PIXEL_ID=1318803496970561`; the Docker build maps it to `REACT_APP_META_PIXEL_ID` for the actual CRA/CRACO storefront.
+
+## Meta Conversions API — 2026-11-02
+
+- Added backend-only Meta CAPI v21 delivery service with timeout, allowlisted events, hashed email/phone matching, PKR-safe custom data, token-safe logs, and graceful failure.
+- Added MongoDB `MetaEvent` idempotency records to prevent duplicate delivery/replay of the same event ID.
+- Server-authoritative events: `CompleteRegistration`, `OrderPlaced`, and verified-payment `Purchase`. Existing browser Pixel continues to cover product/search/cart/checkout actions; order IDs match for deduplication.
+- Purchase is emitted only from the admin payment-verification transition and never for pending COD/manual payments. Consent is captured on the order and rejected consent blocks server delivery.
+- Backend tests: 14 suites / 63 tests passed. Frontend production build passed.
+- Backend Coolify variables: `META_PIXEL_ID`, `META_CAPI_ACCESS_TOKEN`, `META_CAPI_ENABLED=true`, optional `META_GRAPH_API_VERSION`.
+- Added a rate-limited `/api/analytics/meta/events` bridge for consented browser events; authoritative order totals/statuses are reloaded from MongoDB before `OrderPlaced`/`Purchase` delivery.

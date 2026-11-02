@@ -30,6 +30,9 @@ import { addWishlistItem, getCustomerToken, getGuestWishlistIds, getWishlist, me
 import TikTokPixelPageViews from './analytics/TikTokPixelPageViews';
 import { trackProductEvent } from './analytics/tiktokEvents';
 import SeoMeta from './components/SeoMeta';
+import MetaPixelPageViews from './analytics/MetaPixelPageViews';
+import { trackMetaProduct } from './analytics/metaEvents';
+import MarketingConsentBanner from './components/MarketingConsentBanner';
 
 const theme = createTheme({
   palette: {
@@ -269,7 +272,11 @@ function App() {
         const ids = getGuestWishlistIds();
         saveGuestWishlistIds(exists ? ids.filter(itemId => itemId !== key) : [...ids, key]);
       }
-      if (!exists) trackProductEvent('AddToWishlist', product, { eventId: `wishlist:${key}:add` });
+      if (!exists) {
+        const eventId = `wishlist:${key}:add`;
+        trackProductEvent('AddToWishlist', product, { eventId });
+        trackMetaProduct('AddToWishlist', product, { eventId });
+      }
     } catch (wishlistError) {
       setWishlist(previousWishlist);
       notify({ severity: 'error', message: 'Unable to update wishlist. Please try again.' });
@@ -294,7 +301,9 @@ function App() {
         notify({ severity: 'info', message: 'Item is already in your cart.' });
         return;
       }
-      trackProductEvent('AddToCart', product, { eventId: `cart:${canonicalId}:${Date.now()}` });
+      const eventId = `cart:${canonicalId}:${Date.now()}`;
+      trackProductEvent('AddToCart', product, { eventId });
+      trackMetaProduct('AddToCart', product, { eventId });
       setCart(prevCart => {
         const alreadyInCart = prevCart.some(item => item.id === canonicalId || item._id === canonicalId);
         if (alreadyInCart) {
@@ -319,6 +328,8 @@ function App() {
       <BrowserRouter>
         <SeoMeta />
         <TikTokPixelPageViews />
+        <MetaPixelPageViews />
+        <MarketingConsentBanner />
         <WishlistProvider value={wishlistContext}>
         <ScrollToTop />
         <NavigationBar cartItemCount={cart.length} />

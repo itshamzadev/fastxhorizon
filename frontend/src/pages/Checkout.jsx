@@ -29,6 +29,8 @@ import { formatPrice } from '../utils/currency';
 import { resolveMediaUrl } from '../utils/media';
 import { trackCartEvent } from '../analytics/tiktokEvents';
 import { identifyTikTokCustomer } from '../analytics/tiktokPixel';
+import { hasMetaConsent } from '../analytics/metaPixel';
+import { trackMetaCart } from '../analytics/metaEvents';
 
 function Checkout({ cartItems = [], onOrderComplete }) {
   const navigate = useNavigate();
@@ -65,6 +67,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
     try {
       const orderPayload = {
         ...formData,
+        marketingConsent: hasMetaConsent(),
         items: itemsToPurchase
           .map(item => ({
             productId: item._id || item.id,
@@ -86,8 +89,10 @@ function Checkout({ cartItems = [], onOrderComplete }) {
       const orderEventId = data?.orderNumber ? `order:${data.orderNumber}` : `order:created:${Date.now()}`;
       void identifyTikTokCustomer({ email: normalizedEmail });
       trackCartEvent('PlaceAnOrder', orderItems, orderEventId);
+      trackMetaCart('OrderPlaced', orderItems, orderEventId, { order_id: data?.orderNumber || undefined });
       if (data?.paymentStatus === 'verified' || data?.paymentLifecycle === 'VERIFIED') {
         trackCartEvent('Purchase', orderItems, `${orderEventId}:purchase`, { payment_status: 'verified', payment_lifecycle: 'VERIFIED' });
+        trackMetaCart('Purchase', orderItems, `${orderEventId}:purchase`, { payment_status: 'verified', order_id: data?.orderNumber || undefined });
       }
 
       setLoading(false);
@@ -127,7 +132,11 @@ function Checkout({ cartItems = [], onOrderComplete }) {
   });
   const total = itemsToShow.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1), 0);
   React.useEffect(() => {
-    if (itemsToShow.length) trackCartEvent('InitiateCheckout', itemsToShow, `checkout:${itemsToShow.map(item => item._id || item.id).sort().join(',')}`);
+    if (itemsToShow.length) {
+      const eventId = `checkout:${itemsToShow.map(item => item._id || item.id).sort().join(',')}`;
+      trackCartEvent('InitiateCheckout', itemsToShow, eventId);
+      trackMetaCart('InitiateCheckout', itemsToShow, eventId);
+    }
   }, [itemsToShow]);
   const allSelected = cartItems.every(item => selectedItems.has(item._id || item.id));
 

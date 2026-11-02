@@ -96,6 +96,7 @@ const OrderSchema = new mongoose.Schema(
     statusHistory: { type: [StatusEntrySchema], default: [] },
     estimatedDelivery: { type: Date },
     paymentSubmissionId: { type: mongoose.Schema.Types.ObjectId, ref: 'PaymentSubmission', default: null },
+    marketingConsent: { type: Boolean, default: false },
   },
   { timestamps: true }
 );
