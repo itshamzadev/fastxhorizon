@@ -141,7 +141,8 @@ function PaymentFields({ fields, form, setField, setPaymentValue, fileToData }) 
 
 function PaymentField({ field, form, setField, setPaymentValue, fileToData }) {
   if (field.type === 'file') return <><Button component="label" fullWidth variant="outlined" startIcon={<UploadFileOutlinedIcon />} sx={{ py: 1.4, justifyContent: 'flex-start' }}>{field.label}{field.required ? ' *' : ''}<input hidden type="file" accept={(field.acceptedMimeTypes || []).join(',')} onChange={async event => { const file = event.target.files?.[0]; if (!file) return; try { const encoded = await fileToData(file); setField('paymentEvidence', [{ ...encoded, fieldId: field.id, name: file.name }]); } catch (error) { setField('paymentEvidence', []); window.alert(error.message); } }} /></Button>{form.paymentEvidence.some(file => file.fieldId === field.id) && <Typography variant="caption" color="success.main">Screenshot attached (compressed)</Typography>}</>;
-  return <TextField fullWidth multiline={field.type === 'textarea'} type={field.type === 'number' ? 'number' : 'text'} label={`${field.label}${field.required ? ' *' : ''}`} placeholder={field.placeholder} helperText={field.helpText} value={form.paymentValues[field.id] || ''} onChange={event => setPaymentValue(field.id, event.target.value)} />;
+  const isReference = /transaction|reference|tid/i.test(`${field.id} ${field.label}`);
+  return <TextField fullWidth multiline={field.type === 'textarea'} type={isReference ? 'text' : field.type === 'number' ? 'number' : 'text'} label={`${field.label}${field.required ? ' *' : ''}`} placeholder={field.placeholder} helperText={isReference ? 'Enter the reference exactly as received. Any letters or numbers are accepted.' : field.helpText} value={form.paymentValues[field.id] || ''} onChange={event => setPaymentValue(field.id, event.target.value)} />;
 }
 
 export default CheckoutForm;

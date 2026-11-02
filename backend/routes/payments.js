@@ -32,7 +32,8 @@ function validateFields(method, values, evidence) {
     const value = values?.[field.id];
     if (field.required && (value === undefined || value === null || value === '' || (field.type === 'checkbox' && value !== true))) return `${field.label} is required.`;
     if (value === undefined || value === null || value === '') continue;
-    if (field.type === 'number' && !Number.isFinite(Number(value))) return `${field.label} must be a number.`;
+    const isReference = /transaction|reference|tid/i.test(`${field.id} ${field.label}`);
+    if (field.type === 'number' && !isReference && !Number.isFinite(Number(value))) return `${field.label} must be a number.`;
     if (['select', 'radio'].includes(field.type) && !field.options.includes(String(value))) return `${field.label} has an invalid option.`;
     if (field.type === 'file' && field.required && !evidence?.some(file => file.fieldId === field.id)) return `${field.label} is required.`;
   }
