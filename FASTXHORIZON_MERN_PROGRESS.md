@@ -1148,3 +1148,4 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Checkout validation failures are now shown inline inside the form as well as through the notification, so missing phone/payment details no longer make the final button appear unresponsive.
 - Manual payment transaction/reference fields now use unrestricted text input: letters, numbers and mixed formats are accepted without an application-defined length or numeric-format rule. Verification/rejection remains an admin responsibility.
 - Fixed manual payment proof validation to accept any non-empty transaction/reference value OR an uploaded screenshot, independent of the configured `requiredAnyOf` field-group labels.
+- Checkout reservation now treats the existing `AVAILABLE_TO_ORDER` status as orderable for availability-mode products, matching the storefront label and preventing false insufficient-stock errors.

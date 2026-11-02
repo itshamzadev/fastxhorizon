@@ -240,7 +240,8 @@ router.post('/create-order', auth, async (req, res) => {
         // numeric stock reservation. Numeric inventory modes still require an
         // atomic stock check and decrement below.
         const supplierBased = candidate?.inventoryMode === 'SUPPLIER_BASED';
-        const updated = candidate && candidate.status !== 'archived' && (supplierBased || (availabilityMode && candidate.availabilityStatus === 'IN_STOCK') || (!availabilityMode && candidate.stock >= item.quantity))
+        const availabilityConfirmed = ['IN_STOCK', 'AVAILABLE_TO_ORDER'].includes(candidate?.availabilityStatus);
+        const updated = candidate && candidate.status !== 'archived' && (supplierBased || (availabilityMode && availabilityConfirmed) || (!availabilityMode && candidate.stock >= item.quantity))
           ? (availabilityMode ? candidate : await Product.findOneAndUpdate({ _id: item.productId, stock: { $gte: item.quantity }, status: { $ne: 'archived' } }, { $inc: { stock: -item.quantity }, $set: { updatedAt: new Date() } }, { new: true }))
           : null;
         if (!updated) throw new Error('INSUFFICIENT_STOCK');
