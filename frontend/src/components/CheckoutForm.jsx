@@ -21,6 +21,7 @@ function CheckoutForm({ onSubmit, submitting = false, cartItems = [], onStepChan
   const [config, setConfig] = useState(null);
   const [step, setStep] = useState(1);
   const [error, setError] = useState('');
+  const [validationError, setValidationError] = useState('');
   const { notify } = useNotifier();
   useEffect(() => { apiClient.get('payments/config').then(({ data: response }) => { const data = response?.data || response; setConfig(data); const first = data?.manual?.methods?.[0]; if (first) setForm(current => ({ ...current, methodKey: first.key })) }).catch(() => setError('Payment options are currently unavailable.')) }, []);
   const methods = config?.manual?.methods || [];
@@ -49,21 +50,25 @@ function CheckoutForm({ onSubmit, submitting = false, cartItems = [], onStepChan
   useEffect(() => { onStepChange?.(step); }, [onStepChange, step]);
   const submit = async event => {
     event.preventDefault();
+    setValidationError('');
     const contactInvalid = !form.name.trim() || !emailPattern.test(form.email) || !form.phone.trim() || !form.shippingAddress.trim();
     if (step === 1) {
-      if (contactInvalid) { notify({ severity: 'error', message: 'Please enter your name, email, phone number and complete delivery address.' }); return; }
+      if (contactInvalid) { const message = 'Please enter your name, email, phone number and complete delivery address.'; setValidationError(message); notify({ severity: 'error', message }); return; }
       setStep(2); return;
     }
-    if (step === 2) { setStep(3); return; }
+    if (step === 2) {
+      if (!form.paymentMethod) { const message = 'Please choose a payment type.'; setValidationError(message); notify({ severity: 'error', message }); return; }
+      setStep(3); return;
+    }
     if (step === 3) {
-      if (form.paymentMethod === 'manual' && !form.methodKey) { notify({ severity: 'error', message: 'Select a manual payment method.' }); return; }
+      if (form.paymentMethod === 'manual' && !form.methodKey) { const message = 'Select a manual payment method.'; setValidationError(message); notify({ severity: 'error', message }); return; }
       setStep(4); return;
     }
     const paymentNeedsProof = form.paymentMethod === 'manual';
     const required = paymentNeedsProof ? (selected?.fields?.filter(field => field.required) || []) : [];
     const missing = required.find(field => field.type !== 'file' && !String(form.paymentValues[field.id] || '').trim());
     const anyMissing = paymentNeedsProof && (selected?.requiredAnyOf || []).some(group => !group.some(id => String(form.paymentValues[id] || '').trim() || form.paymentEvidence.some(file => file.fieldId === id)));
-    if (contactInvalid || (paymentNeedsProof && (!form.methodKey || missing || anyMissing))) { notify({ severity: 'error', message: missing ? `${missing.label} is required.` : anyMissing ? 'Enter a Transaction ID or upload a payment screenshot.' : 'Please complete the required checkout fields.' }); return; }
+    if (contactInvalid || (paymentNeedsProof && (!form.methodKey || missing || anyMissing))) { const message = missing ? `${missing.label} is required.` : anyMissing ? 'Enter a Transaction ID or upload a payment screenshot.' : 'Please complete the required checkout fields.'; setValidationError(message); notify({ severity: 'error', message }); return; }
     await onSubmit(form);
   };
   useEffect(() => {
@@ -77,6 +82,7 @@ function CheckoutForm({ onSubmit, submitting = false, cartItems = [], onStepChan
   if (!config) return <Box className="luxury-route-loading"><CircularProgress size={24} /><Typography variant="body2">Loading secure checkout…</Typography></Box>;
   if (!config.ordersEnabled) return <Alert severity="info" className="luxury-checkout-lock">Online ordering is temporarily unavailable. Please return to your cart when checkout is reopened.</Alert>;
   return <form onSubmit={submit}>
+    {validationError && <Alert severity="warning" sx={{ mb: 2 }}>{validationError}</Alert>}
     {step === 1 && <>
     <SectionTitle icon={<PersonOutlineIcon />} title="Step 1: Contact & Delivery" caption="We will use these details for order updates." />
     <Grid container spacing={2.25}><Grid item xs={12} sm={4}><TextField required fullWidth label="Full name" value={form.name} onChange={e => setField('name', e.target.value)} /></Grid><Grid item xs={12} sm={4}><TextField required fullWidth type="email" label="Email address" value={form.email} onChange={e => setField('email', e.target.value)} /></Grid><Grid item xs={12} sm={4}><TextField required fullWidth type="tel" label="Phone number" placeholder="03XX XXXXXXX" value={form.phone} onChange={e => setField('phone', e.target.value)} helperText="Required for delivery calls and order updates" /></Grid></Grid>

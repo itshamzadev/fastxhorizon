@@ -1145,3 +1145,4 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Fixed the checkout progress indicator so it follows the active step instead of remaining visually on Step 1.
 - Added a required customer phone number beside name/email on delivery details, included it in order validation/storage, and displayed it in the confirmation review for delivery calls.
 - Numeric inventory checkout now caps a requested quantity to the currently available stock (for example, requested 8 with stock 5 fulfills 5), rejects zero stock, and reports any adjustment to the customer. Availability-based and supplier-based inventory behavior remains unchanged.
+- Checkout validation failures are now shown inline inside the form as well as through the notification, so missing phone/payment details no longer make the final button appear unresponsive.
