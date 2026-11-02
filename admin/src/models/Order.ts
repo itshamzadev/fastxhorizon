@@ -26,6 +26,8 @@ export interface Order {
   number: string
   customerName: string
   customerEmail: string
+  phone: string
+  shippingAddress: string
   items: OrderItem[]
   subtotal: number
   shipping: number
@@ -33,6 +35,7 @@ export interface Order {
   total: number
   status: OrderStatus
   paymentStatus: OrderPaymentStatus
+  paymentMethod: string
   placedAt: string
   updatedAt: string
 }

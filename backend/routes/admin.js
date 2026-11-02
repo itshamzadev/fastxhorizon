@@ -203,7 +203,7 @@ function orderStatus(order) {
 }
 
 function orderView(order) {
-  return { id: String(order._id), number: order.orderNumber, customerName: order.name, customerEmail: order.email, items: (order.items || []).map((item) => ({ productId: String(item.productId), name: item.name, quantity: item.quantity, unitPrice: item.price })), subtotal: order.total, shipping: 0, tax: 0, total: order.total, currency: order.currency || null, status: orderStatus(order), paymentStatus: order.paymentStatus || 'pending', paymentLifecycle: order.paymentLifecycle || 'PENDING_PAYMENT_VERIFICATION', availabilityStatus: order.availabilityStatus || 'CONFIRMED', paymentMethod: order.paymentMethod || 'cod', placedAt: order.createdAt, updatedAt: order.updatedAt, shippingAddress: order.shippingAddress, statusHistory: order.statusHistory || [] };
+  return { id: String(order._id), number: order.orderNumber, customerName: order.name, customerEmail: order.email, phone: order.phone || '', items: (order.items || []).map((item) => ({ productId: String(item.productId), name: item.name, quantity: item.quantity, unitPrice: item.price })), subtotal: order.total, shipping: 0, tax: 0, total: order.total, currency: order.currency || null, status: orderStatus(order), paymentStatus: order.paymentStatus || 'pending', paymentLifecycle: order.paymentLifecycle || 'PENDING_PAYMENT_VERIFICATION', availabilityStatus: order.availabilityStatus || 'CONFIRMED', paymentMethod: order.paymentMethod || 'cod', placedAt: order.createdAt, updatedAt: order.updatedAt, shippingAddress: order.shippingAddress || '', statusHistory: order.statusHistory || [] };
 }
 
 async function audit(req, action, success = true, metadata = {}) {

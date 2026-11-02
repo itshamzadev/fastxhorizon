@@ -216,6 +216,18 @@ export function OrderDetailPage() {
                     <span className="meta-list__value">{data.customerEmail}</span>
                   </li>
                   <li className="meta-list__row">
+                    <span className="meta-list__label">Phone</span>
+                    <span className="meta-list__value">{data.phone || 'Not provided'}</span>
+                  </li>
+                  <li className="meta-list__row" style={{ alignItems: 'flex-start' }}>
+                    <span className="meta-list__label">Delivery address</span>
+                    <span className="meta-list__value" style={{ whiteSpace: 'pre-wrap', textAlign: 'right' }}>{data.shippingAddress || 'Not provided'}</span>
+                  </li>
+                  <li className="meta-list__row">
+                    <span className="meta-list__label">Payment method</span>
+                    <span className="meta-list__value">{data.paymentMethod === 'manual' ? 'Manual payment' : data.paymentMethod === 'cod' ? 'Cash on Delivery' : 'Card / online'}</span>
+                  </li>
+                  <li className="meta-list__row">
                     <span className="meta-list__label">Current state</span>
                     <span
                       className="meta-list__value"
