@@ -1139,3 +1139,8 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Added safe delivery diagnostics for HTTP status, Meta `events_received`, event name, truncated event ID and sanitized error fields. Tokens and customer data are never logged.
 - `META_CAPI_TEST_EVENT_CODE` support is present and runtime-only; it is included only when configured in the backend environment.
 - Backend tests now verify the endpoint, timeout, access-token parameter handling and optional test event code without exposing the secret in application output.
+
+### Checkout contact and step flow — 2026-11-02
+
+- Fixed the checkout progress indicator so it follows the active step instead of remaining visually on Step 1.
+- Added a required customer phone number beside name/email on delivery details, included it in order validation/storage, and displayed it in the confirmation review for delivery calls.

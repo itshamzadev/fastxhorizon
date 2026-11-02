@@ -37,6 +37,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
   const [orderCreated, setOrderCreated] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [loading, setLoading] = useState(false);
+  const [checkoutStep, setCheckoutStep] = useState(1);
   const { notify } = useNotifier();
 
   const [showCartSummary, setShowCartSummary] = useState(true);
@@ -174,7 +175,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
           </Box>
         </Stack>
         <Stack direction="row" spacing={1} sx={{ flexWrap: 'wrap', gap: 1 }}>
-          {['Step 1: Cart', 'Step 2: Choose Payment Type', 'Step 3: Choose Payment Method', 'Step 4: Confirm Order'].map((step, index) => <Box key={step} sx={{ px: 1.5, py: .75, borderRadius: 10, bgcolor: index === 0 ? 'primary.main' : 'action.hover', color: index === 0 ? 'primary.contrastText' : 'text.secondary', fontSize: 13, fontWeight: 600 }}>{step}</Box>)}
+          {['Step 1: Cart', 'Step 2: Choose Payment Type', 'Step 3: Choose Payment Method', 'Step 4: Confirm Order'].map((label, index) => { const active = index + 1 === checkoutStep; const complete = index + 1 < checkoutStep; return <Box key={label} sx={{ px: 1.5, py: .75, borderRadius: 10, bgcolor: active ? 'primary.main' : complete ? 'success.main' : 'action.hover', color: active || complete ? 'primary.contrastText' : 'text.secondary', fontSize: 13, fontWeight: 600 }}>{label}</Box>; })}
         </Stack>
       </Box>
 
@@ -232,7 +233,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
           <Paper elevation={0} sx={{ p: { xs: 2.5, md: 4 }, borderRadius: 4 }}>
             {loading && <CircularProgress size={22} sx={{ mb: 2 }} />}
             {errorMessage && <Box sx={{ mb: 3, p: 1.5, borderRadius: 2, bgcolor: 'error.main', color: 'error.contrastText' }}><Typography variant="body2">{errorMessage}</Typography></Box>}
-            <CheckoutForm onSubmit={handleSubmit} submitting={loading} cartItems={itemsToShow} />
+            <CheckoutForm onSubmit={handleSubmit} submitting={loading} cartItems={itemsToShow} onStepChange={setCheckoutStep} />
             <Stack direction="row" spacing={1} alignItems="center" sx={{ mt: 3, color: 'text.secondary' }}><LockIcon fontSize="small" /><Typography variant="caption">Your order details are transmitted securely. Payment evidence is reviewed by our team.</Typography></Stack>
           </Paper>
           <Paper elevation={0} sx={{ p: { xs: 2.5, md: 3 }, borderRadius: 4, position: { md: 'sticky' }, top: { md: 24 } }}>

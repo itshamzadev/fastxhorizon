@@ -137,19 +137,20 @@ async function generateOrderNumber() {
  */
 router.post('/create-order', auth, async (req, res) => {
   try {
-    const { items, name, email, shippingAddress } = req.body;
+    const { items, name, email, phone, shippingAddress } = req.body;
     const paymentMethod = req.body?.paymentMethod;
 
-    if (!Array.isArray(items) || !items.length || !name || !email || !shippingAddress || !['automatic', 'manual', 'cod'].includes(paymentMethod)) {
+    if (!Array.isArray(items) || !items.length || !name || !email || !phone || !shippingAddress || !['automatic', 'manual', 'cod'].includes(paymentMethod)) {
       return res.status(400).json({ error: 'Missing required fields' });
     }
 
     const trimmedEmail = String(email).trim();
+    const trimmedPhone = String(phone).trim();
     const trimmedName = String(name).trim();
     const trimmedAddress = String(shippingAddress).trim();
 
-    if (!trimmedName || !trimmedAddress) {
-      return res.status(400).json({ error: 'Name and shipping address are required.' });
+    if (!trimmedName || !trimmedPhone || !trimmedAddress) {
+      return res.status(400).json({ error: 'Name, phone number and shipping address are required.' });
     }
 
     if (!emailRegex.test(trimmedEmail)) {
@@ -237,6 +238,7 @@ router.post('/create-order', auth, async (req, res) => {
       orderNumber,
       email: trimmedEmail.toLowerCase(),
       name: trimmedName,
+      phone: trimmedPhone,
       shippingAddress: trimmedAddress,
       items: orderItems,
       total: orderTotal,

@@ -16,8 +16,8 @@ const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 // Keep the encoded checkout request below common reverse-proxy body limits.
 const MAX_PAYMENT_IMAGE_BYTES = 400 * 1024;
 
-function CheckoutForm({ onSubmit, submitting = false, cartItems = [] }) {
-  const [form, setForm] = useState({ name: '', email: '', shippingAddress: '', paymentMethod: 'manual', methodKey: '', paymentValues: {}, paymentEvidence: [] });
+function CheckoutForm({ onSubmit, submitting = false, cartItems = [], onStepChange }) {
+  const [form, setForm] = useState({ name: '', email: '', phone: '', shippingAddress: '', paymentMethod: 'manual', methodKey: '', paymentValues: {}, paymentEvidence: [] });
   const [config, setConfig] = useState(null);
   const [step, setStep] = useState(1);
   const [error, setError] = useState('');
@@ -46,11 +46,12 @@ function CheckoutForm({ onSubmit, submitting = false, cartItems = [] }) {
     };
     reader.onerror = () => reject(new Error('Unable to read payment screenshot.')); reader.readAsDataURL(file);
   });
+  useEffect(() => { onStepChange?.(step); }, [onStepChange, step]);
   const submit = async event => {
     event.preventDefault();
-    const contactInvalid = !form.name.trim() || !emailPattern.test(form.email) || !form.shippingAddress.trim();
+    const contactInvalid = !form.name.trim() || !emailPattern.test(form.email) || !form.phone.trim() || !form.shippingAddress.trim();
     if (step === 1) {
-      if (contactInvalid) { notify({ severity: 'error', message: 'Please complete your contact and delivery details.' }); return; }
+      if (contactInvalid) { notify({ severity: 'error', message: 'Please enter your name, email, phone number and complete delivery address.' }); return; }
       setStep(2); return;
     }
     if (step === 2) { setStep(3); return; }
@@ -78,7 +79,7 @@ function CheckoutForm({ onSubmit, submitting = false, cartItems = [] }) {
   return <form onSubmit={submit}>
     {step === 1 && <>
     <SectionTitle icon={<PersonOutlineIcon />} title="Step 1: Contact & Delivery" caption="We will use these details for order updates." />
-    <Grid container spacing={2.25}><Grid item xs={12} sm={6}><TextField required fullWidth label="Full name" value={form.name} onChange={e => setField('name', e.target.value)} /></Grid><Grid item xs={12} sm={6}><TextField required fullWidth type="email" label="Email address" value={form.email} onChange={e => setField('email', e.target.value)} /></Grid></Grid>
+    <Grid container spacing={2.25}><Grid item xs={12} sm={4}><TextField required fullWidth label="Full name" value={form.name} onChange={e => setField('name', e.target.value)} /></Grid><Grid item xs={12} sm={4}><TextField required fullWidth type="email" label="Email address" value={form.email} onChange={e => setField('email', e.target.value)} /></Grid><Grid item xs={12} sm={4}><TextField required fullWidth type="tel" label="Phone number" placeholder="03XX XXXXXXX" value={form.phone} onChange={e => setField('phone', e.target.value)} helperText="Required for delivery calls and order updates" /></Grid></Grid>
     <SectionTitle icon={<LocalShippingOutlinedIcon />} title="Delivery address" caption="Enter the address where you want your order delivered." />
     <TextField required fullWidth multiline minRows={3} label="Complete shipping address" value={form.shippingAddress} onChange={e => setField('shippingAddress', e.target.value)} />
     </>}
@@ -113,7 +114,7 @@ function CheckoutForm({ onSubmit, submitting = false, cartItems = [] }) {
     </>}
     {step === 4 && <>
       <SectionTitle icon={<CheckCircleOutlinedIcon />} title="Step 4: Confirm Order" caption="Review your details, then place your order securely." />
-      <Paper variant="outlined" sx={{ p: 2, borderRadius: 2.5, bgcolor: 'action.hover' }}><Typography variant="body2"><strong>{form.name}</strong> · {form.email}</Typography><Typography variant="body2" color="text.secondary" sx={{ mt: .5, whiteSpace: 'pre-wrap' }}>{form.shippingAddress}</Typography><Typography variant="body2" sx={{ mt: 1 }}>Payment: <strong>{form.paymentMethod === 'manual' ? selected?.name : form.paymentMethod === 'automatic' ? 'Card / online payment' : 'Cash on Delivery (COD)'}</strong></Typography></Paper>
+      <Paper variant="outlined" sx={{ p: 2, borderRadius: 2.5, bgcolor: 'action.hover' }}><Typography variant="body2"><strong>{form.name}</strong> · {form.email} · {form.phone}</Typography><Typography variant="body2" color="text.secondary" sx={{ mt: .5, whiteSpace: 'pre-wrap' }}>{form.shippingAddress}</Typography><Typography variant="body2" sx={{ mt: 1 }}>Payment: <strong>{form.paymentMethod === 'manual' ? selected?.name : form.paymentMethod === 'automatic' ? 'Card / online payment' : 'Cash on Delivery (COD)'}</strong></Typography></Paper>
     </>}
     <Divider sx={{ my: 3 }} />
     <Box sx={{ display: 'flex', gap: 1.25 }}>

@@ -84,6 +84,7 @@ const OrderSchema = new mongoose.Schema(
     orderNumber: { type: String, required: true, unique: true, index: true },
     email: { type: String, required: true, index: true },
     name: { type: String, required: true },
+    phone: { type: String, required: true },
     shippingAddress: { type: String, required: true },
     items: { type: [OrderItemSchema], default: [] },
     total: { type: Number, required: true, min: 0 },
