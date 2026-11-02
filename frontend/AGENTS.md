@@ -1,8 +1,8 @@
-# AI Coding Agent Instructions for Fusion Electronics E-commerce
+﻿# AI Coding Agent Instructions for FASTXHORIZON E-commerce
 
 ## Project Overview
 
-**Fusion Electronics** is a production-ready, full-stack MERN (MongoDB, Express, React, Node.js) e-commerce application featuring:
+**FASTXHORIZON** is a production-ready, full-stack MERN (MongoDB, Express, React, Node.js) e-commerce application featuring:
 - Product browsing, search, and detailed views
 - Shopping cart and checkout flow with validation
 - User authentication (JWT-based)
@@ -18,93 +18,93 @@
 
 ```
 project-root/
-├── backend/                      # Node.js + Express API server
-│   ├── config/                   # Database configuration
-│   │   └── db.js                # MongoDB connection setup
-│   ├── docs/                     # API documentation
-│   │   └── swagger.js           # Swagger configuration
-│   ├── models/                   # Mongoose schemas
-│   │   ├── product.js           # Product model with Pinecone hooks
-│   │   └── user.js              # User model for authentication
-│   ├── routes/                   # Express route handlers
-│   │   ├── auth.js              # Authentication endpoints
-│   │   ├── checkout.js          # Order creation and validation
-│   │   ├── products.js          # Product CRUD and recommendations
-│   │   └── search.js            # Product search functionality
-│   ├── scripts/                  # Utility scripts
-│   │   ├── build-faiss-index.js # FAISS index builder
-│   │   ├── search-faiss-index.js# FAISS similarity search
-│   │   ├── sync-pinecone.js     # Sync MongoDB → Pinecone
-│   │   ├── sync-weaviate-ids.js # Sync MongoDB → Weaviate IDs
-│   │   ├── query-weaviate.js    # Weaviate query utility
-│   │   └── weaviate-upsert.js   # Weaviate data upsert
-│   ├── seed/                     # Database seeding
-│   │   └── productSeeds.js      # Initial product data
-│   ├── services/                 # Business logic services
-│   │   └── pineconeSync.js      # Pinecone synchronization helpers
-│   ├── sync/                     # Synchronization modules
-│   │   ├── syncPinecone.js      # Main Pinecone sync orchestrator
-│   │   └── syncWeaviate.js      # Weaviate sync orchestrator
-│   ├── __tests__/                # Backend tests
-│   │   ├── auth.spec.js
-│   │   ├── checkout.spec.js
-│   │   └── search.spec.js
-│   ├── pineconeClient.js         # Pinecone SDK client
-│   ├── weaviateClient.js         # Weaviate SDK client
-│   ├── index.js                  # Express server entry point
-│   ├── package.json              # Backend dependencies
-│   └── .env                      # Environment variables (not committed)
-│
-├── src/                          # React frontend
-│   ├── components/               # Reusable React components
-│   │   ├── CheckoutForm.jsx     # Payment form with validation
-│   │   ├── Footer.jsx           # Site footer
-│   │   ├── NavigationBar.jsx    # Top navigation with cart badge
-│   │   ├── ProductCard.jsx      # Product display card
-│   │   ├── ScrollToTop.jsx      # Auto-scroll on route change
-│   │   └── SearchResults.jsx    # Search results display
-│   ├── context/                  # React Context providers
-│   │   └── NotificationProvider.jsx # Toast notifications
-│   ├── pages/                    # Page-level components
-│   │   ├── About.jsx
-│   │   ├── Cart.jsx             # Shopping cart page
-│   │   ├── Checkout.jsx         # Checkout page
-│   │   ├── ForgotPassword.jsx
-│   │   ├── Home.jsx             # Landing page with recommendations
-│   │   ├── Login.jsx
-│   │   ├── NotFoundPage.jsx
-│   │   ├── OrderSuccess.jsx     # Order confirmation
-│   │   ├── ProductDetails.jsx   # Single product view
-│   │   ├── Register.jsx
-│   │   ├── ResetPassword.jsx
-│   │   ├── Shop.jsx             # All products listing
-│   │   └── Support.jsx
-│   ├── services/                 # API client services
-│   │   └── apiClient.js         # Axios instance with retry logic
-│   ├── tests/                    # Frontend tests
-│   │   ├── Cart.test.js
-│   │   ├── Checkout.test.js
-│   │   ├── Home.test.js
-│   │   ├── Login.test.js
-│   │   ├── OrderSuccess.test.js
-│   │   ├── Register.test.js
-│   │   └── Shop.test.js
-│   ├── utils/                    # Utility functions
-│   │   └── products.js          # Product data helpers
-│   ├── App.jsx                   # Root component with routing
-│   ├── index.js                  # React entry point
-│   └── setupProxy.js             # Development proxy configuration
-│
-├── public/                       # Static assets
-├── docs/                         # Documentation and screenshots
-├── .github/workflows/            # CI/CD pipelines
-│   └── ci.yml                   # GitHub Actions workflow
-├── docker-compose.yml            # Docker orchestration
-├── Dockerfile                    # Container definition
-├── package.json                  # Frontend dependencies
-├── craco.config.js               # Create React App overrides
-├── jest.config.js                # Jest configuration
-└── README.md                     # User-facing documentation
+â”œâ”€â”€ backend/                      # Node.js + Express API server
+â”‚   â”œâ”€â”€ config/                   # Database configuration
+â”‚   â”‚   â””â”€â”€ db.js                # MongoDB connection setup
+â”‚   â”œâ”€â”€ docs/                     # API documentation
+â”‚   â”‚   â””â”€â”€ swagger.js           # Swagger configuration
+â”‚   â”œâ”€â”€ models/                   # Mongoose schemas
+â”‚   â”‚   â”œâ”€â”€ product.js           # Product model with Pinecone hooks
+â”‚   â”‚   â””â”€â”€ user.js              # User model for authentication
+â”‚   â”œâ”€â”€ routes/                   # Express route handlers
+â”‚   â”‚   â”œâ”€â”€ auth.js              # Authentication endpoints
+â”‚   â”‚   â”œâ”€â”€ checkout.js          # Order creation and validation
+â”‚   â”‚   â”œâ”€â”€ products.js          # Product CRUD and recommendations
+â”‚   â”‚   â””â”€â”€ search.js            # Product search functionality
+â”‚   â”œâ”€â”€ scripts/                  # Utility scripts
+â”‚   â”‚   â”œâ”€â”€ build-faiss-index.js # FAISS index builder
+â”‚   â”‚   â”œâ”€â”€ search-faiss-index.js# FAISS similarity search
+â”‚   â”‚   â”œâ”€â”€ sync-pinecone.js     # Sync MongoDB â†’ Pinecone
+â”‚   â”‚   â”œâ”€â”€ sync-weaviate-ids.js # Sync MongoDB â†’ Weaviate IDs
+â”‚   â”‚   â”œâ”€â”€ query-weaviate.js    # Weaviate query utility
+â”‚   â”‚   â””â”€â”€ weaviate-upsert.js   # Weaviate data upsert
+â”‚   â”œâ”€â”€ seed/                     # Database seeding
+â”‚   â”‚   â””â”€â”€ productSeeds.js      # Initial product data
+â”‚   â”œâ”€â”€ services/                 # Business logic services
+â”‚   â”‚   â””â”€â”€ pineconeSync.js      # Pinecone synchronization helpers
+â”‚   â”œâ”€â”€ sync/                     # Synchronization modules
+â”‚   â”‚   â”œâ”€â”€ syncPinecone.js      # Main Pinecone sync orchestrator
+â”‚   â”‚   â””â”€â”€ syncWeaviate.js      # Weaviate sync orchestrator
+â”‚   â”œâ”€â”€ __tests__/                # Backend tests
+â”‚   â”‚   â”œâ”€â”€ auth.spec.js
+â”‚   â”‚   â”œâ”€â”€ checkout.spec.js
+â”‚   â”‚   â””â”€â”€ search.spec.js
+â”‚   â”œâ”€â”€ pineconeClient.js         # Pinecone SDK client
+â”‚   â”œâ”€â”€ weaviateClient.js         # Weaviate SDK client
+â”‚   â”œâ”€â”€ index.js                  # Express server entry point
+â”‚   â”œâ”€â”€ package.json              # Backend dependencies
+â”‚   â””â”€â”€ .env                      # Environment variables (not committed)
+â”‚
+â”œâ”€â”€ src/                          # React frontend
+â”‚   â”œâ”€â”€ components/               # Reusable React components
+â”‚   â”‚   â”œâ”€â”€ CheckoutForm.jsx     # Payment form with validation
+â”‚   â”‚   â”œâ”€â”€ Footer.jsx           # Site footer
+â”‚   â”‚   â”œâ”€â”€ NavigationBar.jsx    # Top navigation with cart badge
+â”‚   â”‚   â”œâ”€â”€ ProductCard.jsx      # Product display card
+â”‚   â”‚   â”œâ”€â”€ ScrollToTop.jsx      # Auto-scroll on route change
+â”‚   â”‚   â””â”€â”€ SearchResults.jsx    # Search results display
+â”‚   â”œâ”€â”€ context/                  # React Context providers
+â”‚   â”‚   â””â”€â”€ NotificationProvider.jsx # Toast notifications
+â”‚   â”œâ”€â”€ pages/                    # Page-level components
+â”‚   â”‚   â”œâ”€â”€ About.jsx
+â”‚   â”‚   â”œâ”€â”€ Cart.jsx             # Shopping cart page
+â”‚   â”‚   â”œâ”€â”€ Checkout.jsx         # Checkout page
+â”‚   â”‚   â”œâ”€â”€ ForgotPassword.jsx
+â”‚   â”‚   â”œâ”€â”€ Home.jsx             # Landing page with recommendations
+â”‚   â”‚   â”œâ”€â”€ Login.jsx
+â”‚   â”‚   â”œâ”€â”€ NotFoundPage.jsx
+â”‚   â”‚   â”œâ”€â”€ OrderSuccess.jsx     # Order confirmation
+â”‚   â”‚   â”œâ”€â”€ ProductDetails.jsx   # Single product view
+â”‚   â”‚   â”œâ”€â”€ Register.jsx
+â”‚   â”‚   â”œâ”€â”€ ResetPassword.jsx
+â”‚   â”‚   â”œâ”€â”€ Shop.jsx             # All products listing
+â”‚   â”‚   â””â”€â”€ Support.jsx
+â”‚   â”œâ”€â”€ services/                 # API client services
+â”‚   â”‚   â””â”€â”€ apiClient.js         # Axios instance with retry logic
+â”‚   â”œâ”€â”€ tests/                    # Frontend tests
+â”‚   â”‚   â”œâ”€â”€ Cart.test.js
+â”‚   â”‚   â”œâ”€â”€ Checkout.test.js
+â”‚   â”‚   â”œâ”€â”€ Home.test.js
+â”‚   â”‚   â”œâ”€â”€ Login.test.js
+â”‚   â”‚   â”œâ”€â”€ OrderSuccess.test.js
+â”‚   â”‚   â”œâ”€â”€ Register.test.js
+â”‚   â”‚   â””â”€â”€ Shop.test.js
+â”‚   â”œâ”€â”€ utils/                    # Utility functions
+â”‚   â”‚   â””â”€â”€ products.js          # Product data helpers
+â”‚   â”œâ”€â”€ App.jsx                   # Root component with routing
+â”‚   â”œâ”€â”€ index.js                  # React entry point
+â”‚   â””â”€â”€ setupProxy.js             # Development proxy configuration
+â”‚
+â”œâ”€â”€ public/                       # Static assets
+â”œâ”€â”€ docs/                         # Documentation and screenshots
+â”œâ”€â”€ .github/workflows/            # CI/CD pipelines
+â”‚   â””â”€â”€ ci.yml                   # GitHub Actions workflow
+â”œâ”€â”€ docker-compose.yml            # Docker orchestration
+â”œâ”€â”€ Dockerfile                    # Container definition
+â”œâ”€â”€ package.json                  # Frontend dependencies
+â”œâ”€â”€ craco.config.js               # Create React App overrides
+â”œâ”€â”€ jest.config.js                # Jest configuration
+â””â”€â”€ README.md                     # User-facing documentation
 ```
 
 ---
@@ -338,21 +338,21 @@ POST /api/checkout/create-order
 
 #### Routing (`src/App.jsx`)
 ```
-/ → Home (featured products + recommendations)
-/shop → All products grid
-/product/:id → Product details + similar items
-/cart → Shopping cart
-/checkout → Checkout form
-/order-success → Confirmation page
-/login, /register, /forgot-password, /reset-password → Auth flows
-/about, /support → Info pages
-* → 404 Not Found
+/ â†’ Home (featured products + recommendations)
+/shop â†’ All products grid
+/product/:id â†’ Product details + similar items
+/cart â†’ Shopping cart
+/checkout â†’ Checkout form
+/order-success â†’ Confirmation page
+/login, /register, /forgot-password, /reset-password â†’ Auth flows
+/about, /support â†’ Info pages
+* â†’ 404 Not Found
 ```
 
 #### State Management
 - **Global**: Cart state via React Context (`App.jsx`)
 - **Notifications**: `NotificationProvider.jsx` for toast messages
-- **Local Storage**: Cart persists across sessions (`fusionCart` key)
+- **Local Storage**: Cart persists across sessions (`FASTXHORIZONCart` key)
 
 #### API Client (`src/services/apiClient.js`)
 - Axios instance with base URL configuration
@@ -679,36 +679,36 @@ RECOMMENDATION_PREFER_WEAVIATE=false
 ### 1. Product Recommendation Flow
 ```
 User visits /product/:id
-  → Frontend fetches product details (GET /api/products/:id)
-  → Frontend fetches similar products (GET /api/products/:id/similar)
-    → Backend queries Pinecone by product ID
-    → Returns top 5 similar products
-  → If Pinecone fails, fallback to heuristic scoring
-  → Frontend displays recommendations
+  â†’ Frontend fetches product details (GET /api/products/:id)
+  â†’ Frontend fetches similar products (GET /api/products/:id/similar)
+    â†’ Backend queries Pinecone by product ID
+    â†’ Returns top 5 similar products
+  â†’ If Pinecone fails, fallback to heuristic scoring
+  â†’ Frontend displays recommendations
 ```
 
 ### 2. Cart to Checkout Flow
 ```
 User adds products to cart
-  → Cart state stored in React Context + localStorage
+  â†’ Cart state stored in React Context + localStorage
 User clicks "Proceed to Checkout"
-  → Navigate to /checkout
+  â†’ Navigate to /checkout
 User fills payment form
-  → POST /api/checkout/create-order
-  → Backend validates inputs
-  → Returns success message
-  → Frontend navigates to /order-success
-  → Cart cleared
+  â†’ POST /api/checkout/create-order
+  â†’ Backend validates inputs
+  â†’ Returns success message
+  â†’ Frontend navigates to /order-success
+  â†’ Cart cleared
 ```
 
 ### 3. Vector Sync Flow
 ```
 Product created/updated in MongoDB
-  → Mongoose post-save hook triggered
-  → Extract text (name + description + category + brand)
-  → Generate embedding via Google Generative AI
-  → Upsert vector to Pinecone with metadata
-  → Store pineconeId in MongoDB
+  â†’ Mongoose post-save hook triggered
+  â†’ Extract text (name + description + category + brand)
+  â†’ Generate embedding via Google Generative AI
+  â†’ Upsert vector to Pinecone with metadata
+  â†’ Store pineconeId in MongoDB
 ```
 
 ---
@@ -765,7 +765,7 @@ Product created/updated in MongoDB
    - Run sync after deployment: `npm run sync-pinecone`
 
 4. **Post-Deployment**:
-   - Test critical flows (browse → add to cart → checkout)
+   - Test critical flows (browse â†’ add to cart â†’ checkout)
    - Monitor error logs
    - Set up uptime monitoring (e.g., UptimeRobot)
 
@@ -798,7 +798,7 @@ Product created/updated in MongoDB
 **Solution**:
 1. Check `.dockerignore` excludes `node_modules`
 2. Verify `Dockerfile` uses correct Node version
-3. Test build locally: `docker build -t fusion-app .`
+3. Test build locally: `docker build -t FASTXHORIZON-app .`
 
 ---
 
@@ -904,7 +904,7 @@ To support multiple stores in one deployment:
 4. **Update documentation**: Reflect changes in comments and docs
 
 ### Best Practices for AI Agents
-- **Be explicit**: Don't assume implicit behavior—check the code
+- **Be explicit**: Don't assume implicit behaviorâ€”check the code
 - **Preserve intent**: Understand why code exists before changing it
 - **Ask for clarification**: If requirements are ambiguous, request user input
 - **Provide alternatives**: Suggest multiple solutions with trade-offs
@@ -993,4 +993,4 @@ For issues, questions, or contributions:
 
 **Last Updated**: 2025-10-04
 **Version**: 1.1.0
-**Maintained by**: Fusion Electronics Team
+**Maintained by**: FASTXHORIZON Team

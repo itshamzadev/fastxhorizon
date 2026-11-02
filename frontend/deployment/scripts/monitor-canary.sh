@@ -1,7 +1,7 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 ################################################################################
-# Canary Monitoring Script for Fusion Electronics
+# Canary Monitoring Script for FASTXHORIZON
 #
 # This script monitors canary deployments and compares metrics between
 # canary and stable versions to detect issues early.
@@ -12,7 +12,7 @@
 # - Request rate
 # - Pod resource usage
 #
-# @author Fusion Electronics DevOps Team
+# @author FASTXHORIZON DevOps Team
 # @version 2.0.0
 ################################################################################
 
@@ -27,8 +27,8 @@ MAGENTA='\033[0;35m'
 NC='\033[0m'
 
 # Configuration
-NAMESPACE="${K8S_NAMESPACE:-fusion-ecommerce}"
-APP_NAME="${APP_NAME:-fusion-electronics}"
+NAMESPACE="${K8S_NAMESPACE:-FASTXHORIZON-ecommerce}"
+APP_NAME="${APP_NAME:-FASTXHORIZON-electronics}"
 MONITORING_DURATION="${MONITORING_DURATION:-300}"  # 5 minutes default
 ERROR_RATE_THRESHOLD="${ERROR_RATE_THRESHOLD:-5}"  # 5% error rate threshold
 LATENCY_THRESHOLD="${LATENCY_THRESHOLD:-2000}"     # 2000ms latency threshold
@@ -39,11 +39,11 @@ log_info() {
 }
 
 log_success() {
-    echo -e "${GREEN}[✓]${NC} $1"
+    echo -e "${GREEN}[âœ“]${NC} $1"
 }
 
 log_error() {
-    echo -e "${RED}[✗]${NC} $1"
+    echo -e "${RED}[âœ—]${NC} $1"
 }
 
 log_warning() {

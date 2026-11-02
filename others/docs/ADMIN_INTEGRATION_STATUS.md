@@ -1,4 +1,4 @@
-# Admin Integration Status
+﻿# Admin Integration Status
 
 Updated 2026-10-26.
 
@@ -9,7 +9,7 @@ Updated 2026-10-26.
 - Product list, search, pagination, create, update, archive/status changes and safe delete are connected to MongoDB.
 - Customer and order list/detail reads are connected to MongoDB. Customer suspension and validated order status changes are available server-side.
 - Server-side administrator session and permission middleware protects every `/api/admin/*` resource.
-- The existing Fusion public product API remains the storefront data source, so products created in Admin use the same Product collection.
+- The existing FASTXHORIZON public product API remains the storefront data source, so products created in Admin use the same Product collection.
 
 ## Not yet implemented
 

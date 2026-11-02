@@ -1,17 +1,17 @@
----
+﻿---
 # Frontend Service - Routes to active blue or green deployment
 apiVersion: v1
 kind: Service
 metadata:
-  name: fusion-electronics-frontend
-  namespace: fusion-ecommerce
+  name: FASTXHORIZON-electronics-frontend
+  namespace: FASTXHORIZON-ecommerce
   labels:
-    app: fusion-electronics
+    app: FASTXHORIZON-electronics
     component: frontend
 spec:
   type: LoadBalancer
   selector:
-    app: fusion-electronics
+    app: FASTXHORIZON-electronics
     component: frontend
     version: blue  # Change to 'green' to switch traffic
   ports:
@@ -29,15 +29,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: fusion-electronics-backend
-  namespace: fusion-ecommerce
+  name: FASTXHORIZON-electronics-backend
+  namespace: FASTXHORIZON-ecommerce
   labels:
-    app: fusion-electronics
+    app: FASTXHORIZON-electronics
     component: backend
 spec:
   type: LoadBalancer
   selector:
-    app: fusion-electronics
+    app: FASTXHORIZON-electronics
     component: backend
     version: blue  # Change to 'green' to switch traffic
   ports:

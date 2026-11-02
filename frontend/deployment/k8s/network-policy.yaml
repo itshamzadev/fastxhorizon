@@ -1,14 +1,14 @@
----
+﻿---
 # Network Policy for Frontend
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: fusion-electronics-frontend-netpol
-  namespace: fusion-ecommerce
+  name: FASTXHORIZON-electronics-frontend-netpol
+  namespace: FASTXHORIZON-ecommerce
 spec:
   podSelector:
     matchLabels:
-      app: fusion-electronics
+      app: FASTXHORIZON-electronics
       component: frontend
   policyTypes:
   - Ingress
@@ -25,7 +25,7 @@ spec:
   - to:
     - podSelector:
         matchLabels:
-          app: fusion-electronics
+          app: FASTXHORIZON-electronics
           component: backend
     ports:
     - protocol: TCP
@@ -43,12 +43,12 @@ spec:
 apiVersion: networking.k8s.io/v1
 kind: NetworkPolicy
 metadata:
-  name: fusion-electronics-backend-netpol
-  namespace: fusion-ecommerce
+  name: FASTXHORIZON-electronics-backend-netpol
+  namespace: FASTXHORIZON-ecommerce
 spec:
   podSelector:
     matchLabels:
-      app: fusion-electronics
+      app: FASTXHORIZON-electronics
       component: backend
   policyTypes:
   - Ingress
@@ -57,7 +57,7 @@ spec:
   - from:
     - podSelector:
         matchLabels:
-          app: fusion-electronics
+          app: FASTXHORIZON-electronics
           component: frontend
     - namespaceSelector:
         matchLabels:

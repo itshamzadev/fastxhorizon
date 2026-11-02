@@ -1,7 +1,7 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 ################################################################################
-# Blue-Green Deployment Script for Fusion Electronics
+# Blue-Green Deployment Script for FASTXHORIZON
 #
 # This script implements blue-green deployment strategy for zero-downtime
 # deployments. It maintains two identical production environments (blue and green)
@@ -10,7 +10,7 @@
 # Usage:
 #   ./blue-green-deploy.sh [deploy-green|switch-to-green|switch-to-blue|cleanup-blue|cleanup-green]
 #
-# @author Fusion Electronics DevOps Team
+# @author FASTXHORIZON DevOps Team
 # @version 2.0.0
 ################################################################################
 
@@ -24,8 +24,8 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-NAMESPACE="${K8S_NAMESPACE:-fusion-ecommerce}"
-APP_NAME="${APP_NAME:-fusion-electronics}"
+NAMESPACE="${K8S_NAMESPACE:-FASTXHORIZON-ecommerce}"
+APP_NAME="${APP_NAME:-FASTXHORIZON-electronics}"
 BUILD_TAG="${BUILD_TAG:-latest}"
 FRONTEND_IMAGE="${FRONTEND_IMAGE:-}:${BUILD_TAG}"
 BACKEND_IMAGE="${BACKEND_IMAGE:-}:${BUILD_TAG}"

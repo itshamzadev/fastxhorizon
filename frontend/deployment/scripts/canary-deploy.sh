@@ -1,7 +1,7 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 ################################################################################
-# Canary Deployment Script for Fusion Electronics
+# Canary Deployment Script for FASTXHORIZON
 #
 # This script implements canary deployment strategy for gradual rollouts.
 # It allows you to test new versions with a small percentage of traffic
@@ -14,7 +14,7 @@
 #   CANARY_PERCENTAGE - Percentage of traffic to route to canary (default: 10)
 #   BUILD_TAG - Docker image tag for the new version
 #
-# @author Fusion Electronics DevOps Team
+# @author FASTXHORIZON DevOps Team
 # @version 2.0.0
 ################################################################################
 
@@ -29,8 +29,8 @@ MAGENTA='\033[0;35m'
 NC='\033[0m' # No Color
 
 # Configuration
-NAMESPACE="${K8S_NAMESPACE:-fusion-ecommerce}"
-APP_NAME="${APP_NAME:-fusion-electronics}"
+NAMESPACE="${K8S_NAMESPACE:-FASTXHORIZON-ecommerce}"
+APP_NAME="${APP_NAME:-FASTXHORIZON-electronics}"
 BUILD_TAG="${BUILD_TAG:-latest}"
 CANARY_PERCENTAGE="${CANARY_PERCENTAGE:-10}"
 FRONTEND_IMAGE="${FRONTEND_IMAGE:-}:${BUILD_TAG}"

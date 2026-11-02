@@ -16,7 +16,7 @@ const resolveBaseURL = () => {
     return 'http://127.0.0.1:5000/api';
   }
 
-  return 'https://fusion-electronics-api.vercel.app/api';
+  return 'https://api.fastxhorizon.com/api';
 };
 
 export const API_BASE_URL = resolveBaseURL();

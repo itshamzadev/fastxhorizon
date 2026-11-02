@@ -1,6 +1,6 @@
-# Fusion Electronics - Deployment Guide
+﻿# FASTXHORIZON - Deployment Guide
 
-This comprehensive guide covers all deployment strategies, infrastructure setup, and operational procedures for the Fusion Electronics application.
+This comprehensive guide covers all deployment strategies, infrastructure setup, and operational procedures for the FASTXHORIZON application.
 
 ## Table of Contents
 
@@ -18,7 +18,7 @@ This comprehensive guide covers all deployment strategies, infrastructure setup,
 
 ## Overview
 
-Fusion Electronics supports three production-ready deployment strategies:
+FASTXHORIZON supports three production-ready deployment strategies:
 
 1. **Blue-Green Deployment**: Zero-downtime deployments with instant rollback capability
 2. **Canary Deployment**: Gradual rollout with progressive traffic shifting
@@ -91,11 +91,11 @@ graph TB
         D -->|Yes, Real Traffic| F[Canary]
         D -->|No, Just Deploy| E
 
-        C --> G[Characteristics:<br/>✓ Simple<br/>✓ Fast<br/>✓ Resource Efficient<br/>⚠ Gradual Rollout<br/>⚠ Mixed Versions]
+        C --> G[Characteristics:<br/>âœ“ Simple<br/>âœ“ Fast<br/>âœ“ Resource Efficient<br/>âš  Gradual Rollout<br/>âš  Mixed Versions]
 
-        F --> H[Characteristics:<br/>✓ Safe Testing<br/>✓ Progressive Validation<br/>✓ Real User Feedback<br/>⚠ Complex Monitoring<br/>⚠ Slower Rollout]
+        F --> H[Characteristics:<br/>âœ“ Safe Testing<br/>âœ“ Progressive Validation<br/>âœ“ Real User Feedback<br/>âš  Complex Monitoring<br/>âš  Slower Rollout]
 
-        E --> I[Characteristics:<br/>✓ Zero Downtime<br/>✓ Instant Rollback<br/>✓ Full Testing<br/>⚠ Double Resources<br/>⚠ More Complex]
+        E --> I[Characteristics:<br/>âœ“ Zero Downtime<br/>âœ“ Instant Rollback<br/>âœ“ Full Testing<br/>âš  Double Resources<br/>âš  More Complex]
     end
 
     style C fill:#2196F3
@@ -150,23 +150,23 @@ cd MERN-Stack-Ecommerce-App
 kubectl apply -f deployment/k8s/namespace.yaml
 
 # Verify namespace
-kubectl get namespace fusion-ecommerce
+kubectl get namespace FASTXHORIZON-ecommerce
 ```
 
 ### 3. Configure Secrets
 
 ```bash
 # Create secrets from environment variables
-kubectl create secret generic fusion-electronics-secrets \
+kubectl create secret generic FASTXHORIZON-electronics-secrets \
   --from-literal=MONGO_URI='mongodb+srv://...' \
   --from-literal=JWT_SECRET='your-strong-secret-key' \
   --from-literal=PINECONE_API_KEY='your-pinecone-key' \
   --from-literal=PINECONE_HOST='https://your-index.pinecone.io' \
   --from-literal=GOOGLE_AI_API_KEY='your-google-ai-key' \
-  -n fusion-ecommerce
+  -n FASTXHORIZON-ecommerce
 
 # Verify secrets
-kubectl get secrets -n fusion-ecommerce
+kubectl get secrets -n FASTXHORIZON-ecommerce
 ```
 
 ### 4. Apply ConfigMaps
@@ -176,7 +176,7 @@ kubectl get secrets -n fusion-ecommerce
 kubectl apply -f deployment/k8s/configmap.yaml
 
 # Verify config
-kubectl get configmap fusion-electronics-config -n fusion-ecommerce
+kubectl get configmap FASTXHORIZON-electronics-config -n FASTXHORIZON-ecommerce
 ```
 
 ### 5. Set Up Ingress Controller (Optional)
@@ -232,7 +232,7 @@ graph TB
             TLS[TLS Termination]
         end
 
-        subgraph "Namespace: fusion-ecommerce"
+        subgraph "Namespace: FASTXHORIZON-ecommerce"
             subgraph "Services"
                 FrontendSvc[Frontend Service<br/>LoadBalancer]
                 BackendSvc[Backend Service<br/>LoadBalancer]
@@ -428,10 +428,10 @@ sequenceDiagram
     Green-->>K8s: Pods Ready
 
     Jenkins->>Green: Health Check
-    Green-->>Jenkins: Healthy ✓
+    Green-->>Jenkins: Healthy âœ“
 
     Jenkins->>Green: Smoke Tests
-    Green-->>Jenkins: Tests Pass ✓
+    Green-->>Jenkins: Tests Pass âœ“
 
     Jenkins->>Dev: Approval Request
     Dev->>Jenkins: Approve Traffic Switch
@@ -632,19 +632,19 @@ Standard Kubernetes rolling update strategy.
 
 ```bash
 # Update deployment image
-kubectl set image deployment/fusion-electronics-frontend \
-  frontend=registry.io/fusion-electronics-frontend:v1.2.0 \
-  -n fusion-ecommerce
+kubectl set image deployment/FASTXHORIZON-electronics-frontend \
+  frontend=registry.io/FASTXHORIZON-electronics-frontend:v1.2.0 \
+  -n FASTXHORIZON-ecommerce
 
 # Watch rollout status
-kubectl rollout status deployment/fusion-electronics-frontend -n fusion-ecommerce
+kubectl rollout status deployment/FASTXHORIZON-electronics-frontend -n FASTXHORIZON-ecommerce
 ```
 
 #### Rollback
 
 ```bash
 # Rollback to previous version
-kubectl rollout undo deployment/fusion-electronics-frontend -n fusion-ecommerce
+kubectl rollout undo deployment/FASTXHORIZON-electronics-frontend -n FASTXHORIZON-ecommerce
 ```
 
 ---
@@ -778,8 +778,8 @@ Edit `Jenkinsfile` to customize:
 ```groovy
 environment {
     DOCKER_REGISTRY = '<your-registry>'
-    APP_NAME = 'fusion-electronics'
-    K8S_NAMESPACE = 'fusion-ecommerce'
+    APP_NAME = 'FASTXHORIZON-electronics'
+    K8S_NAMESPACE = 'FASTXHORIZON-ecommerce'
 }
 
 parameters {
@@ -890,16 +890,16 @@ bash deployment/scripts/health-check.sh canary
 
 ```bash
 # Check pods
-kubectl get pods -n fusion-ecommerce
+kubectl get pods -n FASTXHORIZON-ecommerce
 
 # Check deployments
-kubectl get deployments -n fusion-ecommerce
+kubectl get deployments -n FASTXHORIZON-ecommerce
 
 # Check services
-kubectl get services -n fusion-ecommerce
+kubectl get services -n FASTXHORIZON-ecommerce
 
 # Check resource usage
-kubectl top pods -n fusion-ecommerce
+kubectl top pods -n FASTXHORIZON-ecommerce
 kubectl top nodes
 ```
 
@@ -971,8 +971,8 @@ graph LR
 
     F3 --> G{All Tests Pass?}
 
-    G -->|Yes| H[✓ Tests Passed]
-    G -->|No| I[✗ Tests Failed]
+    G -->|Yes| H[âœ“ Tests Passed]
+    G -->|No| I[âœ— Tests Failed]
 
     H --> J[Generate Report]
     I --> J
@@ -1002,13 +1002,13 @@ Metrics:
 
 ```bash
 # Frontend logs
-kubectl logs -f deployment/fusion-electronics-frontend -n fusion-ecommerce
+kubectl logs -f deployment/FASTXHORIZON-electronics-frontend -n FASTXHORIZON-ecommerce
 
 # Backend logs
-kubectl logs -f deployment/fusion-electronics-backend -n fusion-ecommerce
+kubectl logs -f deployment/FASTXHORIZON-electronics-backend -n FASTXHORIZON-ecommerce
 
 # Stream logs from all pods
-kubectl logs -f -l app=fusion-electronics -n fusion-ecommerce
+kubectl logs -f -l app=FASTXHORIZON-electronics -n FASTXHORIZON-ecommerce
 ```
 
 ### Metrics (Prometheus)
@@ -1113,8 +1113,8 @@ bash deployment/scripts/canary-deploy.sh rollback
 
 ```bash
 # Kubectl rollback
-kubectl rollout undo deployment/fusion-electronics-frontend -n fusion-ecommerce
-kubectl rollout undo deployment/fusion-electronics-backend -n fusion-ecommerce
+kubectl rollout undo deployment/FASTXHORIZON-electronics-frontend -n FASTXHORIZON-ecommerce
+kubectl rollout undo deployment/FASTXHORIZON-electronics-backend -n FASTXHORIZON-ecommerce
 ```
 
 #### Auto-Detect Rollback
@@ -1216,8 +1216,8 @@ graph TD
 
 **Diagnosis**:
 ```bash
-kubectl describe pod <pod-name> -n fusion-ecommerce
-kubectl logs <pod-name> -n fusion-ecommerce
+kubectl describe pod <pod-name> -n FASTXHORIZON-ecommerce
+kubectl logs <pod-name> -n FASTXHORIZON-ecommerce
 ```
 
 **Solutions**:
@@ -1232,7 +1232,7 @@ kubectl logs <pod-name> -n fusion-ecommerce
 
 **Diagnosis**:
 ```bash
-kubectl logs -f deployment/fusion-electronics-backend -n fusion-ecommerce | grep "MongoDB"
+kubectl logs -f deployment/FASTXHORIZON-electronics-backend -n FASTXHORIZON-ecommerce | grep "MongoDB"
 ```
 
 **Solutions**:
@@ -1240,7 +1240,7 @@ kubectl logs -f deployment/fusion-electronics-backend -n fusion-ecommerce | grep
 - Check MongoDB Atlas firewall rules
 - Test connection from pod:
   ```bash
-  kubectl exec -it <pod-name> -n fusion-ecommerce -- sh
+  kubectl exec -it <pod-name> -n FASTXHORIZON-ecommerce -- sh
   curl -v <mongo-uri>
   ```
 
@@ -1250,8 +1250,8 @@ kubectl logs -f deployment/fusion-electronics-backend -n fusion-ecommerce | grep
 
 **Diagnosis**:
 ```bash
-kubectl get services -n fusion-ecommerce
-kubectl describe service fusion-electronics-frontend -n fusion-ecommerce
+kubectl get services -n FASTXHORIZON-ecommerce
+kubectl describe service FASTXHORIZON-electronics-frontend -n FASTXHORIZON-ecommerce
 ```
 
 **Solutions**:
@@ -1265,7 +1265,7 @@ kubectl describe service fusion-electronics-frontend -n fusion-ecommerce
 
 **Diagnosis**:
 ```bash
-kubectl describe pod <pod-name> -n fusion-ecommerce
+kubectl describe pod <pod-name> -n FASTXHORIZON-ecommerce
 ```
 
 **Solutions**:
@@ -1278,29 +1278,29 @@ kubectl describe pod <pod-name> -n fusion-ecommerce
     --docker-server=<registry> \
     --docker-username=<username> \
     --docker-password=<password> \
-    -n fusion-ecommerce
+    -n FASTXHORIZON-ecommerce
   ```
 
 ### Debug Commands
 
 ```bash
 # Get all resources
-kubectl get all -n fusion-ecommerce
+kubectl get all -n FASTXHORIZON-ecommerce
 
 # Describe pod
-kubectl describe pod <pod-name> -n fusion-ecommerce
+kubectl describe pod <pod-name> -n FASTXHORIZON-ecommerce
 
 # Get pod logs
-kubectl logs <pod-name> -n fusion-ecommerce
+kubectl logs <pod-name> -n FASTXHORIZON-ecommerce
 
 # Execute command in pod
-kubectl exec -it <pod-name> -n fusion-ecommerce -- sh
+kubectl exec -it <pod-name> -n FASTXHORIZON-ecommerce -- sh
 
 # Port forward for local testing
-kubectl port-forward service/fusion-electronics-frontend 3000:80 -n fusion-ecommerce
+kubectl port-forward service/FASTXHORIZON-electronics-frontend 3000:80 -n FASTXHORIZON-ecommerce
 
 # Get events
-kubectl get events -n fusion-ecommerce --sort-by='.lastTimestamp'
+kubectl get events -n FASTXHORIZON-ecommerce --sort-by='.lastTimestamp'
 ```
 
 ---

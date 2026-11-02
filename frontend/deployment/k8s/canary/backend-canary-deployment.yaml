@@ -1,10 +1,10 @@
-apiVersion: apps/v1
+﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fusion-electronics-backend-canary
-  namespace: fusion-ecommerce
+  name: FASTXHORIZON-electronics-backend-canary
+  namespace: FASTXHORIZON-ecommerce
   labels:
-    app: fusion-electronics
+    app: FASTXHORIZON-electronics
     component: backend
     version: canary
 spec:
@@ -16,13 +16,13 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      app: fusion-electronics
+      app: FASTXHORIZON-electronics
       component: backend
       version: canary
   template:
     metadata:
       labels:
-        app: fusion-electronics
+        app: FASTXHORIZON-electronics
         component: backend
         version: canary
       annotations:
@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - name: backend
-        image: <DOCKER_REGISTRY>/fusion-electronics-backend:canary
+        image: <DOCKER_REGISTRY>/FASTXHORIZON-electronics-backend:canary
         imagePullPolicy: Always
         ports:
         - containerPort: 5000
@@ -42,42 +42,42 @@ spec:
         - name: NODE_ENV
           valueFrom:
             configMapKeyRef:
-              name: fusion-electronics-config
+              name: FASTXHORIZON-electronics-config
               key: NODE_ENV
         - name: PORT
           valueFrom:
             configMapKeyRef:
-              name: fusion-electronics-config
+              name: FASTXHORIZON-electronics-config
               key: PORT
         - name: MONGO_URI
           valueFrom:
             secretKeyRef:
-              name: fusion-electronics-secrets
+              name: FASTXHORIZON-electronics-secrets
               key: MONGO_URI
         - name: JWT_SECRET
           valueFrom:
             secretKeyRef:
-              name: fusion-electronics-secrets
+              name: FASTXHORIZON-electronics-secrets
               key: JWT_SECRET
         - name: PINECONE_API_KEY
           valueFrom:
             secretKeyRef:
-              name: fusion-electronics-secrets
+              name: FASTXHORIZON-electronics-secrets
               key: PINECONE_API_KEY
         - name: PINECONE_HOST
           valueFrom:
             secretKeyRef:
-              name: fusion-electronics-secrets
+              name: FASTXHORIZON-electronics-secrets
               key: PINECONE_HOST
         - name: PINECONE_INDEX
           valueFrom:
             configMapKeyRef:
-              name: fusion-electronics-config
+              name: FASTXHORIZON-electronics-config
               key: PINECONE_INDEX
         - name: GOOGLE_AI_API_KEY
           valueFrom:
             secretKeyRef:
-              name: fusion-electronics-secrets
+              name: FASTXHORIZON-electronics-secrets
               key: GOOGLE_AI_API_KEY
         - name: VERSION
           value: "canary"

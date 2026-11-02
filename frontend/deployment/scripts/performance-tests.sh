@@ -1,12 +1,12 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 ################################################################################
-# Performance Tests for Fusion Electronics
+# Performance Tests for FASTXHORIZON
 #
 # This script runs performance tests using Apache Bench (ab) or similar tools
 # to verify that the deployment can handle expected load.
 #
-# @author Fusion Electronics DevOps Team
+# @author FASTXHORIZON DevOps Team
 # @version 2.0.0
 ################################################################################
 
@@ -20,8 +20,8 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Configuration
-NAMESPACE="${K8S_NAMESPACE:-fusion-ecommerce}"
-APP_NAME="${APP_NAME:-fusion-electronics}"
+NAMESPACE="${K8S_NAMESPACE:-FASTXHORIZON-ecommerce}"
+APP_NAME="${APP_NAME:-FASTXHORIZON-electronics}"
 CONCURRENT_REQUESTS="${CONCURRENT_REQUESTS:-10}"
 TOTAL_REQUESTS="${TOTAL_REQUESTS:-1000}"
 MAX_RESPONSE_TIME="${MAX_RESPONSE_TIME:-2000}"  # 2 seconds
@@ -33,11 +33,11 @@ log_info() {
 }
 
 log_success() {
-    echo -e "${GREEN}[✓]${NC} $1"
+    echo -e "${GREEN}[âœ“]${NC} $1"
 }
 
 log_error() {
-    echo -e "${RED}[✗]${NC} $1"
+    echo -e "${RED}[âœ—]${NC} $1"
 }
 
 log_warning() {

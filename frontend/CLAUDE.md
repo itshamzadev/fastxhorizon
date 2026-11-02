@@ -1,10 +1,10 @@
-# CLAUDE.md
+﻿# CLAUDE.md
 
 This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
 
 ## Project Overview
 
-**Fusion Electronics** is a production-ready MERN stack e-commerce application with AI-powered product recommendations using vector databases (Pinecone, Weaviate, FAISS). The project consists of a React frontend, Express.js backend, MongoDB database, and vector database integrations for semantic product search and recommendations.
+**FASTXHORIZON** is a production-ready MERN stack e-commerce application with AI-powered product recommendations using vector databases (Pinecone, Weaviate, FAISS). The project consists of a React frontend, Express.js backend, MongoDB database, and vector database integrations for semantic product search and recommendations.
 
 ## Essential Commands
 
@@ -67,7 +67,7 @@ npm run lint                         # Lint all code
 cd backend
 
 # Pinecone (primary)
-npm run sync-pinecone                # Full sync MongoDB → Pinecone
+npm run sync-pinecone                # Full sync MongoDB â†’ Pinecone
 
 # Weaviate (optional)
 npm run weaviate-upsert              # Initial upsert
@@ -87,7 +87,7 @@ This is a **workspace-based monorepo** with the frontend in the root directory a
 
 ### Key Architectural Patterns
 
-1. **Stateless Backend**: All API endpoints are stateless, enabling horizontal scaling. No server-side sessions—authentication is JWT-based.
+1. **Stateless Backend**: All API endpoints are stateless, enabling horizontal scaling. No server-side sessionsâ€”authentication is JWT-based.
 
 2. **Vector-First Recommendations**: Product recommendations are powered by **Pinecone** vector similarity search using Google AI text embeddings (768-dimensional vectors). The system automatically:
    - Syncs products to Pinecone on creation/update/deletion via Mongoose hooks
@@ -105,18 +105,18 @@ This is a **workspace-based monorepo** with the frontend in the root directory a
 
 ```
 User views Product X
-  → Frontend: GET /api/products/:id/similar
-    → Backend queries Pinecone using product's pineconeId
-      → Pinecone returns top 5 similar vectors (cosine similarity)
-        → Backend loads full product documents from MongoDB
-          → Frontend displays recommendations
-            ↓
+  â†’ Frontend: GET /api/products/:id/similar
+    â†’ Backend queries Pinecone using product's pineconeId
+      â†’ Pinecone returns top 5 similar vectors (cosine similarity)
+        â†’ Backend loads full product documents from MongoDB
+          â†’ Frontend displays recommendations
+            â†“
     [If Pinecone fails]
-      → Backend applies heuristic scoring:
-         • Category match: +3 points
-         • Brand match: +2 points
-         • Name/description similarity: +3/+1 points
-         • Price affinity: +2 points
+      â†’ Backend applies heuristic scoring:
+         â€¢ Category match: +3 points
+         â€¢ Brand match: +2 points
+         â€¢ Name/description similarity: +3/+1 points
+         â€¢ Price affinity: +2 points
 ```
 
 **Key Files**:
@@ -127,7 +127,7 @@ User views Product X
 
 ### Frontend Architecture
 
-**State Management**: React Context API for global cart state (`App.jsx`), with localStorage persistence (`fusionCart` key). No Redux—intentionally simple for this project size.
+**State Management**: React Context API for global cart state (`App.jsx`), with localStorage persistence (`FASTXHORIZONCart` key). No Reduxâ€”intentionally simple for this project size.
 
 **API Client**: Centralized Axios instance with exponential backoff retry logic (`src/services/apiClient.js`). All API calls should use `withRetry()` wrapper for resilience.
 
@@ -267,7 +267,7 @@ The application now supports production-ready Kubernetes deployments with advanc
    - Manifests: `deployment/k8s/blue-green/`
 
 2. **Canary Deployment**
-   - Gradual traffic shifting (10% → 25% → 50% → 75% → 100%)
+   - Gradual traffic shifting (10% â†’ 25% â†’ 50% â†’ 75% â†’ 100%)
    - Real-time monitoring and automatic rollback
    - Progressive validation before full rollout
    - Scripts: `deployment/scripts/canary-deploy.sh`
@@ -294,7 +294,7 @@ The `Jenkinsfile` provides a comprehensive CI/CD pipeline with:
 ```bash
 # Via Jenkins UI: Select deployment strategy and parameters
 # Via CLI:
-jenkins-cli build fusion-electronics \
+jenkins-cli build FASTXHORIZON-electronics \
   -p DEPLOYMENT_STRATEGY=blue-green \
   -p RUN_SMOKE_TESTS=true
 ```
@@ -417,7 +417,7 @@ For complete deployment documentation, see [DEPLOYMENT.md](./DEPLOYMENT.md).
 
 2. **Embedding API rate limits**: Google Generative AI has rate limits. The sync script processes products sequentially to avoid hitting limits. For bulk operations, add rate limiting.
 
-3. **MongoDB indexes**: The Product model has indexes on `name`, `category`, `brand`, `rating`, and a text index on `name + description`. Don't remove these—they're critical for query performance.
+3. **MongoDB indexes**: The Product model has indexes on `name`, `category`, `brand`, `rating`, and a text index on `name + description`. Don't remove theseâ€”they're critical for query performance.
 
 4. **Frontend bundle size**: The app uses Material-UI which adds ~300KB gzipped. Consider code splitting if adding heavy dependencies.
 
@@ -449,7 +449,7 @@ For complete deployment documentation, see [DEPLOYMENT.md](./DEPLOYMENT.md).
 **Docker build fails**:
 - Ensure `.dockerignore` excludes `node_modules`
 - Check Node version in `Dockerfile` matches local version
-- Test locally: `docker build -t fusion-app .`
+- Test locally: `docker build -t FASTXHORIZON-app .`
 
 ## Additional Context
 

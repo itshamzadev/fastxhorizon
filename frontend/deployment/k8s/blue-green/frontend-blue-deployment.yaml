@@ -1,10 +1,10 @@
-apiVersion: apps/v1
+﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: fusion-electronics-frontend-blue
-  namespace: fusion-ecommerce
+  name: FASTXHORIZON-electronics-frontend-blue
+  namespace: FASTXHORIZON-ecommerce
   labels:
-    app: fusion-electronics
+    app: FASTXHORIZON-electronics
     component: frontend
     version: blue
 spec:
@@ -16,13 +16,13 @@ spec:
       maxUnavailable: 0
   selector:
     matchLabels:
-      app: fusion-electronics
+      app: FASTXHORIZON-electronics
       component: frontend
       version: blue
   template:
     metadata:
       labels:
-        app: fusion-electronics
+        app: FASTXHORIZON-electronics
         component: frontend
         version: blue
       annotations:
@@ -32,7 +32,7 @@ spec:
     spec:
       containers:
       - name: frontend
-        image: <DOCKER_REGISTRY>/fusion-electronics-frontend:latest
+        image: <DOCKER_REGISTRY>/FASTXHORIZON-electronics-frontend:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 3000
@@ -42,10 +42,10 @@ spec:
         - name: NODE_ENV
           valueFrom:
             configMapKeyRef:
-              name: fusion-electronics-config
+              name: FASTXHORIZON-electronics-config
               key: NODE_ENV
         - name: REACT_APP_API_URL
-          value: "http://fusion-electronics-backend:5000"
+          value: "http://FASTXHORIZON-electronics-backend:5000"
         - name: VERSION
           value: "blue"
         resources:

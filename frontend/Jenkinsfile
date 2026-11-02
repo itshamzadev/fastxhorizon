@@ -1,7 +1,7 @@
-#!/usr/bin/env groovy
+﻿#!/usr/bin/env groovy
 
 /**
- * Fusion Electronics - Production CI/CD Pipeline
+ * FASTXHORIZON - Production CI/CD Pipeline
  *
  * This Jenkins pipeline implements:
  * - Automated testing and quality gates
@@ -10,7 +10,7 @@
  * - Automated rollback capabilities
  * - Production-ready monitoring and health checks
  *
- * @author Fusion Electronics DevOps Team
+ * @author FASTXHORIZON DevOps Team
  * @version 2.0.0
  */
 
@@ -31,10 +31,10 @@ pipeline {
 
         // Kubernetes Configuration
         KUBECONFIG = credentials('kubeconfig')
-        K8S_NAMESPACE = 'fusion-ecommerce'
+        K8S_NAMESPACE = 'FASTXHORIZON-ecommerce'
 
         // Application Configuration
-        APP_NAME = 'fusion-electronics'
+        APP_NAME = 'FASTXHORIZON-electronics'
         FRONTEND_IMAGE = "${DOCKER_REGISTRY}/${APP_NAME}-frontend"
         BACKEND_IMAGE = "${DOCKER_REGISTRY}/${APP_NAME}-backend"
         BUILD_TAG = "${env.BUILD_NUMBER}-${env.GIT_COMMIT.take(7)}"
@@ -89,7 +89,7 @@ pipeline {
             steps {
                 script {
                     echo "========================================="
-                    echo "Fusion Electronics Deployment Pipeline"
+                    echo "FASTXHORIZON Deployment Pipeline"
                     echo "========================================="
                     echo "Build Number: ${env.BUILD_NUMBER}"
                     echo "Git Commit: ${env.GIT_COMMIT}"
@@ -320,7 +320,7 @@ pipeline {
     post {
         success {
             script {
-                echo "✅ Deployment completed successfully!"
+                echo "âœ… Deployment completed successfully!"
 
                 // Send success notification
                 notifySuccess()
@@ -332,7 +332,7 @@ pipeline {
 
         failure {
             script {
-                echo "❌ Deployment failed!"
+                echo "âŒ Deployment failed!"
 
                 // Trigger automatic rollback
                 if (DEPLOYMENT_STRATEGY in ['blue-green', 'canary']) {

@@ -1,12 +1,12 @@
-# Fusion Electronics: A MERN-Stack E-commerce Application
+﻿# FASTXHORIZON: A MERN-Stack E-commerce Application
 
-Welcome to **Fusion Electronics**, a **MERN-Stack E-commerce Application**! This project is a working demo of a full-stack web application that was built using the MERN stack (MongoDB, Express.js, React.js, Node.js). Additionally, it also includes features such as user authentication, checkout process, product recommendations with vector search, and more!
+Welcome to **FASTXHORIZON**, a **MERN-Stack E-commerce Application**! This project is a working demo of a full-stack web application that was built using the MERN stack (MongoDB, Express.js, React.js, Node.js). Additionally, it also includes features such as user authentication, checkout process, product recommendations with vector search, and more!
 
 It also aims to provide a comprehensive example of building a modern e-commerce platform, covering frontend user interface, backend server logic, database management, and integration with third-party libraries. Let's dive in!
 
 <p align="center">
-  <a href="https://fusion-ecommerce-app.vercel.app/" target="_blank">
-    <img src="docs/logo.png" alt="Fusion Electronics Logo" style="border-radius: 10px" width="35%"/>
+  <a href="https://www.fastxhorizon.com/" target="_blank">
+    <img src="docs/logo.png" alt="FASTXHORIZON Logo" style="border-radius: 10px" width="35%"/>
   </a>
 </p>
 
@@ -139,132 +139,132 @@ The application is designed to be user-friendly and responsive, providing a seam
 
 ## Live Deployment
 
-The application is deployed live on Vercel. You can access it at the following URL: **[Fusion Electronics App](https://fusion-ecommerce-app.vercel.app).**
+The application is deployed live on Vercel. You can access it at the following URL: **[FASTXHORIZON App](https://www.fastxhorizon.com).**
 
-The **primary** backend server is deployed on Vercel and can be accessed at the following URL: **[Fusion Electronics API](https://fusion-electronics-api.vercel.app/)**.
+The **primary** backend server is deployed on Vercel and can be accessed at the following URL: **[FASTXHORIZON API](https://api.fastxhorizon.com/)**.
 
-The **backup** backend server is deployed on Render and can be accessed at the following URL: **[Fusion Electronics API](https://fusion-electronics-api.vercel.app/).**
+The **backup** backend server is deployed on Render and can be accessed at the following URL: **[FASTXHORIZON API](https://api.fastxhorizon.com/).**
 
 > [!IMPORTANT]
 > **Note**: The backend server may take a few seconds to wake up if it has been inactive for a while. For your information, it is hosted on the free tier of Render, with 0.1 CPU and 512 MB of memory only, so it may take a bit longer to respond to requests, especially after periods of inactivity.
 
 > [!CAUTION]
-> **Warning**: The vector recommendation pipeline relies on Pinecone's serverless index (free tier). Please make sure your Pinecone project has enough credits and remains active; otherwise, recommendation calls may fall back to heuristic suggestions. You can always run the application locally and provision your own Pinecone and/or Weaviate instances—see [Product Recommendations with Vector Database](#product-recommendations-with-vector-database) for setup details.
+> **Warning**: The vector recommendation pipeline relies on Pinecone's serverless index (free tier). Please make sure your Pinecone project has enough credits and remains active; otherwise, recommendation calls may fall back to heuristic suggestions. You can always run the application locally and provision your own Pinecone and/or Weaviate instancesâ€”see [Product Recommendations with Vector Database](#product-recommendations-with-vector-database) for setup details.
 
 ## User Interface
 
 ### Home Page
 
 <p align="center">
-    <img src="docs/home-ui.png" alt="Fusion Electronics Homepage" style="border-radius: 10px" width="100%"/>
+    <img src="docs/home-ui.png" alt="FASTXHORIZON Homepage" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Recommended Products (based on user interaction)
 
 <p align="center">
-    <img src="docs/recommended-products-ui.png" alt="Fusion Electronics Recommended Products" style="border-radius: 10px" width="100%"/>
+    <img src="docs/recommended-products-ui.png" alt="FASTXHORIZON Recommended Products" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Full Product List
 
 <p align="center">
-    <img src="docs/products-ui.png" alt="Fusion Electronics Products List" style="border-radius: 10px" width="100%"/>
+    <img src="docs/products-ui.png" alt="FASTXHORIZON Products List" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Search Results
 
 <p align="center">
-    <img src="docs/search-results-ui.png" alt="Fusion Electronics Search Results" style="border-radius: 10px" width="100%"/>
+    <img src="docs/search-results-ui.png" alt="FASTXHORIZON Search Results" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Product Details Page
 
 <p align="center">
-    <img src="docs/product-details-ui.png" alt="Fusion Electronics Product Details Page" style="border-radius: 10px" width="100%"/>
+    <img src="docs/product-details-ui.png" alt="FASTXHORIZON Product Details Page" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Cart Page
 
 <p align="center">
-    <img src="docs/cart-ui.png" alt="Fusion Electronics Cart Page" style="border-radius: 10px" width="100%"/>
+    <img src="docs/cart-ui.png" alt="FASTXHORIZON Cart Page" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Checkout Page
 
 <p align="center">
-    <img src="docs/checkout-ui.png" alt="Fusion Electronics Checkout Page" style="border-radius: 10px" width="100%"/>
+    <img src="docs/checkout-ui.png" alt="FASTXHORIZON Checkout Page" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Support Page
 
 <p align="center">
-    <img src="docs/support-ui.png" alt="Fusion Electronics Support Page" style="border-radius: 10px" width="100%"/>
+    <img src="docs/support-ui.png" alt="FASTXHORIZON Support Page" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### About Page
 
 <p align="center">
-    <img src="docs/about-ui.png" alt="Fusion Electronics About Page" style="border-radius: 10px" width="100%"/>
+    <img src="docs/about-ui.png" alt="FASTXHORIZON About Page" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Order Confirmation
 
 <p align="center">
-    <img src="docs/order-ui.png" alt="Fusion Electronics Order Success Page" style="border-radius: 10px" width="100%"/>
+    <img src="docs/order-ui.png" alt="FASTXHORIZON Order Success Page" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Order Tracking
 
 <p align="center">
-    <img src="docs/order-tracking-ui.png" alt="Fusion Electronics Order Tracking Page" style="border-radius: 10px" width="100%"/>
+    <img src="docs/order-tracking-ui.png" alt="FASTXHORIZON Order Tracking Page" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Shipping & Returns
 
 <p align="center">
-    <img src="docs/shipping-ui.png" alt="Fusion Electronics Shipping & Returns Page" style="border-radius: 10px" width="100%"/>
+    <img src="docs/shipping-ui.png" alt="FASTXHORIZON Shipping & Returns Page" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Terms of Service
 
 <p align="center">
-    <img src="docs/terms-ui.png" alt="Fusion Electronics Terms of Service Page" style="border-radius: 10px" width="100%"/>
+    <img src="docs/terms-ui.png" alt="FASTXHORIZON Terms of Service Page" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Privacy Policy
 
 <p align="center">
-    <img src="docs/privacy-ui.png" alt="Fusion Electronics Privacy Policy Page" style="border-radius: 10px" width="100%"/>
+    <img src="docs/privacy-ui.png" alt="FASTXHORIZON Privacy Policy Page" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Login Page
 
 <p align="center">
-    <img src="docs/login-ui.png" alt="Fusion Electronics Login Page" style="border-radius: 10px" width="100%"/>
+    <img src="docs/login-ui.png" alt="FASTXHORIZON Login Page" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Register Page
 
 <p align="center">
-    <img src="docs/register-ui.png" alt="Fusion Electronics Register Page" style="border-radius: 10px" width="100%"/>
+    <img src="docs/register-ui.png" alt="FASTXHORIZON Register Page" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Forgot Password Page
 
 <p align="center">
-    <img src="docs/forgot-password-ui.png" alt="Fusion Electronics Forgot Password Page" style="border-radius: 10px" width="100%"/>
+    <img src="docs/forgot-password-ui.png" alt="FASTXHORIZON Forgot Password Page" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Reset Password Page
 
 <p align="center">
-    <img src="docs/reset-password-ui.png" alt="Fusion Electronics Reset Password Page" style="border-radius: 10px" width="100%"/>
+    <img src="docs/reset-password-ui.png" alt="FASTXHORIZON Reset Password Page" style="border-radius: 10px" width="100%"/>
 </p>
 
 ### Footer
 
 <p align="center">
-    <img src="docs/footer.png" alt="Fusion Electronics Footer" style="border-radius: 10px" width="100%"/>
+    <img src="docs/footer.png" alt="FASTXHORIZON Footer" style="border-radius: 10px" width="100%"/>
 </p>
 
 ## Features
@@ -375,70 +375,70 @@ The project is organized into two main "stacks": The backend is in the `backend`
 
 ```
 fullstack-ecommerce/
-├── backend/                       # Node.js server files
-│   ├── config/                    # Configuration files
-│   │   └── db.js                  # Database connection
-│   ├── docs/
-│   │   └── swagger.js             # Swagger API documentation setup
-│   ├── models/                    # Mongoose models
-│   │   ├── user.js                # User schema
-│   │   └── product.js             # Product schema
-│   ├── routes/                    # Route handlers
-│   │   ├── products.js            # Product routes
-│   │   ├── search.js              # Search routes
-│   │   └── checkout.js            # Checkout routes
-│   ├── middleware/                # Middleware functions
-│   │   ├── auth.js                # Authentication middleware
-│   ├── scripts/                   # Scripts for various tasks
-│   │   ├── build-faiss-index.js   # Script to build FAISS index
-│   │   ├── search-faiss-index.js  # Script to search FAISS index
-│   │   ├── query-weaviate.js      # Script to query Weaviate
-│   │   ├── weaviate-upsert.js     # Script to upsert products to Weaviate
-│   │   ├── sync-weaviate.js       # Script to synchronize products with Weaviate
-│   │   └── sync-pinecone.js       # Script to synchronize products with Pinecone
-│   ├── seed/                      # Database seed data
-│   │   └── productSeeds.js        # Product seed data
-│   ├── services/                  # Shared services (e.g., Pinecone sync helpers)
-│   ├── weaviateClient.js          # Weaviate client setup
-│   ├── pineconeClient.js          # Pinecone client setup
-│   ├── faiss.sh                   # FAISS index setup script
-│   ├── .env                       # Environment variables
-│   └── index.js                   # Server entry point
-├── public/                        # Frontend public assets
-│   ├── index.html                 # HTML template
-│   ├── manifest.json              # Web app manifest
-│   └── favicon.ico                # Favicon
-├── src/                           # React.js frontend files
-│   ├── components/                # Reusable components
-│   │   ├── CheckoutForm.jsx       # Checkout form component
-│   │   ├── ProductCard.jsx        # Product card component
-│   │   ├── NavigationBar.jsx      # Navigation bar component
-│   │   ├── OrderConfirmation.jsx  # Order confirmation component
-│   │   ├── ProductListing.jsx     # Product listing component
-│   │   ├── SearchResults.jsx      # Search results component
-│   │   └── ShoppingCart.jsx       # Shopping cart component
-│   ├── dev/                       # Development utilities
-│   │   ├── index.js               # Development entry point
-│   │   ├── palette.jsx            # Color palette
-│   │   ├── preview.jsx            # Component preview
-│   │   └── useInitials.js         # Initials hook
-│   ├── pages/                     # Page components
-│   │   ├── Cart.jsx               # Cart page component
-│   │   ├── Checkout.jsx           # Checkout page component
-│   │   ├── Home.jsx               # Home page component
-│   │   ├── ProductDetails.jsx     # Product details page component
-│   │   ├── OrderSuccess.jsx       # Order success page component
-│   │   ├── ProductDetails.jsx     # Product details page component
-│   │   └── Shop.jsx               # Shop page component
-│   ├── App.jsx                    # Main application component
-│   ├── App.css                    # Main application styles
-│   └── index.js                   # React entry point
-├── build/                         # Frontend production build files
-├── tests/                         # Test files
-├── .gitignore                     # Git ignore file
-├── package.json                   # NPM package file
-├── jsconfig.json                  # JS config file
-└── setupProxy.js                  # Proxy configuration
+â”œâ”€â”€ backend/                       # Node.js server files
+â”‚   â”œâ”€â”€ config/                    # Configuration files
+â”‚   â”‚   â””â”€â”€ db.js                  # Database connection
+â”‚   â”œâ”€â”€ docs/
+â”‚   â”‚   â””â”€â”€ swagger.js             # Swagger API documentation setup
+â”‚   â”œâ”€â”€ models/                    # Mongoose models
+â”‚   â”‚   â”œâ”€â”€ user.js                # User schema
+â”‚   â”‚   â””â”€â”€ product.js             # Product schema
+â”‚   â”œâ”€â”€ routes/                    # Route handlers
+â”‚   â”‚   â”œâ”€â”€ products.js            # Product routes
+â”‚   â”‚   â”œâ”€â”€ search.js              # Search routes
+â”‚   â”‚   â””â”€â”€ checkout.js            # Checkout routes
+â”‚   â”œâ”€â”€ middleware/                # Middleware functions
+â”‚   â”‚   â”œâ”€â”€ auth.js                # Authentication middleware
+â”‚   â”œâ”€â”€ scripts/                   # Scripts for various tasks
+â”‚   â”‚   â”œâ”€â”€ build-faiss-index.js   # Script to build FAISS index
+â”‚   â”‚   â”œâ”€â”€ search-faiss-index.js  # Script to search FAISS index
+â”‚   â”‚   â”œâ”€â”€ query-weaviate.js      # Script to query Weaviate
+â”‚   â”‚   â”œâ”€â”€ weaviate-upsert.js     # Script to upsert products to Weaviate
+â”‚   â”‚   â”œâ”€â”€ sync-weaviate.js       # Script to synchronize products with Weaviate
+â”‚   â”‚   â””â”€â”€ sync-pinecone.js       # Script to synchronize products with Pinecone
+â”‚   â”œâ”€â”€ seed/                      # Database seed data
+â”‚   â”‚   â””â”€â”€ productSeeds.js        # Product seed data
+â”‚   â”œâ”€â”€ services/                  # Shared services (e.g., Pinecone sync helpers)
+â”‚   â”œâ”€â”€ weaviateClient.js          # Weaviate client setup
+â”‚   â”œâ”€â”€ pineconeClient.js          # Pinecone client setup
+â”‚   â”œâ”€â”€ faiss.sh                   # FAISS index setup script
+â”‚   â”œâ”€â”€ .env                       # Environment variables
+â”‚   â””â”€â”€ index.js                   # Server entry point
+â”œâ”€â”€ public/                        # Frontend public assets
+â”‚   â”œâ”€â”€ index.html                 # HTML template
+â”‚   â”œâ”€â”€ manifest.json              # Web app manifest
+â”‚   â””â”€â”€ favicon.ico                # Favicon
+â”œâ”€â”€ src/                           # React.js frontend files
+â”‚   â”œâ”€â”€ components/                # Reusable components
+â”‚   â”‚   â”œâ”€â”€ CheckoutForm.jsx       # Checkout form component
+â”‚   â”‚   â”œâ”€â”€ ProductCard.jsx        # Product card component
+â”‚   â”‚   â”œâ”€â”€ NavigationBar.jsx      # Navigation bar component
+â”‚   â”‚   â”œâ”€â”€ OrderConfirmation.jsx  # Order confirmation component
+â”‚   â”‚   â”œâ”€â”€ ProductListing.jsx     # Product listing component
+â”‚   â”‚   â”œâ”€â”€ SearchResults.jsx      # Search results component
+â”‚   â”‚   â””â”€â”€ ShoppingCart.jsx       # Shopping cart component
+â”‚   â”œâ”€â”€ dev/                       # Development utilities
+â”‚   â”‚   â”œâ”€â”€ index.js               # Development entry point
+â”‚   â”‚   â”œâ”€â”€ palette.jsx            # Color palette
+â”‚   â”‚   â”œâ”€â”€ preview.jsx            # Component preview
+â”‚   â”‚   â””â”€â”€ useInitials.js         # Initials hook
+â”‚   â”œâ”€â”€ pages/                     # Page components
+â”‚   â”‚   â”œâ”€â”€ Cart.jsx               # Cart page component
+â”‚   â”‚   â”œâ”€â”€ Checkout.jsx           # Checkout page component
+â”‚   â”‚   â”œâ”€â”€ Home.jsx               # Home page component
+â”‚   â”‚   â”œâ”€â”€ ProductDetails.jsx     # Product details page component
+â”‚   â”‚   â”œâ”€â”€ OrderSuccess.jsx       # Order success page component
+â”‚   â”‚   â”œâ”€â”€ ProductDetails.jsx     # Product details page component
+â”‚   â”‚   â””â”€â”€ Shop.jsx               # Shop page component
+â”‚   â”œâ”€â”€ App.jsx                    # Main application component
+â”‚   â”œâ”€â”€ App.css                    # Main application styles
+â”‚   â””â”€â”€ index.js                   # React entry point
+â”œâ”€â”€ build/                         # Frontend production build files
+â”œâ”€â”€ tests/                         # Test files
+â”œâ”€â”€ .gitignore                     # Git ignore file
+â”œâ”€â”€ package.json                   # NPM package file
+â”œâ”€â”€ jsconfig.json                  # JS config file
+â””â”€â”€ setupProxy.js                  # Proxy configuration
 (... and more files not listed here ...)
 ```
 
@@ -570,7 +570,7 @@ The application uses **Pinecone** as the primary vector database while still sup
 With Pinecone configured, product pages and bundles leverage vector similarity for recommendations. When Pinecone or Weaviate lookups have no matches, the API falls back to metadata-based heuristics to ensure users always see relevant suggestions.
 
 > [!TIP]
-> Pinecone, Weaviate, and FAISS can comfortably coexist—keep your Pinecone index active for production traffic, and spin up Weaviate/FAISS locally when you want to compare engines or run experiments.
+> Pinecone, Weaviate, and FAISS can comfortably coexistâ€”keep your Pinecone index active for production traffic, and spin up Weaviate/FAISS locally when you want to compare engines or run experiments.
 
 ## Testing the APIs
 
@@ -613,9 +613,9 @@ npm run test:coverage
 
 #### Snapshot Tests
 
-Alongside the behavioral suites, every screen has a **snapshot test** under `src/tests/snapshots/` (one file per screen — Home, Shop, Product Details, Cart, Checkout, Order Success, Order Tracking, Login, Register, Forgot/Reset Password, About, Privacy, Terms-style pages, Support, Shipping & Returns, Not Found, plus the Navigation Bar and Footer). Each renders the component with the props/providers it needs (router, mocked `apiClient`, stubbed `ProductCard`/carousel) and asserts the rendered markup with `toMatchSnapshot()`, so unintended UI changes surface as a diff.
+Alongside the behavioral suites, every screen has a **snapshot test** under `src/tests/snapshots/` (one file per screen â€” Home, Shop, Product Details, Cart, Checkout, Order Success, Order Tracking, Login, Register, Forgot/Reset Password, About, Privacy, Terms-style pages, Support, Shipping & Returns, Not Found, plus the Navigation Bar and Footer). Each renders the component with the props/providers it needs (router, mocked `apiClient`, stubbed `ProductCard`/carousel) and asserts the rendered markup with `toMatchSnapshot()`, so unintended UI changes surface as a diff.
 
-The snapshots are deterministic — the API client is mocked, images/carousel/product cards are stubbed, `autoFocus` is neutralized, and `Date` is frozen where it's rendered (the footer year) — so they pass identically on local machines and CI regardless of timezone or run time.
+The snapshots are deterministic â€” the API client is mocked, images/carousel/product cards are stubbed, `autoFocus` is neutralized, and `Date` is frozen where it's rendered (the footer year) â€” so they pass identically on local machines and CI regardless of timezone or run time.
 
 ```bash
 # Run only the snapshot suites
@@ -652,7 +652,7 @@ npm test -- -u
 
 2. **Test the API**
 - Import `openapi.yaml` into [Postman](https://www.postman.com/):
-  - Open Postman → Import → Select `openapi.yaml`.
+  - Open Postman â†’ Import â†’ Select `openapi.yaml`.
   - Test the API endpoints directly from Postman.
 - Or use [Swagger UI](https://swagger.io/tools/swagger-ui/):
   - Provide the file URL or upload it to view and test endpoints.
@@ -693,7 +693,7 @@ This guide enables you to view, test, and utilize the API. You can generate clie
 
 ## Deployment
 
-Fusion Electronics supports a wide range of deployment platforms, including Vercel, Render, AWS, and more. You can deploy both the frontend and backend servers to your preferred cloud provider. 
+FASTXHORIZON supports a wide range of deployment platforms, including Vercel, Render, AWS, and more. You can deploy both the frontend and backend servers to your preferred cloud provider. 
 
 It also supports containerized and enterprise-grade deployments (blue/green deployments, canary releases, etc.) using Docker and Kubernetes. For more details on deployments, see the [DEPLOYMENT GUIDE](DEPLOYMENT.md) file.
 
@@ -728,13 +728,13 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 ## Creator
 
-Fusion Electronics was created with ❤️ by:
+FASTXHORIZON was created with â¤ï¸ by:
 
 - **Son Nguyen** - [hoangsonww](https://github.com/hoangsonww)
 - **Email:** [hoangson091104@gmail.com](mailto:hoangson091104@gmail.com).
 
 ---
 
-Thank you for exploring **Fusion Electronics - a MERN Stack E-commerce Application**! If you have any questions or feedback, feel free to reach out or open an issue.
+Thank you for exploring **FASTXHORIZON - a MERN Stack E-commerce Application**! If you have any questions or feedback, feel free to reach out or open an issue.
 
-**Happy coding! 🚀**
+**Happy coding! ðŸš€**

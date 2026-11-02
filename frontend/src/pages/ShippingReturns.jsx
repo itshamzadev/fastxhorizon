@@ -19,7 +19,7 @@ function ShippingReturns() {
       <Stack spacing={3} alignItems="center" textAlign="center" sx={{ mb: 4 }}>
         <Chip label="Shipping & Returns" color="primary" variant="outlined" />
         <Typography variant="h3" fontWeight={700}>Shipping and returns, clearly explained</Typography>
-        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 680 }}>We confirm order handling details after checkout and keep the relevant status information available in your account.</Typography>
+        <Typography variant="body1" color="text.secondary" sx={{ maxWidth: 680 }}>We check every order carefully. If clothing colour runs, fades or the fabric arrives damaged, contact us promptly for return support.</Typography>
       </Stack>
 
       <Grid container spacing={4}>
@@ -45,8 +45,11 @@ function ShippingReturns() {
 
       <Paper elevation={0} sx={{ mt: 5, p: { xs: 3, md: 5 }, borderRadius: 4 }}>
         <Stack spacing={3}>
-          <Typography variant="h5" fontWeight={700}>Returns and refunds</Typography>
-          <Typography variant="body2" color="text.secondary">Return eligibility, item condition requirements and any applicable charges are communicated for the relevant order. Contact support before sending an item back so the request can be recorded correctly.</Typography>
+          <Typography variant="h5" fontWeight={700}>Clothing colour and fabric protection</Typography>
+          <Typography variant="body2" color="text.secondary">If a clothing item arrives with fabric damage, or its colour visibly runs, fades or transfers during the first reasonable use, contact support as soon as possible. Send your order number, a description and clear photos or video. After review, we can arrange an approved return, replacement or refund according to the case.</Typography>
+          <Typography variant="body2" color="text.secondary">The item must not be washed, dry-cleaned, altered or deliberately damaged. Please follow the care instructions. Normal wear, incorrect washing, perfume or chemical damage, colour preference, sizing preference and change of mind are not manufacturing defects.</Typography>
+          <Typography variant="h5" fontWeight={700}>Other returns</Typography>
+          <Typography variant="body2" color="text.secondary">For an unused eligible product, request a return before sending it back. Keep tags, packaging and order information. Hygiene-sensitive, customised, clearance and clearly marked final-sale products may not be returnable.</Typography>
           <Divider />
           <Stack direction="row" spacing={1} alignItems="center"><ReplayIcon color="primary" fontSize="small" /><Typography variant="caption" color="text.secondary">Keep the original packaging and order information where possible.</Typography></Stack>
         </Stack>

@@ -36,6 +36,7 @@ import { useWishlist } from '../context/WishlistContext';
 import ProductCard from '../components/ProductCard';
 import { trackProductEvent } from '../analytics/tiktokEvents';
 import { trackMetaProduct } from '../analytics/metaEvents';
+import SeoMeta, { SITE_URL } from '../components/SeoMeta';
 
 function SimilarProductsError({ onRetry }) {
   const [showDetails, setShowDetails] = React.useState(false);
@@ -288,6 +289,25 @@ function ProductDetails({ addToCart }) {
   }
 
   return (
+    <>
+    <SeoMeta
+      title={`${product.name} | FASTXHORIZON`}
+      description={product.shortDescription || product.description || `Shop ${product.name} from FASTXHORIZON.`}
+      image={resolveMediaUrl(displayedImages[0] || product.image)}
+      imageAlt={product.name}
+      type="product"
+      jsonLd={{
+        '@context': 'https://schema.org',
+        '@type': 'Product',
+        name: product.name,
+        description: product.shortDescription || product.description || undefined,
+        sku: displayedSku || undefined,
+        image: displayedImages.map(resolveMediaUrl).filter(Boolean),
+        url: `${SITE_URL}/product/${encodeURIComponent(product.id)}`,
+        brand: { '@type': 'Brand', name: product.brand || 'FASTXHORIZON' },
+        offers: { '@type': 'Offer', url: `${SITE_URL}/product/${encodeURIComponent(product.id)}`, priceCurrency: 'PKR', price: Number(displayedPrice || 0), availability: variantAvailable ? 'https://schema.org/InStock' : 'https://schema.org/OutOfStock', seller: { '@type': 'Organization', name: 'FASTXHORIZON' } },
+      }}
+    />
     <Box className="product-details-v7 product-details-v8" sx={{ minHeight: '100vh', color: '#292D32', background: '#F4F0E9', py: { xs: 2, md: 4 } }}>
     <Container maxWidth="xl" sx={{ pb: 8 }}>
       <Typography className="product-details-v8__breadcrumb" variant="body2" sx={{ mb: 2, color: '#667085' }}>
@@ -363,6 +383,7 @@ function ProductDetails({ addToCart }) {
         )}
       </Box>
     </Container></Box>
+    </>
   );
 }
 

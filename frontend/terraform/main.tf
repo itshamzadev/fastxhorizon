@@ -1,4 +1,4 @@
-terraform {
+﻿terraform {
   required_version = ">= 1.3"
   required_providers {
     aws = {
@@ -19,7 +19,7 @@ variable "region" {
 
 variable "app_name" {
   type    = string
-  default = "fusion-electronics"
+  default = "FASTXHORIZON-electronics"
 }
 
 locals {

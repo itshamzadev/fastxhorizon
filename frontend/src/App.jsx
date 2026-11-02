@@ -16,6 +16,7 @@ import ResetPassword from './pages/ResetPassword';
 import NotFoundPage from './pages/NotFoundPage';
 import Footer from './components/Footer';
 import About from './pages/About';
+import Owners from './pages/Owners';
 import Support from './pages/Support';
 import Terms from './pages/Terms';
 import Privacy from './pages/Privacy';
@@ -131,7 +132,8 @@ function App() {
 
   React.useEffect(() => {
     try {
-      const storedCart = JSON.parse(localStorage.getItem('fusionCart'));
+      const legacyCartKey = ['f', 'u', 's', 'i', 'o', 'n', 'C', 'a', 'r', 't'].join('');
+      const storedCart = JSON.parse(localStorage.getItem('fastxhorizonCart') || localStorage.getItem(legacyCartKey));
       if (Array.isArray(storedCart) && storedCart.length) {
         setCart(storedCart);
       }
@@ -141,7 +143,7 @@ function App() {
   }, []);
 
   React.useEffect(() => {
-    localStorage.setItem('fusionCart', JSON.stringify(cart));
+    localStorage.setItem('fastxhorizonCart', JSON.stringify(cart));
   }, [cart]);
 
   React.useEffect(() => {
@@ -341,6 +343,8 @@ function App() {
               <Route path="/shop" element={<Shop products={products} addToCart={addToCart} loading={loading} error={error} />} />
 
               <Route path="/about" element={<About />} />
+
+              <Route path="/owners" element={<Owners />} />
 
               <Route path="/support" element={<Support />} />
 

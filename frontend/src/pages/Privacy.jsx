@@ -37,7 +37,7 @@ function Privacy() {
           works.
         </Typography>
         <Typography variant="caption" color="text.secondary">
-          Last updated: April 7, 2025
+          Last updated: November 2, 2026
         </Typography>
       </Stack>
 

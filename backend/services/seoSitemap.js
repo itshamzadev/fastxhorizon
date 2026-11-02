@@ -37,6 +37,7 @@ async function buildSitemapXml() {
   addUrl(urls, '/');
   addUrl(urls, '/shop');
   addUrl(urls, '/about');
+  addUrl(urls, '/owners');
   addUrl(urls, '/support');
   addUrl(urls, '/privacy');
   addUrl(urls, '/terms');

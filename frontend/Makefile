@@ -1,11 +1,11 @@
-# ────────────────────────────────────────────────────────────────────────────────
+﻿# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 # Project-wide Makefile
 # Root = frontend, backend lives in ./backend
 # Requires:
 #   CR_PAT      GitHub Container Registry token (write:packages)
 #   NPM_TOKEN   GitHub Packages npm token (read/write:packages)
 #   GH_USER     your GitHub username (default: hoangsonww)
-# ────────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 
 # User/config
 GH_USER        ?= hoangsonww
@@ -17,13 +17,13 @@ BACKEND_VERSION  := $(shell cd $(BACKEND_DIR) && node -p "require('./package.jso
 
 # image names
 FRONTEND_IMAGE := ghcr.io/$(GH_USER)/ecommerce-fullstack-website-frontend
-BACKEND_IMAGE  := ghcr.io/$(GH_USER)/fusion-electronics-backend
+BACKEND_IMAGE  := ghcr.io/$(GH_USER)/FASTXHORIZON-electronics-backend
 
 # npm package names
 FRONTEND_PKG   := @$(GH_USER)/ecommerce-fullstack-website-frontend
-BACKEND_PKG    := @$(GH_USER)/fusion-electronics-backend
+BACKEND_PKG    := @$(GH_USER)/FASTXHORIZON-electronics-backend
 
-# ────────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 .PHONY: all help install build test \
         docker-build docker-push \
         publish-npm \
@@ -45,46 +45,46 @@ help:
 	@echo "  make clean            # cleanup node_modules and builds"
 	@echo
 
-# ────────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 install: install-frontend install-backend
 
 install-frontend:
-	@echo "↪ Installing frontend deps..."
+	@echo "â†ª Installing frontend deps..."
 	npm ci
 
 install-backend:
-	@echo "↪ Installing backend deps..."
+	@echo "â†ª Installing backend deps..."
 	cd $(BACKEND_DIR) && npm ci
 
-# ────────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 build: build-frontend build-backend
 
 build-frontend:
-	@echo "↪ Building frontend..."
+	@echo "â†ª Building frontend..."
 	npm run build
 
 build-backend:
-	@echo "↪ Building backend..."
+	@echo "â†ª Building backend..."
 	cd $(BACKEND_DIR) && npm run build
 
-# ────────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 test: test-frontend test-backend
 
 test-frontend:
-	@echo "↪ Testing frontend..."
+	@echo "â†ª Testing frontend..."
 	# insert your frontend test command here, e.g. npm test
 	@echo "(no tests configured)"
 
 test-backend:
-	@echo "↪ Testing backend..."
+	@echo "â†ª Testing backend..."
 	# insert your backend test command here, e.g. cd backend && npm test
 	@echo "(no tests configured)"
 
-# ────────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 docker-build: docker-build-frontend docker-build-backend
 
 docker-build-frontend:
-	@echo "↪ Docker build frontend → $(FRONTEND_IMAGE):$(FRONTEND_VERSION)"
+	@echo "â†ª Docker build frontend â†’ $(FRONTEND_IMAGE):$(FRONTEND_VERSION)"
 	docker build \
 	  -t $(FRONTEND_IMAGE):$(FRONTEND_VERSION) \
 	  -t $(FRONTEND_IMAGE):latest \
@@ -92,7 +92,7 @@ docker-build-frontend:
 	  .
 
 docker-build-backend:
-	@echo "↪ Docker build backend → $(BACKEND_IMAGE):$(BACKEND_VERSION)"
+	@echo "â†ª Docker build backend â†’ $(BACKEND_IMAGE):$(BACKEND_VERSION)"
 	docker build \
 	  -t $(BACKEND_IMAGE):$(BACKEND_VERSION) \
 	  -t $(BACKEND_IMAGE):latest \
@@ -100,9 +100,9 @@ docker-build-backend:
 	  $(BACKEND_DIR)
 
 docker-push: ## push both images (requires CR_PAT)
-	@echo "↪ Pushing to GitHub Container Registry..."
+	@echo "â†ª Pushing to GitHub Container Registry..."
 	@if [ -z "$(CR_PAT)" ]; then \
-	  echo "❌ CR_PAT is not set"; exit 1; \
+	  echo "âŒ CR_PAT is not set"; exit 1; \
 	fi
 	echo "$(CR_PAT)" | docker login ghcr.io -u "$(GH_USER)" --password-stdin
 	docker push $(FRONTEND_IMAGE):$(FRONTEND_VERSION)
@@ -110,28 +110,28 @@ docker-push: ## push both images (requires CR_PAT)
 	docker push $(BACKEND_IMAGE):$(BACKEND_VERSION)
 	docker push $(BACKEND_IMAGE):latest
 
-# ────────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 publish-npm: publish-frontend-npm publish-backend-npm
 
 publish-frontend-npm:
-	@echo "↪ npm publish frontend → $(FRONTEND_PKG)@$(FRONTEND_VERSION)"
+	@echo "â†ª npm publish frontend â†’ $(FRONTEND_PKG)@$(FRONTEND_VERSION)"
 	@if [ -z "$(NPM_TOKEN)" ]; then \
-	  echo "❌ NPM_TOKEN is not set"; exit 1; \
+	  echo "âŒ NPM_TOKEN is not set"; exit 1; \
 	fi
 	npm config set //npm.pkg.github.com/:_authToken "$(NPM_TOKEN)"
 	npm publish --access public
 
 publish-backend-npm:
-	@echo "↪ npm publish backend → $(BACKEND_PKG)@$(BACKEND_VERSION)"
+	@echo "â†ª npm publish backend â†’ $(BACKEND_PKG)@$(BACKEND_VERSION)"
 	@if [ -z "$(NPM_TOKEN)" ]; then \
-	  echo "❌ NPM_TOKEN is not set"; exit 1; \
+	  echo "âŒ NPM_TOKEN is not set"; exit 1; \
 	fi
 	cd $(BACKEND_DIR) && \
 	npm config set //npm.pkg.github.com/:_authToken "$(NPM_TOKEN)" && \
 	npm publish --access public
 
-# ────────────────────────────────────────────────────────────────────────────────
+# â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€
 clean:
-	@echo "↪ Cleaning..."
+	@echo "â†ª Cleaning..."
 	rm -rf node_modules build
 	cd $(BACKEND_DIR) && rm -rf node_modules build

@@ -1,7 +1,7 @@
-#!/bin/bash
+﻿#!/bin/bash
 
 ################################################################################
-# Health Check Script for Fusion Electronics
+# Health Check Script for FASTXHORIZON
 #
 # This script performs comprehensive health checks on deployed environments
 # including application health, database connectivity, vector DB availability,
@@ -10,7 +10,7 @@
 # Usage:
 #   ./health-check.sh [blue|green|canary|stable|all]
 #
-# @author Fusion Electronics DevOps Team
+# @author FASTXHORIZON DevOps Team
 # @version 2.0.0
 ################################################################################
 
@@ -24,8 +24,8 @@ BLUE='\033[0;34m'
 NC='\033[0m'
 
 # Configuration
-NAMESPACE="${K8S_NAMESPACE:-fusion-ecommerce}"
-APP_NAME="${APP_NAME:-fusion-electronics}"
+NAMESPACE="${K8S_NAMESPACE:-FASTXHORIZON-ecommerce}"
+APP_NAME="${APP_NAME:-FASTXHORIZON-electronics}"
 HEALTH_CHECK_RETRIES="${HEALTH_CHECK_RETRIES:-30}"
 HEALTH_CHECK_INTERVAL="${HEALTH_CHECK_INTERVAL:-10}"
 HEALTH_CHECK_TIMEOUT=5
@@ -40,12 +40,12 @@ log_info() {
 }
 
 log_success() {
-    echo -e "${GREEN}[✓]${NC} $1"
+    echo -e "${GREEN}[âœ“]${NC} $1"
     ((PASSED_CHECKS++))
 }
 
 log_error() {
-    echo -e "${RED}[✗]${NC} $1"
+    echo -e "${RED}[âœ—]${NC} $1"
     ((FAILED_CHECKS++))
 }
 

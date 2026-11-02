@@ -4,8 +4,8 @@ Phase 1 workspace for the FASTXHORIZON customer website, central Express backend
 
 ## Applications
 
-- `frontend/` — Fusion Electronics customer application; original frontend tooling is preserved in Phase 1.
-- `backend/` — Fusion Electronics Node/Express backend.
+- `frontend/` — FASTXHORIZON customer application.
+- `backend/` — FASTXHORIZON Node/Express backend.
 - `admin/` — Vital Admin React/Vite frontend.
 - `others/original-repos/` — clean source snapshots and attribution.
 

@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: frontend-deployment
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: frontend
-          image: fusion-ecommerce-frontend:latest  # Build and push this to a container registry
+          image: FASTXHORIZON-ecommerce-frontend:latest  # Build and push this to a container registry
           ports:
             - containerPort: 3001
           env:

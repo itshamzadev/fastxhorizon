@@ -20,6 +20,7 @@ const quickLinks = [
   { label: 'Home', to: '/' },
   { label: 'Shop', to: '/shop' },
   { label: 'About', to: '/about' },
+  { label: 'Owners & Leadership', to: '/owners' },
   { label: 'Support', to: '/support' },
   { label: 'Cart', to: '/cart' },
 ];

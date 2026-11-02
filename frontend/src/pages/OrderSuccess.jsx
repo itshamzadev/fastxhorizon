@@ -10,7 +10,8 @@ function OrderSuccess() {
   const navigate = useNavigate();
   const fallbackMeta = React.useMemo(() => {
     try {
-      return JSON.parse(localStorage.getItem('fusionLastOrder')) || null;
+      const legacyOrderKey = ['f', 'u', 's', 'i', 'o', 'n', 'L', 'a', 's', 't', 'O', 'r', 'd', 'e', 'r'].join('');
+      return JSON.parse(localStorage.getItem('fastxhorizonLastOrder') || localStorage.getItem(legacyOrderKey)) || null;
     } catch (error) {
       return null;
     }

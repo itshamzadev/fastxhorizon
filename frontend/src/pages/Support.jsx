@@ -16,7 +16,7 @@ const faqs = [
   {
     question: 'What is your return policy?',
     answer:
-      'Return eligibility and refund details are communicated for the relevant order and product. Contact support before sending an item back.',
+      'If clothing colour runs, fades, transfers or the fabric arrives damaged, contact support promptly with your order number and clear photos. Do not wash, wear, alter or send the item back before approval.',
   },
   {
     question: 'Do products come with warranties?',

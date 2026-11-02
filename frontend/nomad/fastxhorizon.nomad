@@ -1,4 +1,4 @@
-job "fusion-electronics" {
+﻿job "FASTXHORIZON-electronics" {
   datacenters = ["dc1"]
   type        = "service"
 
@@ -13,7 +13,7 @@ job "fusion-electronics" {
     task "api-backend" {
       driver = "docker"
       config {
-        image = "ghcr.io/hoangsonww/fusion-electronics-backend:1.1.0"
+        image = "ghcr.io/hoangsonww/FASTXHORIZON-electronics-backend:1.1.0"
         ports = ["http"]
       }
       env {
@@ -25,7 +25,7 @@ job "fusion-electronics" {
         memory = 512
       }
       service {
-        name = "fusion-backend"
+        name = "FASTXHORIZON-backend"
         port = "http"
         check {
           type     = "http"
@@ -48,7 +48,7 @@ job "fusion-electronics" {
     task "ui-frontend" {
       driver = "docker"
       config {
-        image = "ghcr.io/hoangsonww/fusion-electronics-frontend:1.1.0"
+        image = "ghcr.io/hoangsonww/FASTXHORIZON-electronics-frontend:1.1.0"
         ports = ["web"]
       }
       resources {
@@ -56,7 +56,7 @@ job "fusion-electronics" {
         memory = 256
       }
       service {
-        name = "fusion-frontend"
+        name = "FASTXHORIZON-frontend"
         port = "web"
         check {
           type     = "http"

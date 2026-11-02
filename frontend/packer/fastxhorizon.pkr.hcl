@@ -1,4 +1,4 @@
-packer {
+﻿packer {
   required_plugins {
     docker = {
       version = ">= 1.0.0"
@@ -9,7 +9,7 @@ packer {
 
 variable "backend_image_name" {
   type    = string
-  default = "fusion-electronics-backend"
+  default = "FASTXHORIZON-electronics-backend"
 }
 variable "backend_version" {
   type    = string
@@ -36,7 +36,7 @@ build {
 
   provisioner "shell" {
     inline = [
-      "docker tag fusion-electronics-backend:latest ghcr.io/hoangsonww/fusion-electronics-backend:${var.backend_version}"
+      "docker tag FASTXHORIZON-electronics-backend:latest ghcr.io/hoangsonww/FASTXHORIZON-electronics-backend:${var.backend_version}"
     ]
   }
 }

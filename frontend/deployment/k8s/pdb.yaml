@@ -1,15 +1,15 @@
----
+﻿---
 # Pod Disruption Budget for Frontend
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: fusion-electronics-frontend-pdb
-  namespace: fusion-ecommerce
+  name: FASTXHORIZON-electronics-frontend-pdb
+  namespace: FASTXHORIZON-ecommerce
 spec:
   minAvailable: 2
   selector:
     matchLabels:
-      app: fusion-electronics
+      app: FASTXHORIZON-electronics
       component: frontend
   unhealthyPodEvictionPolicy: AlwaysAllow
 
@@ -18,12 +18,12 @@ spec:
 apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
-  name: fusion-electronics-backend-pdb
-  namespace: fusion-ecommerce
+  name: FASTXHORIZON-electronics-backend-pdb
+  namespace: FASTXHORIZON-ecommerce
 spec:
   minAvailable: 2
   selector:
     matchLabels:
-      app: fusion-electronics
+      app: FASTXHORIZON-electronics
       component: backend
   unhealthyPodEvictionPolicy: AlwaysAllow

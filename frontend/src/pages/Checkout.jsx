@@ -102,7 +102,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
 
       if (data?.orderNumber) {
         try {
-          localStorage.setItem('fusionLastOrder', JSON.stringify({ orderNumber: data.orderNumber, email: normalizedEmail }));
+          localStorage.setItem('fastxhorizonLastOrder', JSON.stringify({ orderNumber: data.orderNumber, email: normalizedEmail }));
         } catch (storageError) {
           console.warn('Unable to persist last order reference', storageError);
         }

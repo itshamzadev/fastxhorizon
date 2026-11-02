@@ -2,7 +2,7 @@
 set -euo pipefail
 
 GITHUB_USER="hoangsonww"
-IMAGE_NAME="fusion-electronics-backend"
+IMAGE_NAME="fastxhorizon-backend"
 VERSION="1.1.0"
 IMAGE_REF="ghcr.io/${GITHUB_USER}/${IMAGE_NAME}:${VERSION}"
 

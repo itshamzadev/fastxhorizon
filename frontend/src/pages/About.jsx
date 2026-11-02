@@ -7,24 +7,9 @@ import PrecisionManufacturingIcon from '@mui/icons-material/PrecisionManufacturi
 
 const milestones = [
   {
-    year: '2018',
+    year: '2026',
     title: 'Launch',
-    description: 'Established FASTXHORIZON (PRIVATE) LIMITED as a general multi-category online marketplace.',
-  },
-  {
-    year: '2020',
-    title: 'Global Warehouses',
-    description: 'Expanded the marketplace catalogue while keeping product discovery clear and customer-focused.',
-  },
-  {
-    year: '2022',
-    title: 'Creator Collective',
-    description: 'Introduced our invite-only creator program to co-design exclusive bundles and gear edits.',
-  },
-  {
-    year: '2024',
-    title: 'Broader Marketplace',
-    description: 'Celebrated 50,000 VIP members and expanded our line to include modular smart home ecosystems.',
+    description: 'FASTXHORIZON began in 2026 as a multi-category online marketplace, starting with a clear and customer-focused catalog.',
   },
 ];
 

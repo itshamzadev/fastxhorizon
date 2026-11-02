@@ -1,4 +1,4 @@
-# Fusion Electronics: System Architecture Documentation
+﻿# FASTXHORIZON: System Architecture Documentation
 
 ## Table of Contents
 
@@ -23,7 +23,7 @@
 
 ## Overview
 
-Fusion Electronics is a production-ready, full-stack e-commerce platform built on the MERN stack (MongoDB, Express.js, React.js, Node.js) with advanced AI-powered product recommendations using vector databases (Pinecone, Weaviate, FAISS).
+FASTXHORIZON is a production-ready, full-stack e-commerce platform built on the MERN stack (MongoDB, Express.js, React.js, Node.js) with advanced AI-powered product recommendations using vector databases (Pinecone, Weaviate, FAISS).
 
 ### Design Principles
 
@@ -140,48 +140,48 @@ graph TB
 #### Page-Level Components
 ```
 src/pages/
-├── Home.jsx              # Landing page with featured products
-├── Shop.jsx              # All products grid with filters
-├── ProductDetails.jsx    # Single product view with recommendations
-├── Cart.jsx              # Shopping cart management
-├── Checkout.jsx          # Order checkout form
-├── OrderSuccess.jsx      # Order confirmation
-├── Login.jsx             # User login
-├── Register.jsx          # User registration
-├── ForgotPassword.jsx    # Password reset request
-├── ResetPassword.jsx     # Password reset confirmation
-├── About.jsx             # About page
-├── Support.jsx           # Support/contact page
-└── NotFoundPage.jsx      # 404 error page
+â”œâ”€â”€ Home.jsx              # Landing page with featured products
+â”œâ”€â”€ Shop.jsx              # All products grid with filters
+â”œâ”€â”€ ProductDetails.jsx    # Single product view with recommendations
+â”œâ”€â”€ Cart.jsx              # Shopping cart management
+â”œâ”€â”€ Checkout.jsx          # Order checkout form
+â”œâ”€â”€ OrderSuccess.jsx      # Order confirmation
+â”œâ”€â”€ Login.jsx             # User login
+â”œâ”€â”€ Register.jsx          # User registration
+â”œâ”€â”€ ForgotPassword.jsx    # Password reset request
+â”œâ”€â”€ ResetPassword.jsx     # Password reset confirmation
+â”œâ”€â”€ About.jsx             # About page
+â”œâ”€â”€ Support.jsx           # Support/contact page
+â””â”€â”€ NotFoundPage.jsx      # 404 error page
 ```
 
 #### Reusable Components
 ```
 src/components/
-├── NavigationBar.jsx     # Top navigation with search and cart badge
-├── Footer.jsx            # Site footer with links
-├── ProductCard.jsx       # Product tile (image, name, price, CTA)
-├── CheckoutForm.jsx      # Payment form with credit card preview
-├── SearchResults.jsx     # Search results display
-└── ScrollToTop.jsx       # Auto-scroll utility component
+â”œâ”€â”€ NavigationBar.jsx     # Top navigation with search and cart badge
+â”œâ”€â”€ Footer.jsx            # Site footer with links
+â”œâ”€â”€ ProductCard.jsx       # Product tile (image, name, price, CTA)
+â”œâ”€â”€ CheckoutForm.jsx      # Payment form with credit card preview
+â”œâ”€â”€ SearchResults.jsx     # Search results display
+â””â”€â”€ ScrollToTop.jsx       # Auto-scroll utility component
 ```
 
 #### Context Providers
 ```
 src/context/
-└── NotificationProvider.jsx  # Toast notification system
+â””â”€â”€ NotificationProvider.jsx  # Toast notification system
 ```
 
 #### Services
 ```
 src/services/
-└── apiClient.js          # Axios instance with retry logic
+â””â”€â”€ apiClient.js          # Axios instance with retry logic
 ```
 
 #### Utilities
 ```
 src/utils/
-└── products.js           # Product data helper functions
+â””â”€â”€ products.js           # Product data helper functions
 ```
 
 ### 2. Backend Components
@@ -189,74 +189,74 @@ src/utils/
 #### Route Handlers
 ```
 backend/routes/
-├── products.js           # Product CRUD, recommendations, ratings
-├── search.js             # Product search endpoint
-├── checkout.js           # Order creation and validation
-└── auth.js               # Authentication (login, register, password reset)
+â”œâ”€â”€ products.js           # Product CRUD, recommendations, ratings
+â”œâ”€â”€ search.js             # Product search endpoint
+â”œâ”€â”€ checkout.js           # Order creation and validation
+â””â”€â”€ auth.js               # Authentication (login, register, password reset)
 ```
 
 #### Database Models
 ```
 backend/models/
-├── product.js            # Product schema with vector sync hooks
-└── user.js               # User schema with bcrypt hashing
+â”œâ”€â”€ product.js            # Product schema with vector sync hooks
+â””â”€â”€ user.js               # User schema with bcrypt hashing
 ```
 
 #### Configuration
 ```
 backend/config/
-└── db.js                 # MongoDB connection configuration
+â””â”€â”€ db.js                 # MongoDB connection configuration
 ```
 
 #### Services
 ```
 backend/services/
-└── pineconeSync.js       # Pinecone synchronization helpers
+â””â”€â”€ pineconeSync.js       # Pinecone synchronization helpers
 ```
 
 #### Synchronization Modules
 ```
 backend/sync/
-├── syncPinecone.js       # Main Pinecone sync orchestrator
-└── syncWeaviate.js       # Weaviate sync orchestrator
+â”œâ”€â”€ syncPinecone.js       # Main Pinecone sync orchestrator
+â””â”€â”€ syncWeaviate.js       # Weaviate sync orchestrator
 ```
 
 #### Vector Database Clients
 ```
 backend/
-├── pineconeClient.js     # Pinecone SDK wrapper
-└── weaviateClient.js     # Weaviate SDK wrapper
+â”œâ”€â”€ pineconeClient.js     # Pinecone SDK wrapper
+â””â”€â”€ weaviateClient.js     # Weaviate SDK wrapper
 ```
 
 #### Utility Scripts
 ```
 backend/scripts/
-├── build-faiss-index.js      # Build FAISS index from products
-├── search-faiss-index.js     # Query FAISS index
-├── sync-pinecone.js          # Full Pinecone sync script
-├── sync-weaviate-ids.js      # Sync MongoDB IDs to Weaviate
-├── query-weaviate.js         # Query Weaviate index
-└── weaviate-upsert.js        # Upsert products to Weaviate
+â”œâ”€â”€ build-faiss-index.js      # Build FAISS index from products
+â”œâ”€â”€ search-faiss-index.js     # Query FAISS index
+â”œâ”€â”€ sync-pinecone.js          # Full Pinecone sync script
+â”œâ”€â”€ sync-weaviate-ids.js      # Sync MongoDB IDs to Weaviate
+â”œâ”€â”€ query-weaviate.js         # Query Weaviate index
+â””â”€â”€ weaviate-upsert.js        # Upsert products to Weaviate
 ```
 
 #### Database Seeding
 ```
 backend/seed/
-└── productSeeds.js       # Sample product data
+â””â”€â”€ productSeeds.js       # Sample product data
 ```
 
 #### API Documentation
 ```
 backend/docs/
-└── swagger.js            # Swagger/OpenAPI configuration
+â””â”€â”€ swagger.js            # Swagger/OpenAPI configuration
 ```
 
 #### Testing
 ```
 backend/__tests__/
-├── auth.spec.js          # Authentication tests
-├── checkout.spec.js      # Checkout tests
-└── search.spec.js        # Search tests
+â”œâ”€â”€ auth.spec.js          # Authentication tests
+â”œâ”€â”€ checkout.spec.js      # Checkout tests
+â””â”€â”€ search.spec.js        # Search tests
 ```
 
 ---
@@ -529,7 +529,7 @@ Environment: Serverless (free tier)
 ### REST API Design
 
 **Base URL**: `http://localhost:5000/api` (development)
-**Production**: `https://fusion-electronics-api.vercel.app/api`
+**Production**: `https://api.fastxhorizon.com/api`
 
 ### Endpoints
 
@@ -810,7 +810,7 @@ graph TB
 
     Shop --> CategoryFilter
     Shop --> ProductGrid
-    ProductGrid --> ProductCard[ProductCard × N]
+    ProductGrid --> ProductCard[ProductCard Ã— N]
 
     ProductDetails --> ProductImage
     ProductDetails --> ProductInfo
@@ -843,7 +843,7 @@ graph TB
 - Pagination state
 
 #### Persistent State (localStorage)
-- Cart items: `localStorage.getItem('fusionCart')`
+- Cart items: `localStorage.getItem('FASTXHORIZONCart')`
 - JWT token: `localStorage.getItem('authToken')`
 - User preferences (theme, language - future)
 
@@ -1122,16 +1122,16 @@ flowchart TB
 
 ### Security Best Practices Implemented
 
-- ✅ Passwords hashed with bcryptjs (10 salt rounds)
-- ✅ JWT tokens with expiration (24 hours)
-- ✅ CORS configured for specific origins
-- ✅ Environment variables for secrets (.env not committed)
-- ✅ Input validation on checkout (email, card format)
-- ✅ React XSS protection (auto-escaping)
-- ✅ MongoDB injection protection (Mongoose sanitizes)
-- ⚠️ HTTPS enforced in production only
-- ⚠️ Rate limiting not yet implemented
-- ⚠️ Content Security Policy not configured
+- âœ… Passwords hashed with bcryptjs (10 salt rounds)
+- âœ… JWT tokens with expiration (24 hours)
+- âœ… CORS configured for specific origins
+- âœ… Environment variables for secrets (.env not committed)
+- âœ… Input validation on checkout (email, card format)
+- âœ… React XSS protection (auto-escaping)
+- âœ… MongoDB injection protection (Mongoose sanitizes)
+- âš ï¸ HTTPS enforced in production only
+- âš ï¸ Rate limiting not yet implemented
+- âš ï¸ Content Security Policy not configured
 
 ---
 
@@ -1182,7 +1182,7 @@ graph TB
 
 ### Enterprise Kubernetes Deployment
 
-Fusion Electronics also fully supports an enterprise-grade deployment architecture using Kubernetes for high availability, scalability, and advanced deployment strategies.
+FASTXHORIZON also fully supports an enterprise-grade deployment architecture using Kubernetes for high availability, scalability, and advanced deployment strategies.
 
 ```mermaid
 graph TB
@@ -1710,7 +1710,7 @@ logger.info('Product recommendation generated', {
 
 ## Conclusion
 
-This architecture documentation provides a comprehensive overview of the Fusion Electronics e-commerce platform. The system is designed with modern best practices, emphasizing:
+This architecture documentation provides a comprehensive overview of the FASTXHORIZON e-commerce platform. The system is designed with modern best practices, emphasizing:
 
 - **Modularity**: Clear separation of concerns
 - **Scalability**: Stateless design ready for horizontal scaling

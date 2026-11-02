@@ -4,13 +4,13 @@ const swaggerJSDoc = require('swagger-jsdoc');
 const swaggerDefinition = {
   openapi: '3.0.0',
   info: {
-    title: 'Fusion E-Commerce Backend APIs',
+    title: 'FASTXHORIZON E-Commerce Backend APIs',
     version: '1.1.0',
     description:
-      'API documentation for the Fusion E-Commerce backend server. This documentation provides detailed information on all available endpoints for managing products, users, authentication, and more.',
+      'API documentation for the FASTXHORIZON E-Commerce backend server. This documentation provides detailed information on all available endpoints for managing products, users, authentication, and more.',
     termsOfService: 'https://mern-stack-ecommerce-app-nine.vercel.app',
     contact: {
-      name: 'Fusion E-Commerce Website',
+      name: 'FASTXHORIZON Website',
       url: 'https://mern-stack-ecommerce-app-nine.vercel.app',
       email: 'hoangson091104@gmail.com',
     },
@@ -21,7 +21,7 @@ const swaggerDefinition = {
   },
   servers: [
     {
-      url: 'https://fusion-electronics-api.vercel.app',
+      url: 'https://api.fastxhorizon.com',
       description: 'Production server',
     },
     {
@@ -59,7 +59,7 @@ const swaggerDefinition = {
           description: 'Noise-cancelling wireless headphones with long battery life.',
           price: 99.99,
           category: 'Electronics',
-          brand: 'Fusion',
+          brand: 'FASTXHORIZON',
           stock: 150,
           rating: 4.7,
           numReviews: 89,
@@ -126,7 +126,7 @@ function setupSwaggerUi(app) {
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Fusion E-Commerce API Docs</title>
+  <title>FASTXHORIZON E-Commerce API Docs</title>
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <!-- Favicons -->
   <link rel="icon" href="https://unpkg.com/swagger-ui-dist/favicon-32x32.png" sizes="32x32" />

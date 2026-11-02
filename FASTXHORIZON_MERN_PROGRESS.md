@@ -1,4 +1,4 @@
-# FASTXHORIZON MERN Progress
+﻿# FASTXHORIZON MERN Progress
 
 ## Phase 1 status
 
@@ -11,10 +11,10 @@ Started in the empty workspace on 2026-10-26. Phase 1 extraction and feasible lo
 ## Completed
 
 - Confirmed the workspace was empty and isolated.
-- Retrieved Fusion Electronics from `https://github.com/hoangsonww/MERN-Stack-Ecommerce-App`, branch `master`, commit `6b1c21466b192f53724e6ea9d6622b6c0cbb0eed`, MIT license.
+- Retrieved FASTXHORIZON from `https://github.com/hoangsonww/MERN-Stack-Ecommerce-App`, branch `master`, commit `6b1c21466b192f53724e6ea9d6622b6c0cbb0eed`, MIT license.
 - Retrieved Vital Admin from `https://github.com/Miftah-Fentaw/React-admin-template`, branch `main`, commit `57fa6d25b3b82d2f6578d4fa1795bea1643bb40b`, MIT license.
-- Preserved clean source snapshots in `others/original-repos/fusion-electronics/` and `others/original-repos/vital-admin/`; nested Git metadata is not present in either snapshot.
-- Extracted Fusion customer application into `user website/` and its Node/Express backend into `backend/`.
+- Preserved clean source snapshots in `others/original-repos/FASTXHORIZON-electronics/` and `others/original-repos/vital-admin/`; nested Git metadata is not present in either snapshot.
+- Extracted FASTXHORIZON customer application into `user website/` and its Node/Express backend into `backend/`.
 - Extracted Vital Admin into `admin/` without nested Git metadata.
 - Added root workspace scripts and project documentation.
 - Installed dependencies locally for all three applications.
@@ -47,9 +47,9 @@ No Vite migration, backend redesign, MFA implementation, seller/reseller/affilia
 
 ## Recommended Phase 2
 
-Audit the Fusion API contract and environment variables, establish a central API configuration shared by local frontends, and integrate the Vital Admin screens with real backend endpoints behind server-side RBAC. Implement admin session security and TOTP MFA only after the API/authentication boundary is documented and tested.
+Audit the FASTXHORIZON API contract and environment variables, establish a central API configuration shared by local frontends, and integrate the Vital Admin screens with real backend endpoints behind server-side RBAC. Implement admin session security and TOTP MFA only after the API/authentication boundary is documented and tested.
 
-## Local development run — 2026-10-26
+## Local development run â€” 2026-10-26
 
 - Customer website: running from `user website/` with `npm start` on `http://localhost:3000/`.
 - Admin panel: running from `admin/` with `npm run dev -- --host 127.0.0.1 --port 5173` on `http://localhost:5173/`.
@@ -58,13 +58,13 @@ Audit the Fusion API contract and environment variables, establish a central API
 - MongoDB Windows service was running and local port 27017 accepted a connection.
 - Backend logged a non-fatal Pinecone sync warning because no external `GOOGLE_AI_API_KEY` was supplied; the API still started successfully.
 
-## Admin entry-route fix — 2026-10-26
+## Admin entry-route fix â€” 2026-10-26
 
 - Updated `admin/src/app/router/index.tsx` so `/` bypasses the promotional landing page and navigates to the existing `/dashboard` route.
 - Preserved the existing dashboard layout, navigation, feature routes, and login route.
 - Admin build passed; admin tests passed: 7 files and 29 tests.
 
-## Admin authentication implementation — 2026-10-26
+## Admin authentication implementation â€” 2026-10-26
 
 - Added separate administrator models for accounts, server-side sessions, and audit logs under `backend/models/`.
 - Added `/api/admin/auth` endpoints for password login, MFA enrollment, TOTP or recovery-code verification, session lookup, and logout.
@@ -93,7 +93,7 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Vital Admin dashboard data still uses its existing template/mock data paths; this task did not begin backend dashboard integration.
 - Production deployment requires a securely provisioned `ADMIN_TOTP_ENCRYPTION_KEY`, production session/cookie configuration, and real administrator enrollment. No production systems or credentials were accessed.
 
-## Admin real-backend integration — 2026-10-26
+## Admin real-backend integration â€” 2026-10-26
 
 ### Implemented
 
@@ -122,11 +122,11 @@ Audit the Fusion API contract and environment variables, establish a central API
 ### Remaining integration work
 
 - Categories, brands, variants, inventory movement history, payment/manual-payment review, refunds, coupons and CMS content management are not yet implemented.
-- The existing Fusion storefront consumes the shared Product collection, but archived/draft visibility rules, storefront CMS synchronization and full checkout/payment reconciliation still require implementation.
+- The existing FASTXHORIZON storefront consumes the shared Product collection, but archived/draft visibility rules, storefront CMS synchronization and full checkout/payment reconciliation still require implementation.
 - The dashboard reports confirmed collected revenue as zero because the current Order model has no authoritative payment record; no financial value is fabricated.
 - Admin-management UI, granular permission assignment workflow, CSRF token workflow, file upload validation and marketplace role workflows remain follow-up work.
 
-## Customer website local integration repair — 2026-10-27
+## Customer website local integration repair â€” 2026-10-27
 
 ### Reproduced and fixed
 
@@ -136,7 +136,7 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Checkout previously required card fields even though Cash on Delivery is the intended local payment method. Added a real COD path with pending payment status; unsupported manual card payment is explicitly rejected rather than treated as a successful payment.
 - Checkout now reserves stock with conditional MongoDB updates, rolls back reservations on failure, recalculates totals from authoritative Product records, and rejects insufficient stock.
 - Orders now persist `paymentMethod` and `paymentStatus`; Admin order responses expose those values.
-- Preserved Fusion homepage, 3D hero, animations, responsive design and existing routes.
+- Preserved FASTXHORIZON homepage, 3D hero, animations, responsive design and existing routes.
 
 ### Verified locally
 
@@ -154,11 +154,11 @@ Audit the Fusion API contract and environment variables, establish a central API
 ### Customer features still blocked or incomplete
 
 - The database currently contains no customer account history suitable for a full authenticated browser workflow; registration/login endpoints are present and the local JWT session mismatch was fixed.
-- Customer profile, saved addresses, persistent wishlist and authenticated order-history pages are not present in the extracted Fusion route tree; only local cart/visited-product storage and public order tracking currently exist.
+- Customer profile, saved addresses, persistent wishlist and authenticated order-history pages are not present in the extracted FASTXHORIZON route tree; only local cart/visited-product storage and public order tracking currently exist.
 - Payment methods beyond COD remain disabled. Manual payment proof/review, coupons, CMS content and payment reconciliation require the later payment/admin foundation.
 - Search and recommendations work through Express; vector recommendations may fall back when external Pinecone/Google credentials are absent.
 
-## Customer header and admin-controlled announcement â€” 2026-10-27
+## Customer header and admin-controlled announcement Ã¢â‚¬â€ 2026-10-27
 
 ### Implemented
 
@@ -167,7 +167,7 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Announcement updates require `settings.manage`, validate plain text between 1 and 180 characters, persist in MongoDB, and create an administrator audit record.
 - Added the Vital Admin Settings control for loading, editing, enabling/disabling and saving the announcement.
 - Added the customer `AnnouncementBar` directly below the main header with right-to-left GPU-friendly looping, responsive sizing and `prefers-reduced-motion` support.
-- Rebranded the customer header markup to use `/fastxhorizon.png`, removed the Fusion wordmark/tagline, preserved homepage navigation and responsive search/actions, and updated its snapshot.
+- Rebranded the customer header markup to use `/fastxhorizon.png`, removed the FASTXHORIZON wordmark/tagline, preserved homepage navigation and responsive search/actions, and updated its snapshot.
 
 ### Verification
 
@@ -179,14 +179,14 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Live unauthenticated admin mutation returned HTTP 401.
 - Live local authenticated round-trip verified save, admin reload, public reload, disable/hide state, and restoration of the default; no credentials were printed or stored in documentation.
 
-### Logo asset completion â€” 2026-10-27
+### Logo asset completion Ã¢â‚¬â€ 2026-10-27
 
 - The official `fastxhorizon.png` is now present at the workspace root and was copied unchanged to `user website/public/fastxhorizon.png`.
 - SHA-256 source/destination hashes match exactly.
 - Local asset verification passed: `http://localhost:3000/fastxhorizon.png` returned HTTP 200 with `image/png` content.
 - Customer production build passed; only the pre-existing MediaPipe source-map and Browserslist warnings remain.
 
-## Customer header color refinement â€” 2026-10-27
+## Customer header color refinement Ã¢â‚¬â€ 2026-10-27
 
 - Updated only the customer header styling in `user website/src/components/NavigationBar.jsx`.
 - Changed the header to premium white with `#E2E8F0` bottom border and subtle shadow.
@@ -196,7 +196,7 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Coordinated the announcement bar with a royal-blue gradient and white text.
 - Customer tests: 25 suites passed, 44 tests passed, 18 snapshots passed. Customer build passed with only the existing MediaPipe source-map and Browserslist warnings.
 
-## Customer product cards responsive compact layout â€” 2026-10-27
+## Customer product cards responsive compact layout Ã¢â‚¬â€ 2026-10-27
 
 - Updated customer product-card grids only; Admin, backend and MongoDB were not changed.
 - Breakpoints now target 2 columns on mobile/small screens, 3 on medium, 4 on large, 6 on extra-large, and 8 at very wide (`1920px+`) widths.
@@ -205,7 +205,7 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Customer tests: 25 suites passed, 44 tests passed, 18 snapshots passed.
 - Customer production build passed; existing MediaPipe source-map and Browserslist warnings remain.
 
-## Production deployment preparation — 2026-10-27
+## Production deployment preparation â€” 2026-10-27
 
 ### Completed locally
 
@@ -229,11 +229,11 @@ Audit the Fusion API contract and environment variables, establish a central API
 
 - No Coolify, VPS, DNS, production MongoDB or production credentials were accessed.
 - Production MongoDB private networking, authentication, persistent backups and restore drill still need to be configured.
-- Production secrets (`JWT_SECRET`, `ADMIN_TOTP_ENCRYPTION_KEY`, etc.) must be generated and entered in Coolify’s secret manager.
+- Production secrets (`JWT_SECRET`, `ADMIN_TOTP_ENCRYPTION_KEY`, etc.) must be generated and entered in Coolifyâ€™s secret manager.
 - Payment-proof object storage/security hardening is not complete; do not launch sensitive uploads until resolved.
 - Production-like HTTPS end-to-end checks for customer checkout and Admin MFA/payment verification remain to be run after staging infrastructure exists.
 
-## GitHub repository replacement — 2026-10-27
+## GitHub repository replacement â€” 2026-10-27
 
 - Recreated remote `itshamzadev/fastxhorizon` was verified empty before push.
 - Current FastXHorizon workspace was committed as fresh `main` history at `e41320c35e72ac33b7b9d86101f6dc00b911c894`.
@@ -241,15 +241,15 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Tracked-file scan confirmed no `.env` files, build output, `node_modules`, catalog export, private payment storage or credential-key files were included.
 - GitHub API verification reported `private=false`; repository visibility must be changed to Private manually before sharing or production work. No repository settings were changed by Codex.
 
-## Backend Coolify lockfile fix — 2026-10-27
+## Backend Coolify lockfile fix â€” 2026-10-27
 
 - Confirmed `backend/package-lock.json` exists locally and remotely with lockfile version 3; its root package metadata matches `backend/package.json`.
-- Fixed `backend/Dockerfile` for Coolify’s repository-root build context: it now copies `backend/package*.json` before retaining reproducible `npm ci --omit=dev`, then copies only `backend/` source.
+- Fixed `backend/Dockerfile` for Coolifyâ€™s repository-root build context: it now copies `backend/package*.json` before retaining reproducible `npm ci --omit=dev`, then copies only `backend/` source.
 - Added root `.dockerignore` for the root-context backend build so frontend/admin dependencies, builds, secrets and unrelated archives are excluded.
 - Updated `PRODUCTION_DEPLOYMENT_GUIDE.md` with the required Coolify settings: build context `.`, Dockerfile `backend/Dockerfile`.
 - Verification: backend `npm ci --omit=dev --ignore-scripts --dry-run` passed; Docker daemon was unavailable locally, so an actual image build remains pending.
 
-## Production Admin and catalog migration preparation — 2026-10-27
+## Production Admin and catalog migration preparation â€” 2026-10-27
 
 - Extended `backend/scripts/create-admin.js` to support production only with explicit `PRODUCTION_ADMIN_BOOTSTRAP_CONFIRM=YES`, a non-loopback MongoDB URI, `ADMIN_DEV_SKIP_MFA=false`, secure interactive password input and duplicate protection.
 - Added `backend/scripts/validate-catalog-export.js` and `npm run catalog:validate`; validation reports actual catalog counts and checks PKR, Jewellery hierarchy, company store, image URLs, unique slugs and availability-based IN_STOCK state.
@@ -257,7 +257,7 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Production Admin creation and catalog import were intentionally not executed. They require explicit operator authorization inside Coolify.
 - Local validation found 23 active Jewellery products with legacy missing `currency` fields; the exporter explicitly normalizes only company-owned Jewellery records to PKR (without changing numeric prices) because all three supplied batches were specified in PKR. No production records were changed.
 
-## Production Super Admin bootstrap correction — 2026-10-27
+## Production Super Admin bootstrap correction â€” 2026-10-27
 
 - Hardened `create-admin.js` with explicit production confirmation, `ADMIN_DEV_SKIP_MFA=false`, `PRODUCTION_MONGO_PRIVATE_NETWORK=true`, private-host validation, and production-only secure interactive password input.
 - Added automated guard tests covering valid private Coolify host, missing confirmation, MFA bypass, public/loopback MongoDB hosts and strong-password requirements.
@@ -313,35 +313,35 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Customer tests: 24 suites passed, 43 tests passed, 17 snapshots passed. Customer production build passed with the existing MediaPipe source-map and Browserslist warnings.
 - Admin production build passed. Backend tests: 7 suites passed, 39 tests passed.
 
-## Jewellery catalog import — 2026-10-27
+## Jewellery catalog import â€” 2026-10-27
 
 - Added eight active products to the local `fastxhorizon_local` MongoDB database through the idempotent `backend/scripts/import-jewellery-products.js` importer.
 - Added backward-compatible product fields for `subcategory`, `categoryPath`, `productType`, short/long descriptions, tags, unique slugs and `storeName`; public product responses now expose these values.
-- Created the clean category structure: `Women` → `Jewellery` → `Bridal Jewellery Sets`, `Bracelets`, `Necklaces`, `Earrings`, and `Jewellery Sets`.
+- Created the clean category structure: `Women` â†’ `Jewellery` â†’ `Bridal Jewellery Sets`, `Bracelets`, `Necklaces`, `Earrings`, and `Jewellery Sets`.
 - All eight products use `FASTXHORIZON` as brand/store, `active` status, PKR numeric prices, preserved source image URLs, and default stock quantity 10 because stock was not supplied.
 - Source text mentioning COD was excluded from product descriptions and did not alter the global payment policy. Live payment configuration remains Automatic disabled, Manual enabled, COD disabled.
 - Generated unique slugs and verified the live `/api/products` and `/api/products/random?limit=8` endpoints return the imported products with images, stock, store and category data.
 
-## Jewellery catalog import batch 02 — 2026-10-27
+## Jewellery catalog import batch 02 â€” 2026-10-27
 
-- Added/reused proper parent-child `Category` records: Women → Jewellery → Bangles, Bracelets, Earrings, and Pendant & Earrings Sets.
+- Added/reused proper parent-child `Category` records: Women â†’ Jewellery â†’ Bangles, Bracelets, Earrings, and Pendant & Earrings Sets.
 - Imported all 8 requested products through idempotent `backend/scripts/import-jewellery-batch-02.js`; rerunning matches by exact product name and does not create duplicates.
 - Preserved exact names, prices and image URLs; assigned `FASTXHORIZON`, active/published status, zero reviews and unique SEO slugs.
 - Added explicit `inventoryMode=AVAILABILITY` and `availabilityStatus=IN_STOCK` for this batch. Numeric stock remains 0 and is not shown to customers; checkout accepts these products only while the availability flag is IN_STOCK. Existing numeric inventory products retain atomic quantity checks/decrements.
-- Updated product API normalization, storefront cards, stock filtering and product details to display “In Stock” without numerical quantities for availability-mode products. Admin product responses now include the inventory mode/status.
+- Updated product API normalization, storefront cards, stock filtering and product details to display â€œIn Stockâ€ without numerical quantities for availability-mode products. Admin product responses now include the inventory mode/status.
 - COD wording was not imported or displayed, and the global payment policy remains Manual enabled, Automatic disabled, COD disabled.
 - Verification: backend 7 suites/39 tests passed; customer 24 suites/43 tests/17 snapshots passed; customer production build passed with the existing MediaPipe source-map and Browserslist warnings; Admin production build passed; live product/random endpoints returned batch products with `FASTXHORIZON`, images, prices, zero reviews and `IN_STOCK` availability.
 
-## Jewellery catalog import batch 03 — 2026-10-27
+## Jewellery catalog import batch 03 â€” 2026-10-27
 
-- Reused the existing `Women → Jewellery → Bracelets` category and added/reused `Women → Jewellery → Necklaces` without duplicate category records.
+- Reused the existing `Women â†’ Jewellery â†’ Bracelets` category and added/reused `Women â†’ Jewellery â†’ Necklaces` without duplicate category records.
 - Imported 7 new products with `backend/scripts/import-jewellery-batch-03.js`; rerunning the script updated the same exact-name records rather than duplicating them. Second run result: 7 updated, 0 inserted.
 - Preserved the requested product names, PKR prices, exact image URLs, descriptions and generated unique slugs. All products use `FASTXHORIZON`, active status, zero reviews and ratings.
 - Applied the existing availability inventory mode: `inventoryMode=AVAILABILITY`, `availabilityStatus=IN_STOCK`, numeric stock remains 0 and is not displayed to customers.
 - Payment policy was not changed: Manual Advance Payment enabled; Automatic Payment and COD disabled.
 - Verified all 7 products through live catalog/random API responses with correct price, store, image, availability and zero-review values. Backend tests: 7 suites/39 tests passed.
 
-## V1 manual payment foundation — 2026-10-27
+## V1 manual payment foundation â€” 2026-10-27
 
 - Added MongoDB `PaymentConfiguration` with exact initial defaults: Automatic disabled, Manual enabled, COD disabled; manual methods and bounded dynamic fields are administrator-controlled.
 - Added `PaymentSubmission` with explicit pending/verified/rejected lifecycle, amount, payment method/field snapshot, submitted values, evidence metadata and administrator decision audit fields.
@@ -353,7 +353,7 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Verification: backend 7 suites/39 tests passed; customer 24 suites/43 tests passed; customer build passed with existing MediaPipe source-map and Browserslist warnings; Admin TypeScript/Vite build passed.
 - Incomplete: the Admin settings UI is a guarded JSON editor, not yet a visual field-builder/review table; transactional/object storage is not configured. Payment evidence is stored privately in MongoDB for local development and must move to configured private object storage before production.
 
-## Public tracking removal and newsletter subscriptions — 2026-10-27
+## Public tracking removal and newsletter subscriptions â€” 2026-10-27
 
 - Removed the customer-facing `/order-tracking` route, page, footer links, tracking forms and tracking-specific snapshot. Customer order creation, authenticated order history, status data and Admin fulfillment routes remain intact.
 - Removed the obsolete public `POST /api/orders/track` lookup endpoint and its Swagger entry; order status/history fields remain available to authenticated customer and Admin workflows.
@@ -378,12 +378,12 @@ Audit the Fusion API contract and environment variables, establish a central API
 ## FastXHorizon footer branding and light redesign - 2026-10-27
 
 - Rebuilt only `user website/src/components/Footer.jsx` with the official `/fastxhorizon.png` logo linked to the homepage and a responsive four-column layout.
-- Removed all Fusion Electronics and California footer branding. Legal text now uses the exact dynamic form `© {currentYear} FASTXHORIZON (PRIVATE) LIMITED. All rights reserved.`
+- Removed all FASTXHORIZON and California footer branding. Legal text now uses the exact dynamic form `Â© {currentYear} FASTXHORIZON (PRIVATE) LIMITED. All rights reserved.`
 - Applied the premium light palette: `#F8FAFC` background, navy headings, slate secondary text, blue hover accents and subtle `#E2E8F0` borders.
 - Preserved working Explore and Customer Care routes, added the requested `Stay Connected` newsletter area, and kept responsive desktop/tablet/mobile layouts.
 - Social icons now render only when valid company destinations are supplied through `REACT_APP_SOCIAL_GITHUB`, `REACT_APP_SOCIAL_LINKEDIN`, `REACT_APP_SOCIAL_WEBSITE` or `REACT_APP_CONTACT_EMAIL`; no personal or fictional links are embedded.
 - Newsletter subscription is visibly disabled until `REACT_APP_NEWSLETTER_ENDPOINT` is configured; no false subscription success is shown.
-- Verified no Fusion/California references remain in `Footer.jsx`.
+- Verified no FASTXHORIZON/California references remain in `Footer.jsx`.
 - Customer tests: 25 suites passed, 44 tests passed, 18 snapshots passed; Footer snapshot intentionally updated.
 - Customer production build passed; existing MediaPipe source-map and Browserslist warnings remain.
 
@@ -454,7 +454,7 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Live unauthenticated `GET /api/wishlist` returned HTTP 401, confirming protected wishlist access.
 - Customer, Admin and backend local listeners remained available on ports 3000, 5173 and 5000.
 
-## Complete customer wishlist functionality — 2026-10-27
+## Complete customer wishlist functionality â€” 2026-10-27
 
 ### Implemented
 
@@ -474,7 +474,7 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Live unauthorized `GET /api/wishlist` returned HTTP 401.
 - Live customer, Admin and backend listeners responded HTTP 200 on ports 3000, 5173 and 5000.
 
-## Product card wishlist heart — 2026-10-27
+## Product card wishlist heart â€” 2026-10-27
 
 - Added a matching premium wishlist heart button to `user website/src/components/ProductCard.jsx` at the top-left, opposite the cart button.
 - Added active/inactive heart icons, accessible labels/pressed state, hover/focus styling, and balanced circular dark-glass controls.
@@ -483,7 +483,7 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Customer tests: 25 suites passed, 44 tests passed, 18 snapshots passed.
 - Customer production build passed; existing MediaPipe source-map and Browserslist warnings remain.
 
-## Image-first floating product cards — 2026-10-27
+## Image-first floating product cards â€” 2026-10-27
 
 - Refined only `user website/src/components/ProductCard.jsx` into an image-first card while preserving the existing data structure and handlers.
 - The image now covers the full rounded card surface with `object-fit: cover`; the card uses a slightly larger compact proportion and retains the existing responsive grid.
@@ -493,7 +493,7 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Customer tests: 25 suites passed, 44 tests passed, 18 snapshots passed.
 - Customer production build passed; existing MediaPipe source-map and Browserslist warnings remain.
 
-## Premium dark product card redesign â€” 2026-10-27
+## Premium dark product card redesign Ã¢â‚¬â€ 2026-10-27
 
 - Reworked only `user website/src/components/ProductCard.jsx` while preserving existing product navigation and cart handlers.
 - Added the near-black luxury card treatment, rounded corners, muted secondary text, preserved image aspect ratio, compact layout, two-line title clamp and dark-card responsive styling.
@@ -505,7 +505,7 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Customer production build passed; existing MediaPipe source-map and Browserslist warnings remain.
 - Store ownership limitation: the current backend product response does not expose seller/store ownership, so existing products correctly use the company fallback. The card is ready to display authoritative seller store fields when the marketplace model/API exposes them; no backend schema was changed in this customer-only task.
 
-## Admin product image upload — 2026-10-27
+## Admin product image upload â€” 2026-10-27
 
 - Added a real Product image control to `admin/src/features/products/components/ProductFormDialog.tsx` for image URL entry or local image-file selection.
 - Local images are validated as image types, limited to 2 MB in the Admin UI, previewed before save, and persisted as a data URL through the existing authenticated product create/update APIs.
@@ -514,7 +514,7 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Existing Admin product APIs remain permission-protected and audit existing create/update actions; no authentication or production configuration was changed.
 - Backend tests: 7 suites passed, 40 tests passed; Admin production build passed.
 
-## Product card image and glass refinement â€” 2026-10-27
+## Product card image and glass refinement Ã¢â‚¬â€ 2026-10-27
 
 - Refined only `user website/src/components/ProductCard.jsx`; Admin, backend, authentication and other storefront sections were untouched.
 - Increased the image area moderately (`76%` mobile / `72%` larger screens) while preserving the existing dense responsive grid.
@@ -525,7 +525,7 @@ Audit the Fusion API contract and environment variables, establish a central API
 - Preserved the upper-right real cart action with improved glass-like contrast and focus/hover states.
 - Customer tests: 25 suites passed, 44 tests passed, 18 snapshots passed.
 - Customer production build passed; existing MediaPipe source-map and Browserslist warnings remain.
-# YouMart import preparation — 2026-10-28
+# YouMart import preparation â€” 2026-10-28
 
 - Added a local-only Shopify/YouMart CSV importer at `backend/scripts/import-yourmart-csv.js`. It supports quoted multiline CSV, handle grouping, gallery images, HTML sanitization, idempotent `YOURMART:<handle>` upserts, category mapping and dry-run reporting.
 - Added supplier/pricing metadata to products. Unconfirmed source prices are retained as source data and calculated prices are marked `REVIEW_REQUIRED`; existing imported selling prices/status are not overwritten on reruns.
@@ -536,19 +536,19 @@ Audit the Fusion API contract and environment variables, establish a central API
 
 Blocker: no YouMart CSV file is present in the workspace, so exact row/product/image counts and the local database import were not executed. Provide the CSV path and run `npm --prefix backend run yourmart:dry-run -- --csv="<path>"`; after reviewing the report, import with `LOCAL_IMPORT_CONFIRM=YES npm --prefix backend run yourmart:import -- --csv="<path>"`. The importer refuses non-loopback MongoDB URIs and production mode.
 
-## YouMart import completed — 2026-10-28
+## YouMart import completed â€” 2026-10-28
 
 - Source: local `others/yourmart.csv`; 4,396 CSV rows grouped into 730 unique Shopify handles.
 - Imported/upserted: 730 products; skipped: 0; failed: 0; duplicate handles: 0.
 - Images: 3,945 unique product image URLs preserved across the 730 galleries. Missing images and SKUs: 0.
-- Source price range: PKR 115–9,788; average source price PKR 1,034.87. Source prices remain in `sourcePrice`; calculated draft prices remain in `draftSellingPrice`; `pricingStatus=REVIEW_REQUIRED`, `confirmedSupplierCost=null`, and `sellingPrice=null` until Admin review.
+- Source price range: PKR 115â€“9,788; average source price PKR 1,034.87. Source prices remain in `sourcePrice`; calculated draft prices remain in `draftSellingPrice`; `pricingStatus=REVIEW_REQUIRED`, `confirmedSupplierCost=null`, and `sellingPrice=null` until Admin review.
 - Categories created/reused: Electronics, Home & Kitchen, Beauty & Personal Care, Fashion & Accessories, Kids & Toys, Content Creation, Other Accessories, plus their mapped subcategories (19 created during import). Existing top-level Jewellery and its 23 products remain preserved.
 - Imported products use `storeName=FASTXHORIZON`, `supplierName=YOURMART`, `inventoryMode=SUPPLIER_BASED`, `availabilityStatus=AVAILABLE_TO_ORDER`, and `status=draft` pending pricing review. They are therefore visible to authorized Admin catalog views but intentionally not customer-published yet.
 - Local payment/order policy verified and set to: Automatic disabled, Manual disabled, COD disabled, online ordering disabled. No orders were created.
 - First import attempt created only missing category records and hit a MongoDB `$set`/`$setOnInsert` path conflict; the importer was corrected and rerun successfully. No product records were created by the failed attempt.
 - The CSV and generated supplier report are ignored by Git; they were not committed or pushed. Production systems were not accessed.
 
-## Product detail and variant foundation — 2026-10-28
+## Product detail and variant foundation â€” 2026-10-28
 
 - Reworked the customer product detail page with responsive gallery, thumbnails, previous/next controls, image fallback, breadcrumb, SKU, real PKR pricing, genuine review state, availability, wishlist and ordering-disabled messaging.
 - Added sanitized text sections for Description, Specifications, Reviews and Shipping & Returns without delivery promises or invented specifications.
@@ -558,15 +558,15 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Online ordering remains disabled server-side and the product page disables Add to Cart while the global setting is off. Wishlist remains available.
 - Verification: backend 9 suites/46 tests passed; Admin TypeScript/Vite build passed; customer production build passed with the existing MediaPipe source-map warning only. Backend startup build requires `MONGO_URI` in the shell and was not run against production.
 
-## Product detail V2 visual refinement — 2026-10-28
+## Product detail V2 visual refinement â€” 2026-10-28
 
-- Refined `frontend/src/pages/ProductDetails.jsx` into a cleaner Apple-inspired two-column presentation with controlled 21–32px title sizing, tighter image surface, visible thumbnail strip, restrained separators and improved hierarchy.
+- Refined `frontend/src/pages/ProductDetails.jsx` into a cleaner Apple-inspired two-column presentation with controlled 21â€“32px title sizing, tighter image surface, visible thumbnail strip, restrained separators and improved hierarchy.
 - Added accessible image zoom/lightbox with close control, keyboard-focusable gallery image, arrows and thumbnail controls.
 - Long descriptions remain below the main layout in tabs; the right column now shows only a 3-line summary. Empty SKU/review values are hidden or honestly labeled.
 - Preserved real variant selection, supplier availability, wishlist behavior and the global ordering-disabled state. No fake discounts, ratings, stock quantities or delivery promises were added.
 - Verification: customer production build passed with the existing MediaPipe source-map warning; ProductDetails snapshot test passed. Local customer, Admin and backend health endpoints remain HTTP 200.
 
-## Product detail V3 colorful premium styling — 2026-10-28
+## Product detail V3 colorful premium styling â€” 2026-10-28
 
 - Added the requested FastXHorizon color atmosphere: deep navy typography, royal-blue actions/tabs, electric-cyan status accent, amber-compatible restrained palette, ice-blue gallery surface and soft background glows.
 - Tightened the gallery presentation with rounded ice-blue surface, floating navigation controls, active blue thumbnails and subtle thumbnail hover feedback while preserving original image aspect ratios and lightbox zoom.
@@ -574,7 +574,7 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Styled price highlight, eyebrow label, tab indicator, focus/hover transitions and responsive gutters without changing product data, prices, variants or backend behavior.
 - Verification: customer production build passed with the existing MediaPipe source-map warning; ProductDetails snapshot test passed. No database or production systems were modified.
 
-## Product detail V6 balanced premium styling — 2026-10-28
+## Product detail V6 balanced premium styling â€” 2026-10-28
 
 - Rebalanced V5's dark-blue treatment into a soft lavender, cool-grey and clean-white atmosphere using `#F1F0FA`, `#E8EDF3`, `#FFFFFF`, charcoal typography and restrained `#2359CE` accents.
 - Kept the gallery visually clear with a neutral photo stage and desktop thumbnail rail, while reducing large dark/blue surfaces.
@@ -582,7 +582,7 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Restyled variants, availability, wishlist actions and lower content tabs without changing their behavior or product data.
 - Verification: customer build passed with the existing MediaPipe source-map warning; ProductDetails snapshot test passed. No MongoDB, production or global header/footer changes were made.
 
-## Product detail V5 dark navy redesign — 2026-10-28
+## Product detail V5 dark navy redesign â€” 2026-10-28
 
 - Shifted the Product Details page from white-heavy V4 to a navy-dominant `#07162F`/`#0D2550` composition with controlled rich-blue, electric-blue and cyan accents.
 - Added a distinct midnight information panel with white typography, cyan category eyebrow, prominent PKR price treatment, dark variant selectors, compact availability status and dark action area.
@@ -590,7 +590,7 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Reworked the below-fold details surface into a dark blue section with cyan tab indicator and readable light text.
 - No product data, price, image, variant, wishlist, payment or ordering logic was changed. Frontend build and ProductDetails snapshot passed; existing MediaPipe source-map warning remains.
 
-## Product detail V4 composition rebuild — 2026-10-28
+## Product detail V4 composition rebuild â€” 2026-10-28
 
 - Rebuilt the main product composition into distinct editorial gallery and commerce-panel areas rather than one oversized enclosing surface.
 - Added a desktop vertical thumbnail rail with active signature-blue selection, mobile horizontal strip, floating image counter, layered ice/periwinkle gallery stage, and preserved zoom/lightbox/navigation.
@@ -668,7 +668,7 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Preserved the local-only CLI importer restrictions. The Admin workflow now stages a validated, private preview in MongoDB for 30 minutes, returns a preview ID, and confirms using `{ importId, mode, confirm: true }` rather than resubmitting raw CSV content.
 - Production confirmation now requires an authenticated completed Admin session, `products.import`, an unexpired preview and explicit confirmation. Only the uploader or a Super Admin can confirm; staged supplier data is cleared after processing.
 - Existing approved/manual pricing and publication state remains protected during `update_existing` refreshes. Imported records remain drafts with `REVIEW_REQUIRED`; no automatic approval or publication was added.
-- Improved Admin error handling for validation/conflict responses so expired previews, invalid CSVs and duplicate-safe conflicts show meaningful messages instead of generic “Something went wrong.”
+- Improved Admin error handling for validation/conflict responses so expired previews, invalid CSVs and duplicate-safe conflicts show meaningful messages instead of generic â€œSomething went wrong.â€
 - No CSV was imported and no production database was modified. Documentation updated in `others/docs/ADMIN_CSV_IMPORT_AND_PRICING.md`.
 
 ## Customer storefront luxury marketplace redesign - 2026-10-29
@@ -744,7 +744,7 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Added a shared `luxury-page` treatment for Shop, Wishlist, Cart, Login, Register, About, Support, policy pages and Not Found: consistent ivory canvas, charcoal/Cormorant hierarchy, Manrope UI text, sand-gold rules, restrained square corners, form states, buttons, filters, alerts, accordions and empty states.
 - Shop now has a charcoal editorial catalogue header and cleaner filter/product-grid rhythm while retaining real API data, existing filters/sort/pagination, approved ProductCard behavior and disabled ordering.
 - Wishlist, authentication, cart and support/legal pages now visually belong to the same storefront system without changing authentication/session APIs, wishlist persistence, cart state or policy routes.
-- Removed stale customer-facing Fusion Electronics copy and unsupported operational claims from About, Support, Privacy and Terms content; company identity now uses FASTXHORIZON (PRIVATE) LIMITED and truthful marketplace language.
+- Removed stale customer-facing FASTXHORIZON copy and unsupported operational claims from About, Support, Privacy and Terms content; company identity now uses FASTXHORIZON (PRIVATE) LIMITED and truthful marketplace language.
 - Browser QA captured and inspected representative local routes at 390px and 1440px: homepage, Shop, Login and About screenshots are stored under `qa-screenshots/v9-routes/`. Route checks also covered Wishlist, Support, Privacy and Cart. All checked pages stayed within the browser viewport width; Wishlist correctly showed its real empty-state alert.
 - Intentional markup/content changes were reflected in snapshots. Frontend tests passed after snapshot updates: 24 suites, 43 tests, 17 snapshots. Production build passed with only existing Node deprecation and stale Browserslist warnings.
 - No Admin Panel, backend business logic, MongoDB records, supplier pricing, payment settings, checkout/order APIs, production infrastructure, GitHub push or deployment was changed.
@@ -796,7 +796,7 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Reused the existing `PaymentConfiguration.ordersEnabled` field as the single authoritative order-open state, so the checkout API, payment configuration and storefront cannot drift into conflicting sources of truth.
 - Added Super Admin-only `GET/PATCH /api/admin/settings/store-operations` with validation, customer closure message, reason, last-change metadata and audit events. Existing payment-method editing no longer overwrites the master order state.
 - Added read-only public `GET /api/storefront/status` returning only `onlineOrderingEnabled` and a safe customer message.
-- Added the Admin Settings → Online ordering control with ON/OFF confirmation and last-modified display. The backend remains authoritative and continues to fail closed when the setting is unavailable or OFF.
+- Added the Admin Settings â†’ Online ordering control with ON/OFF confirmation and last-modified display. The backend remains authoritative and continues to fail closed when the setting is unavailable or OFF.
 - Local verification confirms `/api/storefront/status` returns `onlineOrderingEnabled: false`; unauthenticated access to the admin control returns HTTP 401. The local order state was not activated.
 - Tests/builds: backend Jest 10 suites/50 tests passed; Admin Vitest 7 files/29 tests passed; Admin production build passed; backend syntax checks passed. No real order or payment was created, and no production setting was changed.
 - Fixed local Admin login CORS failure: development now allows `127.0.0.1:3000/5173` alongside localhost, while production does not add these origins. Preflight verification returned HTTP 204 with credentials enabled.
@@ -907,8 +907,8 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 
 - Verified and used only `127.0.0.1/fastxhorizon_local`; existing product count before insertion was 46.
 - Added guarded idempotent `backend/scripts/seed-arto-earrings-v25-local.js` and `npm run seed:arto:earrings:v25:local`.
-- Inserted all 24 supplied Earrings products under `Jewellery → Earrings`, preserving all existing products. Total local catalog is now 70.
-- Assigned unique sequential SKUs `FXH-FXH-AT-0047` through `FXH-FXH-AT-0070`. Exact requested price mappings were verified: `1020→1199`, `1150→1299`, `1160→1299`, `1680→1849`.
+- Inserted all 24 supplied Earrings products under `Jewellery â†’ Earrings`, preserving all existing products. Total local catalog is now 70.
+- Assigned unique sequential SKUs `FXH-FXH-AT-0047` through `FXH-FXH-AT-0070`. Exact requested price mappings were verified: `1020â†’1199`, `1150â†’1299`, `1160â†’1299`, `1680â†’1849`.
 - All V25 records are draft/unpublished with `REVIEW_REQUIRED` pricing, source prices separated from selling prices, and `SUPPLIER_BASED` availability. All 24 images were securely ingested into internal WebP media paths; original supplier URLs remain protected metadata only.
 - First run: 24 inserted, 0 duplicates, 0 failures. Second run: 0 inserted, 24 duplicates skipped, 0 failures. No existing records, production data, deployment or GitHub state was changed.
 
@@ -921,7 +921,7 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 ## V26 local ARTO Mall catalog expansion - 2026-10-31
 
 - Verified and used only loopback MongoDB `127.0.0.1/fastxhorizon_local`; existing product count before insertion was 70.
-- Added guarded idempotent `backend/scripts/seed-arto-v26-local.js` and `npm run seed:arto:v26:local`. It parses the supplied V26 source file, validates the expected 47 source records, reuses the two-level Jewellery hierarchy, and creates/reuses Watches → Women's Watches.
+- Added guarded idempotent `backend/scripts/seed-arto-v26-local.js` and `npm run seed:arto:v26:local`. It parses the supplied V26 source file, validates the expected 47 source records, reuses the two-level Jewellery hierarchy, and creates/reuses Watches â†’ Women's Watches.
 - Inserted 47 non-duplicate ARTO Mall products with unique SKUs `FXH-FXH-AT-0071` through `FXH-FXH-AT-0117`. The supplied source prices and exact V26 PKR selling-price mappings were preserved.
 - New products are active local preview records with internal WebP media paths, `MANUAL_OVERRIDE` pricing, supplier/source metadata and no exposed supplier URLs. No product, category, admin, order/payment or production records were deleted or overwritten.
 - First run: 47 inserted, 0 duplicates, 0 validation failures; local total is now 117. Repeat run: 0 inserted, 47 duplicates skipped, 0 failures, confirming idempotency. Public API verification returned 117 products.
@@ -930,7 +930,7 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 
 - Verified and used only loopback MongoDB `127.0.0.1/fastxhorizon_local`; existing product count before insertion was 117.
 - Added guarded idempotent `backend/scripts/seed-arto-rings-v27-local.js` and `npm run seed:arto:rings:v27:local`.
-- Inserted all 24 supplied ring records under the existing two-level `Jewellery → Rings` hierarchy. No categories, existing products or admin data were changed.
+- Inserted all 24 supplied ring records under the existing two-level `Jewellery â†’ Rings` hierarchy. No categories, existing products or admin data were changed.
 - Assigned unique sequential SKUs `FXH-FXH-AT-0118` through `FXH-FXH-AT-0141`; source cost is PKR 720 and selling price is PKR 849 for every record.
 - All 24 new products remain `draft`/unpublished as required. Images were successfully ingested into internal WebP media paths; source URLs remain protected metadata.
 - First run: 24 inserted, 0 duplicates, 0 failures; local total is now 141. Repeat run: 0 inserted, 24 duplicates skipped, 0 failures, confirming idempotency. No production, deployment or GitHub action was performed.
@@ -970,7 +970,7 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 
 - Verified and used only loopback MongoDB `127.0.0.1/fastxhorizon_local`; existing product count before insertion was 207.
 - Added guarded idempotent `backend/scripts/seed-arto-v31-local.js` and `npm run seed:arto:v31:local`.
-- Inserted exactly 3 supplied products under Jewellery → Bridal Sets, Rings and Necklaces. Existing products, categories, prices and SKUs were preserved.
+- Inserted exactly 3 supplied products under Jewellery â†’ Bridal Sets, Rings and Necklaces. Existing products, categories, prices and SKUs were preserved.
 - Assigned SKUs `FXH-FXH-AT-0208` through `FXH-FXH-AT-0210`; source costs and requested PKR selling prices remain separate.
 - All 3 products remain draft/unpublished. All 3 supplier images were securely ingested as internal WebP media paths; original URLs remain protected metadata.
 - First run: 3 inserted, 0 duplicates, 0 failures; local total is now 210. Repeat run: 0 inserted, 3 duplicates skipped, 0 failures. No production, deployment or GitHub action was performed.
@@ -1104,7 +1104,7 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Backend sends PlaceAnOrder after order persistence and Purchase only after admin payment verification. Frontend delivery remains a fallback/deduplicated path for browser actions.
 - Backend syntax checks and Jest passed: 14 suites / 63 tests. Frontend production build passed after the Events API changes.
 
-## Production sitemap and SEO configuration — 2026-11-02
+## Production sitemap and SEO configuration â€” 2026-11-02
 
 - Replaced the stale frontend sitemap with a database-backed Express `/sitemap.xml` route.
 - Added active product/category/subcategory URLs, XML escaping, real `updatedAt` values, five-minute response caching, and exclusion of private/checkout routes.
@@ -1113,7 +1113,7 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Backend tests: 14 suites, 63 tests passed. Frontend production build passed.
 - Local sitemap endpoint could not be smoke-tested because no service was listening on `localhost:8000`; verify `https://www.fastxhorizon.com/sitemap.xml` after rebuilding the frontend and restarting the API.
 
-## Production Meta Pixel integration — 2026-11-02
+## Production Meta Pixel integration â€” 2026-11-02
 
 - Added consent-gated Meta Pixel loading with one-time initialization and React Router page-view tracking; admin/private routes are excluded.
 - Added `ViewContent`, `Search`, `AddToWishlist`, `AddToCart`, `InitiateCheckout`, `AddPaymentInfo`, `CompleteRegistration`, custom `OrderPlaced`, and verified-only `Purchase` browser events.
@@ -1122,7 +1122,7 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Frontend build passed. Existing frontend Jest run: 19 suites passed, 5 unrelated existing failures (stale snapshots and missing API env in Cart/Checkout tests).
 - Coolify frontend build variable: `VITE_META_PIXEL_ID=1318803496970561`; the Docker build maps it to `REACT_APP_META_PIXEL_ID` for the actual CRA/CRACO storefront.
 
-## Meta Conversions API — 2026-11-02
+## Meta Conversions API â€” 2026-11-02
 
 - Added backend-only Meta CAPI v21 delivery service with timeout, allowlisted events, hashed email/phone matching, PKR-safe custom data, token-safe logs, and graceful failure.
 - Added MongoDB `MetaEvent` idempotency records to prevent duplicate delivery/replay of the same event ID.
@@ -1133,14 +1133,14 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Added a rate-limited `/api/analytics/meta/events` bridge for consented browser events; authoritative order totals/statuses are reloaded from MongoDB before `OrderPlaced`/`Purchase` delivery.
 - Added optional runtime-only `META_CAPI_TEST_EVENT_CODE`; when set, it is added to the CAPI request body for Meta Events Manager Test Events and is never exposed to frontend code or logs.
 
-### Meta CAPI production diagnostics — 2026-11-02
+### Meta CAPI production diagnostics â€” 2026-11-02
 
 - Confirmed Meta CAPI was already implemented; the previous default Graph API version was `v21.0`. The configurable default is now `v23.0`, with the endpoint `https://graph.facebook.com/{version}/{pixel_id}/events`.
 - Added safe delivery diagnostics for HTTP status, Meta `events_received`, event name, truncated event ID and sanitized error fields. Tokens and customer data are never logged.
 - `META_CAPI_TEST_EVENT_CODE` support is present and runtime-only; it is included only when configured in the backend environment.
 - Backend tests now verify the endpoint, timeout, access-token parameter handling and optional test event code without exposing the secret in application output.
 
-### Checkout contact and step flow — 2026-11-02
+### Checkout contact and step flow â€” 2026-11-02
 
 - Fixed the checkout progress indicator so it follows the active step instead of remaining visually on Step 1.
 - Added a required customer phone number beside name/email on delivery details, included it in order validation/storage, and displayed it in the confirmation review for delivery calls.
@@ -1151,7 +1151,31 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Checkout reservation now treats the existing `AVAILABLE_TO_ORDER` status as orderable for availability-mode products, matching the storefront label and preventing false insufficient-stock errors.
 - Hardened the same rule for legacy/imported products where `inventoryMode` is missing or inconsistent: `availabilityStatus=AVAILABLE_TO_ORDER` now takes precedence and is never incorrectly rejected by numeric stock checks.
 
-### Admin order customer/payment details — 2026-11-02
+### Admin order customer/payment details â€” 2026-11-02
 
 - Admin order detail now receives and displays the customer phone number, complete delivery address, payment method, email and name.
 - Existing authorized payment-details access continues to show submitted TID/reference values and payment screenshots for payment reviewers; no payment evidence is exposed publicly.
+
+### FASTXHORIZON favicon â€” 2026-11-02
+
+- Updated storefront and VitalAdmin favicon references to the supplied `fastxhorizon.png` brand logo.
+
+### Production SEO and social previews â€” 2026-11-02
+
+- Added the supplied root `home-seo.png` to the frontend public assets and use it in the homepage hero plus the production Open Graph/Twitter image tags for WhatsApp and social link previews.
+- Expanded SPA metadata handling with production canonical URLs, index/follow controls for public routes, noindex handling for private/search routes, Open Graph image/type/site metadata, Twitter cards and route-aware JSON-LD.
+- Added product-detail Product structured data with SKU, PKR price, availability, canonical product URL and approved product media.
+- Updated the static production fallback metadata and Organization/WebSite structured data to use `https://www.fastxhorizon.com`; the existing backend dynamic sitemap and robots endpoints remain the source of crawlable product/category URLs.
+- Frontend production build verification is required after this change; no database, checkout, payment or deployment changes were made.
+
+### Store policies and 2026 company launch date â€” 2026-11-02
+
+- Updated the About page journey so FASTXHORIZON starts in 2026; removed the old inaccurate historical milestones.
+- Updated Terms, Privacy and Shipping & Returns page dates to November 2, 2026.
+- Added clothing-specific return guidance for colour running/fading/transferring and fabric damage, including prompt reporting, photos, approval before return and exclusions for washing, wear, alterations, incorrect care, preference and change of mind.
+- Updated the Support return FAQ to match the clothing policy. No order, payment, inventory or database logic was changed.
+
+### Owners and leadership page â€” 2026-11-02
+
+- Added public `/owners` leadership page for Muhammad Younas (CEO & Director) and Muhammad Hamza (Head of Technology & Operations), using the supplied `mdyounas.png` and `mdhamza.png` assets.
+- Added Owners links to desktop/mobile navigation and footer, plus Organization/Person structured data and sitemap inclusion.

@@ -1,17 +1,17 @@
----
+﻿---
 # Frontend Service - Routes to both stable and canary based on weights
 apiVersion: v1
 kind: Service
 metadata:
-  name: fusion-electronics-frontend
-  namespace: fusion-ecommerce
+  name: FASTXHORIZON-electronics-frontend
+  namespace: FASTXHORIZON-ecommerce
   labels:
-    app: fusion-electronics
+    app: FASTXHORIZON-electronics
     component: frontend
 spec:
   type: LoadBalancer
   selector:
-    app: fusion-electronics
+    app: FASTXHORIZON-electronics
     component: frontend
     # No version selector - will route to both stable and canary
   ports:
@@ -26,15 +26,15 @@ spec:
 apiVersion: v1
 kind: Service
 metadata:
-  name: fusion-electronics-backend
-  namespace: fusion-ecommerce
+  name: FASTXHORIZON-electronics-backend
+  namespace: FASTXHORIZON-ecommerce
   labels:
-    app: fusion-electronics
+    app: FASTXHORIZON-electronics
     component: backend
 spec:
   type: LoadBalancer
   selector:
-    app: fusion-electronics
+    app: FASTXHORIZON-electronics
     component: backend
     # No version selector - will route to both stable and canary
   ports:

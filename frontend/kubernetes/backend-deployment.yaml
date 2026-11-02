@@ -1,4 +1,4 @@
-apiVersion: apps/v1
+﻿apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: backend-deployment
@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
         - name: backend
-          image: fusion-ecommerce-backend:latest
+          image: FASTXHORIZON-ecommerce-backend:latest
           ports:
             - containerPort: 3000
           env:

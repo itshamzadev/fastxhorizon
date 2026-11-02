@@ -15,7 +15,7 @@ const termsSections = [
   },
   {
     title: 'Orders, billing, and pricing',
-    copy: 'Checkout totals are confirmed at the point of payment, inclusive of taxes and shipping where applicable. We reserve the right to cancel or refund orders in the rare case of pricing errors or inventory constraints. Any promotional pricing or bundles will state clear eligibility criteria.',
+    copy: 'Checkout totals are confirmed at the point of order, including any applicable delivery charges. We may cancel or refund an order if a price, product availability or catalog error is identified. Promotions and bundles will show their eligibility conditions clearly.',
     icon: <PaymentsIcon color="primary" fontSize="large" />,
   },
   {
@@ -25,7 +25,7 @@ const termsSections = [
   },
   {
     title: 'Returns and exchanges',
-    copy: 'We proudly stand behind the hardware we curate. Eligible products can be returned within 30 days of delivery so long as they remain in like-new condition with original packaging. Certain hygiene or final-sale items will be clearly marked as non-returnable before purchase.',
+    copy: 'Eligible products may be returned according to the Shipping & Returns Policy. Clothing may be returned if the colour fades, runs, transfers or the fabric is damaged on arrival, provided the item is reported promptly with clear photos and has not been washed, worn or altered. Size, preference or change-of-mind returns require the item to be unused with tags and original packaging. Hygiene, customised and clearly marked final-sale items may be excluded.',
     icon: <AutorenewIcon color="primary" fontSize="large" />,
   },
   {
@@ -47,7 +47,7 @@ function Terms() {
           These terms explain how the FastXHorizon marketplace operates and how customer information, products and support interactions are handled.
         </Typography>
         <Typography variant="caption" color="text.secondary">
-          Last updated: April 7, 2025
+          Last updated: November 2, 2026
         </Typography>
       </Stack>
 

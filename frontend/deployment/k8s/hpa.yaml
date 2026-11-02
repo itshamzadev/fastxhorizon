@@ -1,15 +1,15 @@
----
+﻿---
 # Horizontal Pod Autoscaler for Frontend
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: fusion-electronics-frontend-hpa
-  namespace: fusion-ecommerce
+  name: FASTXHORIZON-electronics-frontend-hpa
+  namespace: FASTXHORIZON-ecommerce
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: fusion-electronics-frontend
+    name: FASTXHORIZON-electronics-frontend
   minReplicas: 3
   maxReplicas: 10
   metrics:
@@ -48,13 +48,13 @@ spec:
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:
-  name: fusion-electronics-backend-hpa
-  namespace: fusion-ecommerce
+  name: FASTXHORIZON-electronics-backend-hpa
+  namespace: FASTXHORIZON-ecommerce
 spec:
   scaleTargetRef:
     apiVersion: apps/v1
     kind: Deployment
-    name: fusion-electronics-backend
+    name: FASTXHORIZON-electronics-backend
   minReplicas: 3
   maxReplicas: 15
   metrics:
