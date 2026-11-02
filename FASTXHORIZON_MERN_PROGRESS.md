@@ -1191,3 +1191,9 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Orders now show the backend `verified` payment state as the admin-facing `paid` state and provide a direct Review payment evidence link to the secure approval workflow.
 - Payment approval remains restricted to the existing Payments page evidence decision route, preserving Purchase-event and audit-log behavior.
 - Admin production build passed after the fix.
+
+### Admin fulfillment status workflow â€” 2026-11-02
+
+- Fixed fulfillment updates so an admin can move an order forward directly to processing, shipped or delivered; invalid backward transitions remain blocked.
+- Improved the order-detail error toast to show the actual backend reason instead of a generic message.
+- Backend tests: 15 suites / 65 tests passed. Admin production build passed.

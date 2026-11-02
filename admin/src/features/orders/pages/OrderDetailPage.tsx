@@ -44,8 +44,8 @@ export function OrderDetailPage() {
     try {
       await updateOrder.mutateAsync({ id: orderId, input: patch })
       toast.success('Order updated')
-    } catch {
-      toast.error('Could not update the order', 'Please try again in a moment.')
+    } catch (error) {
+      toast.error('Could not update the order', error instanceof Error ? error.message : 'Please try again in a moment.')
     }
   }
 
