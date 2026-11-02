@@ -67,8 +67,10 @@ function CheckoutForm({ onSubmit, submitting = false, cartItems = [], onStepChan
     const paymentNeedsProof = form.paymentMethod === 'manual';
     const required = paymentNeedsProof ? (selected?.fields?.filter(field => field.required) || []) : [];
     const missing = required.find(field => field.type !== 'file' && !String(form.paymentValues[field.id] || '').trim());
-    const anyMissing = paymentNeedsProof && (selected?.requiredAnyOf || []).some(group => !group.some(id => String(form.paymentValues[id] || '').trim() || form.paymentEvidence.some(file => file.fieldId === id)));
-    if (contactInvalid || (paymentNeedsProof && (!form.methodKey || missing || anyMissing))) { const message = missing ? `${missing.label} is required.` : anyMissing ? 'Enter a Transaction ID or upload a payment screenshot.' : 'Please complete the required checkout fields.'; setValidationError(message); notify({ severity: 'error', message }); return; }
+    const hasReference = Object.entries(form.paymentValues || {}).some(([id, value]) => /transaction|reference|tid/i.test(id) && String(value || '').trim());
+    const hasScreenshot = Array.isArray(form.paymentEvidence) && form.paymentEvidence.length > 0;
+    const proofMissing = paymentNeedsProof && !hasReference && !hasScreenshot;
+    if (contactInvalid || (paymentNeedsProof && (!form.methodKey || missing || proofMissing))) { const message = missing ? `${missing.label} is required.` : proofMissing ? 'Enter a Transaction ID or upload a payment screenshot.' : 'Please complete the required checkout fields.'; setValidationError(message); notify({ severity: 'error', message }); return; }
     await onSubmit(form);
   };
   useEffect(() => {
