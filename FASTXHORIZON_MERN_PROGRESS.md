@@ -1162,7 +1162,7 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 
 ### Production SEO and social previews â€” 2026-11-02
 
-- Added the supplied root `home-seo.png` to the frontend public assets and use it in the homepage hero plus the production Open Graph/Twitter image tags for WhatsApp and social link previews.
+- Added the supplied root `home-seo.png` to the frontend public assets for production Open Graph/Twitter image tags used by WhatsApp and social link previews; the homepage hero keeps its original editorial image.
 - Expanded SPA metadata handling with production canonical URLs, index/follow controls for public routes, noindex handling for private/search routes, Open Graph image/type/site metadata, Twitter cards and route-aware JSON-LD.
 - Added product-detail Product structured data with SKU, PKR price, availability, canonical product URL and approved product media.
 - Updated the static production fallback metadata and Organization/WebSite structured data to use `https://www.fastxhorizon.com`; the existing backend dynamic sitemap and robots endpoints remain the source of crawlable product/category URLs.
