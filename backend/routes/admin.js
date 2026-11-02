@@ -195,10 +195,15 @@ function pricingNumber(value, name, { nullable = true } = {}) {
 
 function orderStatus(order) {
   if (order.statusIndex < 0) return 'cancelled';
-  const code = order.statusHistory?.[order.statusIndex || 0]?.code;
+  const index = Number(order.statusIndex || 0);
+  const code = order.statusHistory?.[index]?.code;
   if (code === 'DELIVERED' || code === 'DELIVERY_CONFIRMED') return 'delivered';
   if (code === 'IN_TRANSIT' || code === 'OUT_FOR_DELIVERY' || code === 'HANDOFF_TO_CARRIER') return 'shipped';
-  if ((order.statusIndex || 0) > 0) return 'processing';
+  // Imported/legacy orders may have the status index updated without a full
+  // statusHistory array. Preserve the canonical milestone from the index.
+  if (index >= 9) return 'delivered';
+  if (index >= 5) return 'shipped';
+  if (index > 0) return 'processing';
   return 'pending';
 }
 

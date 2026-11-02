@@ -1197,3 +1197,8 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Fixed fulfillment updates so an admin can move an order forward directly to processing, shipped or delivered; invalid backward transitions remain blocked.
 - Improved the order-detail error toast to show the actual backend reason instead of a generic message.
 - Backend tests: 15 suites / 65 tests passed. Admin production build passed.
+
+### Fulfillment milestone display correction â€” 2026-11-02
+
+- Fixed legacy/imported orders whose `statusIndex` was advanced without a complete `statusHistory`; index milestones now correctly display `shipped` and `delivered` instead of falling back to `processing`.
+- Backend tests: 15 suites / 65 tests passed. Admin production build passed.
