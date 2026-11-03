@@ -1268,3 +1268,4 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Updated `frontend/src/App.css` so the Shop category/filter panel remains available below the mobile navigation while the product grid scrolls, instead of moving away with the page.
 - Added mobile-only spacing, background and elevation to prevent the sticky filter surface from visually blending into product cards.
 - Frontend production build passed with the existing Browserslist freshness warning only.
+- Follow-up: wrapped the mobile category chips in a bounded touch-scroll region with `overscroll-behavior: contain`, so swiping over categories no longer propagates into the Shop page/product grid.

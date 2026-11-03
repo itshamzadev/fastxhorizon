@@ -283,12 +283,14 @@ function Shop({ products, addToCart, loading, error }) {
             Quick filters
           </Typography>
         </Stack>
-        <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
-          <Chip label="All" color={categoryFilter === 'all' ? 'primary' : 'default'} onClick={() => handleQuickSelect('all')} />
-          {uniqueCategories.map(category => (
-            <Chip key={category} label={category} color={categoryFilter === category ? 'primary' : 'default'} onClick={() => handleQuickSelect(category)} />
-          ))}
-        </Stack>
+        <Box className="luxury-shop__category-scroll" aria-label="Shop categories">
+          <Stack direction="row" spacing={1} flexWrap="wrap" useFlexGap>
+            <Chip label="All" color={categoryFilter === 'all' ? 'primary' : 'default'} onClick={() => handleQuickSelect('all')} />
+            {uniqueCategories.map(category => (
+              <Chip key={category} label={category} color={categoryFilter === category ? 'primary' : 'default'} onClick={() => handleQuickSelect(category)} />
+            ))}
+          </Stack>
+        </Box>
         <Divider sx={{ my: 2 }} />
         <FormControl fullWidth size="small">
           <InputLabel id="category-filter-label">Filter by Category</InputLabel>

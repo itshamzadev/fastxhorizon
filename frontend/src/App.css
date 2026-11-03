@@ -680,6 +680,15 @@ button {
     background: var(--fxh-ivory) !important;
     box-shadow: 0 8px 18px rgba(41, 45, 50, .08) !important;
   }
+  .luxury-shop__category-scroll {
+    max-height: 112px;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+    touch-action: pan-y;
+    scrollbar-width: thin;
+    padding: 2px 2px 6px;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .luxury-hero__visual img, .luxury-category-card img { transition: none; }
