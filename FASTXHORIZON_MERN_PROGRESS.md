@@ -1262,3 +1262,9 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Rebuilt successfully with `android\\gradlew.bat assembleRelease --no-daemon`. Verified the APK contains `assets/index.android.bundle`, `lib/arm64-v8a/libreactnative.so`, and `lib/x86_64/libreactnative.so`.
 - Installed and launched the APK on the local Android emulator. Package `com.fastxhorizon.orders.admin` remained running after launch with no `ExpoAsset`, `SoLoader`, JavaScript, or fatal crash logs.
 - Verification APK: `orders-app/android/app/build/outputs/apk/release/app-release.apk`. It uses the local debug keystore for testing only; a real private release keystore is still required before distribution.
+
+### Mobile Shop category filter scroll fix (November 3, 2026)
+
+- Updated `frontend/src/App.css` so the Shop category/filter panel remains available below the mobile navigation while the product grid scrolls, instead of moving away with the page.
+- Added mobile-only spacing, background and elevation to prevent the sticky filter surface from visually blending into product cards.
+- Frontend production build passed with the existing Browserslist freshness warning only.

@@ -669,6 +669,17 @@ button {
   .luxury-category-card__overlay p { font-size: 24px !important; }
   .luxury-editorial__image, .luxury-editorial__copy { min-height: 300px; }
   .luxury-editorial__copy { padding: 34px 24px; }
+  /* Keep Shop filters available while the product grid scrolls on phones. */
+  .luxury-shop .luxury-page__filters {
+    position: sticky;
+    top: 64px;
+    z-index: 20;
+    margin-left: -16px;
+    margin-right: -16px;
+    padding: 12px 16px 14px !important;
+    background: var(--fxh-ivory) !important;
+    box-shadow: 0 8px 18px rgba(41, 45, 50, .08) !important;
+  }
 }
 @media (prefers-reduced-motion: reduce) {
   .luxury-hero__visual img, .luxury-category-card img { transition: none; }
