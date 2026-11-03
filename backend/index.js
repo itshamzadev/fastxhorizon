@@ -13,6 +13,8 @@ const authRoutes = require('./routes/auth');
 const adminAuthRoutes = require('./routes/adminAuth');
 const adminRoutes = require('./routes/admin');
 const paymentRoutes = require('./routes/payments');
+const mobileRoutes = require('./routes/mobile');
+const { retryPendingNotifications } = require('./services/adminNotifications');
 const { swaggerUi, swaggerSpec, setupSwaggerUi, setupSwaggerJson } = require('./docs/swagger');
 
 // Create Express App
@@ -74,6 +76,9 @@ mongoose
     } catch (err) {
       console.error('❌ Pinecone sync error (continuing with fallbacks):', err);
     }
+
+    retryPendingNotifications().catch((error) => console.error('Notification outbox retry failed:', error.message));
+    setInterval(() => retryPendingNotifications().catch((error) => console.error('Notification outbox retry failed:', error.message)), 60_000).unref();
 
     // 3. Start Express server
     app.listen(PORT, BIND_HOST, () => {
@@ -160,5 +165,6 @@ app.use('/api/auth', authRoutes);
 app.use('/api/admin/auth', adminAuthRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/payments', paymentRoutes.adminRouter);
+app.use('/api/mobile', mobileRoutes);
 
 module.exports = app;

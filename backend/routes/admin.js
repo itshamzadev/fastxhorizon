@@ -16,6 +16,7 @@ const PaymentSubmission = require('../models/paymentSubmission');
 const { SUPPLIER, safeFilename, buildEntries, makeProductDocument, wooPreview, artoPreview } = require('../services/catalogImport');
 const { ingestSupplierImages, auditExternalProductImages } = require('../services/supplierImageIngestion');
 const { SETTING_KEY, DEFAULT_MESSAGE, publicAnnouncement } = require('./storefront');
+const { enqueueAdminNotification } = require('../services/adminNotifications');
 
 const router = express.Router();
 const MAX_PAGE_SIZE = 50;

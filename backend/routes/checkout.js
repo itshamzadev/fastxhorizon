@@ -5,6 +5,7 @@ const Product = require('../models/product');
 const Order = require('../models/order');
 const PaymentConfiguration = require('../models/paymentConfiguration');
 const PaymentSubmission = require('../models/paymentSubmission');
+const { enqueueAdminNotification } = require('../services/adminNotifications');
 const auth = require('../middleware/auth');
 const { sendTikTokEvent } = require('../services/tiktokEventsApi');
 const { sendMetaEvent } = require('../services/metaConversionsApi');
@@ -285,6 +286,15 @@ router.post('/create-order', auth, async (req, res) => {
       order.paymentSubmissionId = paymentSubmission._id;
       await order.save();
     }
+
+    void enqueueAdminNotification({
+      type: 'new_order',
+      title: 'New FASTXHORIZON Order!',
+      body: `Order #${orderNumber} received — PKR ${orderTotal.toLocaleString('en-PK')}`,
+      orderId: order._id,
+      data: { orderId: String(order._id), orderNumber },
+      dedupeKey: `order:${orderNumber}:created`,
+    }).catch((error) => console.error('New-order notification enqueue failed:', error.message));
 
     void sendTikTokEvent({
       eventName: 'PlaceAnOrder',

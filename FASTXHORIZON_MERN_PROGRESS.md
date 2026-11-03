@@ -1202,3 +1202,63 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 
 - Fixed legacy/imported orders whose `statusIndex` was advanced without a complete `statusHistory`; index milestones now correctly display `shipped` and `delivered` instead of falling back to `processing`.
 - Backend tests: 15 suites / 65 tests passed. Admin production build passed.
+## Private Android Orders App (November 2, 2026)
+
+- Added separate `orders-app/` Expo + React Native TypeScript application with premium dark/navy/gold operations UI, login, dashboard, orders list/search, order details/status actions and settings.
+- Added MFA-aware mobile admin sessions with short-lived bearer access tokens, rotating hashed refresh tokens and Android SecureStore persistence.
+- Added permission-checked `/api/mobile` authentication, orders, stats, device registration and notification inbox endpoints using the existing Admin and Order models.
+- Added Firebase Admin-backed notification service with MongoDB outbox/retry records, invalid-token cleanup and post-persistence new-order dispatch. Firebase credentials remain backend-only.
+- Added mobile models for device sessions, devices, notification inbox and notification outbox; no storefront, payment, inventory or customer authentication behavior was changed.
+- Added `orders-app/README.md`, `.env.example`, Expo/EAS APK configuration and existing FASTXHORIZON branding asset.
+- Remaining deployment prerequisites: configure Firebase Android app/`google-services.json`, backend Coolify Firebase variables and `MOBILE_ACCESS_TOKEN_SECRET` (or confirmed existing `JWT_SECRET`), install backend dependency, then build/redeploy backend and build the Android APK. No deployment or physical-device testing was performed in this workspace.
+
+### Orders App Firebase/APK verification (November 2, 2026)
+
+- Repaired npm installation with `npm cache verify` and `npm ci --include=dev`; Expo/React Native dependency tree is now installable and TypeScript passes.
+- Added `android.googleServicesFile` reference and `scripts/verify-firebase-config.js`.
+- Blocker found and intentionally not bypassed: downloaded Firebase config identifies `com.fastxhorizon.orders.admin`, while the required Expo package is `com.fastxhorizon.orders`. A replacement Firebase JSON for the exact package is required.
+- `npm run typecheck` passes. `npm test -- --runInBand` passes with no test files (`--passWithNoTests`). EAS was attempted but cannot run because no authenticated/linked EAS project ID is configured; no APK was generated.
+
+### Orders App package identifier update (November 2, 2026)
+
+- Updated `orders-app/app.json` Android package to `com.fastxhorizon.orders.admin`.
+- Confirmed no native `android/` project exists yet; Expo config now references the unchanged `google-services.json`.
+- `npm run firebase:verify` passes for `com.fastxhorizon.orders.admin`.
+- `npm run typecheck` passes and the configured Jest command exits successfully with no test files.
+- EAS preview build was attempted but remains blocked because the Expo project is not linked/authenticated. Run `npx eas-cli@latest login`, then `npx eas-cli@latest init` or link the existing EAS project before building. No APK was generated.
+
+### Orders App EAS Metro build fix (November 3, 2026)
+
+- Inspected EAS build `3e2b69ab-014d-45fb-90f6-c45274c9f5c2` logs. Exact failure was `react-native-screens@4.30.1` codegen: `Unknown prop type for "onAttached": "undefined"` during Expo SDK 53 Android bundling.
+- Pinned Expo SDK 53-compatible dependencies: React Native `0.79.6`, AsyncStorage `2.1.2`, Safe Area Context `5.4.0`, and React Native Screens `~4.11.1`.
+- Added dynamic `app.config.js` and protected EAS `GOOGLE_SERVICES_JSON` file-variable handling; local Firebase JSON remains ignored and unchanged.
+- Added `.easignore` for generated bundles, logs, native caches and Firebase JSON. Preview remains configured as an installable APK.
+- Verification passed: `npm run firebase:verify`, `npm run typecheck`, `npm test -- --runInBand`, `npx expo-doctor` (18/18), and local `npx expo export --platform android --clear`.
+- Submitted corrected EAS preview build `3683ad62-69b8-497f-8b3e-acd558052b83` for package `com.fastxhorizon.orders.admin`; at the time of documentation it was still `IN_PROGRESS`, so no APK URL is claimed yet.
+
+### Orders App local Windows Android build (November 3, 2026)
+
+- Verified local toolchain: Node `v24.18.0`, npm `11.16.0`, JDK `17.0.20`, Android SDK `C:\SDK`, API 35 and Build Tools 35. Production API health check returned HTTP 200 from `https://api.fastxhorizon.com/health`.
+- Ran `npx expo prebuild --platform android`; native Firebase configuration was generated at `orders-app/android/app/google-services.json` from the unchanged root Firebase file.
+- Ran Gradle debug compilation successfully with `android\gradlew.bat assembleDebug --no-daemon` from the `orders-app\android` directory.
+- Verified APK package `com.fastxhorizon.orders.admin`, compile/target SDK 35, min SDK 24. APK: `orders-app/android/app/build/outputs/apk/debug/app-debug.apk` (149,810,591 bytes).
+- Release signing was not attempted as no project keystore or release credentials are present. No signed release APK is claimed. EAS Cloud was not used for this local build.
+- Local checks remain passing: `npm run firebase:verify`, `npm run typecheck`, `npm test -- --runInBand`, `npx expo-doctor` (18/18), and `npx expo export --platform android --clear` with the production API environment variable.
+
+### Orders App standalone APK startup fix (November 3, 2026)
+
+- Root cause confirmed: the failing APK was `assembleDebug`; React Native marks debug as a Metro-dependent variant and intentionally omits `index.android.bundle`.
+- Confirmed Expo SDK 53 native configuration already uses `expo/scripts/resolveAppEntry` and Expo CLI `export:embed`. The release task now invokes `:app:createBundleReleaseJsAndAssets` and packages the bundle correctly.
+- Added environment-only release signing configuration to `android/app/build.gradle`; keystore paths, aliases and passwords are never stored in source control. The first local release attempt used `arm64-v8a` to control disk usage; the final verification build uses `arm64-v8a,x86_64` for phone and emulator coverage.
+- The first release attempt generated the JS bundle but failed during native packaging because the E: drive ran out of space. Generated build caches were removed and the ARM64-only release build completed successfully.
+- Verified release APK: `orders-app/android/app/build/outputs/apk/release/app-release.apk`, package `com.fastxhorizon.orders.admin`, compile/target SDK 35, with `assets/index.android.bundle` present and 4 APK asset entries. This local verification APK used the existing debug keystore; it is not a production signing credential.
+- No ADB device was connected, so physical installation/startup testing was unavailable. `npm run firebase:verify`, `npm run typecheck` and `npm test -- --runInBand` passed.
+
+### Orders App standalone APK runtime fix (November 3, 2026)
+
+- The first standalone launch exposed a second issue after the architecture fix: the JavaScript runtime could not find the native `ExpoAsset` module because `expo-asset` was missing from the app dependencies.
+- Added Expo SDK 53-compatible `expo-asset` (`~11.1.7`). Gradle autolinking now includes the native module.
+- Updated the local release architecture set to `arm64-v8a,x86_64`, so the same APK supports the three ARM64 phones and the local x86_64 emulator.
+- Rebuilt successfully with `android\\gradlew.bat assembleRelease --no-daemon`. Verified the APK contains `assets/index.android.bundle`, `lib/arm64-v8a/libreactnative.so`, and `lib/x86_64/libreactnative.so`.
+- Installed and launched the APK on the local Android emulator. Package `com.fastxhorizon.orders.admin` remained running after launch with no `ExpoAsset`, `SoLoader`, JavaScript, or fatal crash logs.
+- Verification APK: `orders-app/android/app/build/outputs/apk/release/app-release.apk`. It uses the local debug keystore for testing only; a real private release keystore is still required before distribution.
