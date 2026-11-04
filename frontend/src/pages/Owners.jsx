@@ -42,7 +42,7 @@ export default function Owners() {
           {leaders.map(person => (
             <Grid item xs={12} md={6} key={person.name}>
               <Paper elevation={0} sx={{ height: '100%', overflow: 'hidden', borderRadius: 4, border: '1px solid', borderColor: 'divider' }}>
-                <Box component="img" src={person.image} alt={`${person.name}, ${person.role}`} sx={{ display: 'block', width: '100%', aspectRatio: '1 / 1', objectFit: 'cover', objectPosition: 'center' }} />
+                <Box component="img" src={person.image} alt={`${person.name}, ${person.role}`} sx={{ display: 'block', width: '100%', maxWidth: { xs: '100%', md: 390 }, height: { xs: 'auto', md: 390 }, mx: 'auto', aspectRatio: '1 / 1', objectFit: 'cover', objectPosition: 'center' }} />
                 <Stack spacing={1.5} sx={{ p: { xs: 3, md: 4 } }}>
                   <Typography variant="overline" color="primary" sx={{ letterSpacing: '.14em', fontWeight: 800 }}>{person.role}</Typography>
                   <Typography variant="h4" fontWeight={800}>{person.name}</Typography>

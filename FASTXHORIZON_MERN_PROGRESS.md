@@ -1269,3 +1269,22 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Added mobile-only spacing, background and elevation to prevent the sticky filter surface from visually blending into product cards.
 - Frontend production build passed with the existing Browserslist freshness warning only.
 - Follow-up: wrapped the mobile category chips in a bounded touch-scroll region with `overscroll-behavior: contain`, so swiping over categories no longer propagates into the Shop page/product grid.
+
+### FASTXHORIZON Stock Manager foundation (November 4, 2026)
+
+- Created independent offline-first Electron project at `fxh-stock-management-software/` with React, Vite, TypeScript, secure preload IPC and no MongoDB/production connection.
+- Added SQLite WAL schema with foreign keys for products, variants, categories, brands, suppliers, purchases, purchase items, sales, sale items, deliveries, stock movements, expenses and audit logs.
+- Added transactional product/variant entry with immutable purchase-received stock movement, stock dashboard metrics, product table, backup handler and premium dark/gold operations UI.
+- Added Electron Builder Windows NSIS configuration, README and no-production-data policy. No synthetic or real inventory was seeded; the 145 clothing pieces require verified manual/CSV entry.
+- `npm run typecheck` passed. The renderer production bundler uses the checked-in esbuild build script because Windows Application Control blocks Rollup's native `.node` module; Electron's native runtime is still used by the packaged app.
+- Windows NSIS installer built successfully: `fxh-stock-management-software/release/FASTXHORIZON Stock Manager Setup 0.1.0.exe` (unsigned local installer; SHA-256 `92B5210ED8A729E879D2E874F6E62914542D75F114BA4660A211E0C36A7F016E`). The packaged ASAR contains `dist/index.html`, `dist/assets/index.js` and `dist/assets/index.css`; Electron app ID is `com.fastxhorizon.stockmanager`.
+- `npm run db:smoke` passed after rebuilding `better-sqlite3` for local Node 24. No Vitest test files exist yet (`npm run test -- --run` exits with “No test files found”). The installer was built with Electron's native better-sqlite3 rebuild; no production data was seeded and no backend/production database was touched.
+
+### FASTXHORIZON Stock Manager advanced workflows (November 4, 2026)
+
+- Added working SQLite-backed Stock In receiving with positive-quantity validation and immutable `Purchase Received` stock movements.
+- Added physical Sales Management with available-stock enforcement, invoice numbers, customer details, discounts, delivery fee, COGS capture and sale stock movements.
+- Added supplier directory, financial reports (revenue, COGS, gross profit, inventory value and units), live low-stock dashboard, catalog JSON export and database backup actions.
+- Added IPC handlers with the existing context-isolated preload boundary; no MongoDB or production connection was introduced.
+- TypeScript, renderer build and SQLite smoke test passed. Rebuilt installer: `fxh-stock-management-software/release/FASTXHORIZON Stock Manager Setup 0.1.0.exe` (unsigned local build; SHA-256 `CD8E3F08EFE652C8AEF6FE0364E6500A805AEE332BB8C3C5FD194E8859F9A5D6`).
+- Categories, deliveries, expenses, returns, CSV import and two-laptop sync remain planned modules; no fake inventory data was added.

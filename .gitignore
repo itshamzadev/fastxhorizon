@@ -33,3 +33,4 @@ qa-screenshots/*
 orders-app/*
 # Local-only demo seeders and fixtures; never publish them with production code.
 backend/scripts/add-local-demo-products.js
+fxh-stock-management-software/*
