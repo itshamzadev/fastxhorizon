@@ -30,7 +30,7 @@ import { trackTikTokEvent } from '../analytics/tiktokPixel';
 import { trackMetaEvent } from '../analytics/metaPixel';
 import { TIKTOK_CURRENCY } from '../analytics/tiktokEvents';
 
-const itemsPerPage = 6;
+const itemsPerPage = 24;
 
 function Shop({ products, addToCart, loading, error }) {
   const [categoryFilter, setCategoryFilter] = React.useState('all');
@@ -95,6 +95,10 @@ function Shop({ products, addToCart, loading, error }) {
       .finally(() => { if (active) setSearchLoading(false); });
     return () => { active = false; };
   }, [searchQuery, sortOption, page, categoryFilter, viewFilter]);
+
+  React.useEffect(() => {
+    setPage(1);
+  }, [searchQuery]);
 
   React.useEffect(() => {
     const query = searchQuery.trim();
@@ -317,6 +321,10 @@ function Shop({ products, addToCart, loading, error }) {
           </Grid>
         ))}
       </Grid>
+
+      <Typography variant="body2" color="text.secondary" sx={{ mt: 3, textAlign: 'center' }}>
+        {filteredProducts.length ? `Showing ${startIndex + 1}-${Math.min(startIndex + productsToShow.length, (sortOption === 'random' ? randomTotal : (searchProducts ? searchTotal : filteredProducts.length)) || 0)} of ${(sortOption === 'random' ? randomTotal : (searchProducts ? searchTotal : filteredProducts.length)) || 0} products` : 'Showing 0 products'}
+      </Typography>
 
       {!productsToShow.length && !loading && (
         <Alert severity="info" sx={{ mt: 4 }}>

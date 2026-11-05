@@ -26,23 +26,22 @@ describe('<Shop />', () => {
     expect(screen.queryAllByTestId('product-card')).toHaveLength(0);
   });
 
-  it('renders up to 6 product cards per page', () => {
-    const six = makeProducts(6);
-    renderShop({ products: six, addToCart: () => {}, loading: false });
-    expect(screen.getAllByTestId('product-card')).toHaveLength(6);
+  it('renders up to 24 product cards per page', () => {
+    const products = makeProducts(24);
+    renderShop({ products, addToCart: () => {}, loading: false });
+    expect(screen.getAllByTestId('product-card')).toHaveLength(24);
   });
 
-  it('paginates when more than 6 products', async () => {
-    const eight = makeProducts(8);
-    renderShop({ products: eight, addToCart: () => {}, loading: false });
+  it('paginates when more than 24 products', async () => {
+    const twentySix = makeProducts(26);
+    renderShop({ products: twentySix, addToCart: () => {}, loading: false });
 
-    // Page 1 should show 6 cards
-    expect(screen.getAllByTestId('product-card')).toHaveLength(6);
+    expect(screen.getAllByTestId('product-card')).toHaveLength(24);
 
     // Click the "Go to page 2" button
     fireEvent.click(screen.getByRole('button', { name: /go to page 2/i }));
 
-    // Wait for the new set of cards on page 2 (should be 2)
+    // Page 2 contains the remaining 2 cards.
     const page2Cards = await screen.findAllByTestId('product-card');
     expect(page2Cards).toHaveLength(2);
   });
