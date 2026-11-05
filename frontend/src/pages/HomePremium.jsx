@@ -6,6 +6,7 @@ import ProductCard from '../components/ProductCard';
 import { Link as RouterLink } from 'react-router-dom';
 import '../App.css';
 import { resolveMediaUrl } from '../utils/media';
+import { apiClient } from '../services/apiClient';
 
 const MARKETPLACE_EDITORIAL = '/editorial/marketplace-tech.jpg';
 const CATEGORY_FALLBACKS = [MARKETPLACE_EDITORIAL];
@@ -34,8 +35,15 @@ function SectionIntro({ eyebrow, title, description, action, dark = false }) {
   return <Stack className={dark ? 'luxury-intro luxury-intro--dark' : 'luxury-intro'} direction={{ xs: 'column', sm: 'row' }} justifyContent="space-between" alignItems={{ xs: 'flex-start', sm: 'flex-end' }} spacing={2}><Box><Typography className="luxury-eyebrow">{eyebrow}</Typography><Typography className="luxury-section-title">{title}</Typography>{description && <Typography className="luxury-section-copy">{description}</Typography>}</Box>{action}</Stack>;
 }
 
-export default function HomePremium({ products = [], randomProducts = [], addToCart, error, loading, randomLoading, randomError }) {
+export default function HomePremium({ products = [], randomProducts = [], addToCart, error, loading, randomLoading, randomError, enableRemoteFeed = false }) {
+  const [remoteCatalog, setRemoteCatalog] = React.useState([]);
+  const [remotePage, setRemotePage] = React.useState(1);
+  const [remoteTotal, setRemoteTotal] = React.useState(0);
+  const [remoteHasMore, setRemoteHasMore] = React.useState(false);
+  const [remoteLoading, setRemoteLoading] = React.useState(false);
+  const [remoteError, setRemoteError] = React.useState(null);
   const catalog = React.useMemo(() => {
+    if (enableRemoteFeed) return remoteCatalog;
     const seen = new Set();
     return [...randomProducts, ...products].filter(product => {
       const id = String(product?.id || product?._id || '');
@@ -43,16 +51,57 @@ export default function HomePremium({ products = [], randomProducts = [], addToC
       seen.add(id);
       return true;
     });
-  }, [randomProducts, products]);
+  }, [enableRemoteFeed, remoteCatalog, randomProducts, products]);
   const categories = React.useMemo(() => buildCategories(products.length ? products : catalog), [products, catalog]);
   const [editVisible, setEditVisible] = React.useState(12);
   const [moreVisible, setMoreVisible] = React.useState(12);
+  const [exploreVisible, setExploreVisible] = React.useState(24);
+  const exploreEndRef = React.useRef(null);
   const sectionSplit = Math.ceil(catalog.length / 2);
   const editPool = catalog.slice(0, sectionSplit);
   const morePool = catalog.slice(sectionSplit);
   const selectedProducts = editPool.slice(0, editVisible);
   const moreProducts = morePool.slice(0, moreVisible);
+  const exploreProducts = catalog.slice(0, exploreVisible);
   const featureProduct = editPool[1] || editPool[0];
+  React.useEffect(() => {
+    if (!enableRemoteFeed) return undefined;
+    let active = true;
+    setRemoteLoading(true);
+    setRemoteError(null);
+    apiClient.get('products', { params: { page: remotePage, limit: 24, sort: 'featured' } })
+      .then(({ data }) => {
+        if (!active) return;
+        const payload = Array.isArray(data) ? { products: data, total: data.length, hasMore: false } : data;
+        const incoming = Array.isArray(payload?.products) ? payload.products : [];
+        setRemoteCatalog(previous => {
+          if (remotePage === 1) return incoming;
+          const seen = new Set(previous.map(item => String(item.id || item._id)));
+          return [...previous, ...incoming.filter(item => !seen.has(String(item.id || item._id)))];
+        });
+        setRemoteTotal(Number(payload?.total) || 0);
+        setRemoteHasMore(Boolean(payload?.hasMore));
+      })
+      .catch(requestError => active && setRemoteError(requestError))
+      .finally(() => active && setRemoteLoading(false));
+    return () => { active = false; };
+  }, [enableRemoteFeed, remotePage]);
+  React.useEffect(() => {
+    setEditVisible(12);
+    setMoreVisible(12);
+    setExploreVisible(24);
+  }, [catalog.length]);
+  React.useEffect(() => {
+    const node = exploreEndRef.current;
+    if (!node || typeof IntersectionObserver === 'undefined') return undefined;
+    const observer = new IntersectionObserver(entries => {
+      if (!entries[0]?.isIntersecting || remoteLoading) return;
+      if (enableRemoteFeed && exploreVisible >= catalog.length && remoteHasMore) setRemotePage(value => value + 1);
+      else if (exploreVisible < catalog.length) setExploreVisible(value => Math.min(value + 24, catalog.length));
+    }, { rootMargin: '700px 0px' });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [enableRemoteFeed, exploreVisible, catalog.length, remoteHasMore, remoteLoading]);
   if (loading && !products.length && !randomProducts.length) return <Box className="luxury-loading"><CircularProgress /></Box>;
 
   return <Box className="luxury-home luxury-home--v2">
@@ -65,6 +114,7 @@ export default function HomePremium({ products = [], randomProducts = [], addToC
       <section className="luxury-product-edit" data-testid="home-product-edit"><SectionIntro eyebrow="Selected for you" title="The considered edit." description="Real products from the current public catalog, presented without the noise." dark action={<Button component={RouterLink} to="/shop" className="luxury-text-link luxury-text-link--light" endIcon={<ArrowForwardRoundedIcon />}>Shop the edit</Button>} />{randomError && <Alert severity="info" sx={{ mb: 2 }}>The curated selection is temporarily unavailable. Showing the current catalog instead.</Alert>}{randomLoading && <Box className="luxury-inline-loading"><CircularProgress size={24} /></Box>}{!randomLoading && selectedProducts.length > 0 && <Grid container className="product-grid" spacing={0}>{selectedProducts.map(product => <Grid item key={product.id || product._id} xs={6} sm={6} md={4} lg={3} xl={2}><ProductCard product={product} addToCart={addToCart} /></Grid>)}</Grid>}{!randomLoading && !selectedProducts.length && <Paper className="luxury-empty">No published products are available yet.</Paper>}{editVisible < editPool.length && <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}><Button className="luxury-button luxury-button--outline-light" onClick={() => setEditVisible(value => Math.min(value + 12, editPool.length))}>Load more products</Button></Box>}</section>
       <section className="luxury-story-grid"><Box className="luxury-story-grid__portrait"><Box component="img" src={MARKETPLACE_EDITORIAL} alt="A curated assortment of everyday technology and lifestyle objects" loading="lazy" /><span>03 / EDITORIAL ASSORTMENT</span></Box><Box className="luxury-story-grid__copy"><Typography className="luxury-eyebrow">The FastXHorizon point of view</Typography><Typography component="h2">A marketplace made to be explored.</Typography><Typography>From useful technology and home essentials to accessories and personal finds, we make room for products that earn their place.</Typography><Button component={RouterLink} to="/about" className="luxury-button luxury-button--dark" endIcon={<ArrowForwardRoundedIcon />}>Our story</Button></Box><Box className="luxury-story-grid__detail">{featureProduct && <Box component="img" src={imageSource(featureProduct)} alt={featureProduct.name || 'Current catalog product'} loading="lazy" />}<Typography>04 / FROM THE CURRENT CATALOG</Typography></Box></section>
       <section className="luxury-more-edit" data-testid="home-more-edit"><SectionIntro eyebrow="Keep exploring" title="Find what feels like you." description="A living selection that changes as our marketplace grows." /><Grid container className="product-grid" spacing={0}>{moreProducts.map(product => <Grid item key={`more-${product.id || product._id}`} xs={6} sm={6} md={4} lg={3} xl={2}><ProductCard product={product} addToCart={addToCart} /></Grid>)}</Grid>{moreVisible < morePool.length && <Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}><Button className="luxury-button luxury-button--outline-light" onClick={() => setMoreVisible(value => Math.min(value + 12, morePool.length))}>Load more products</Button></Box>}<Box sx={{ display: 'flex', justifyContent: 'center', mt: 3 }}><Button component={RouterLink} to="/shop" className="luxury-text-link" endIcon={<ArrowForwardRoundedIcon />}>See all products</Button></Box></section>
+      <section className="luxury-product-edit luxury-product-edit--explore" data-testid="home-explore-all"><SectionIntro eyebrow="Explore all products" title="Keep discovering." description={enableRemoteFeed && remoteTotal ? `Loaded ${exploreProducts.length} of ${remoteTotal} eligible products. Scroll to continue.` : 'Scroll to continue through the complete eligible catalog.'} dark action={<Button component={RouterLink} to="/shop" className="luxury-text-link luxury-text-link--light" endIcon={<ArrowForwardRoundedIcon />}>Open full shop</Button>} />{remoteError && <Alert severity="error" sx={{ mb: 2 }}>{remoteError.message || 'Unable to load more products.'}</Alert>}<Grid container className="product-grid" spacing={0}>{exploreProducts.map(product => <Grid item key={`explore-${product.id || product._id}`} xs={6} sm={6} md={4} lg={3} xl={2}><ProductCard product={product} addToCart={addToCart} /></Grid>)}</Grid><Box ref={exploreEndRef} sx={{ minHeight: 64, display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 3 }}>{remoteLoading ? <CircularProgress size={28} /> : (exploreVisible < catalog.length || (enableRemoteFeed && remoteHasMore)) ? <Typography className="luxury-section-copy">Loading more products…</Typography> : (catalog.length > 0 ? <Typography className="luxury-section-copy">You’ve reached the end of the catalog.</Typography> : null)}</Box></section>
       <section className="luxury-trust luxury-trust--v2"><Box><Typography className="luxury-eyebrow">Browse with clarity</Typography><Typography component="h2">Beautifully presented.<br />Truthfully described.</Typography></Box><Box><Typography>FastXHorizon is currently focused on product discovery. Online ordering and payments remain paused while the marketplace continues to grow.</Typography><Button component={RouterLink} to="/support" className="luxury-text-link" endIcon={<ArrowForwardRoundedIcon />}>Visit support</Button></Box></section>
     </Container>
   </Box>;

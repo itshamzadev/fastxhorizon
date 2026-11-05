@@ -115,7 +115,7 @@ router.get('/', async (req, res) => {
     const page = Math.max(1, Number.parseInt(req.query.page, 10) || 1);
     const requestedLimit = Number.parseInt(req.query.limit, 10) || 12;
     const limit = Math.min(MAX_PAGE_SIZE, Math.max(1, requestedLimit));
-    if (!query) return res.json({ products: [], total: 0, page, pageSize: limit, totalPages: 0, query: '' });
+    if (!query) return res.json({ products: [], total: 0, page, limit, pageSize: limit, totalPages: 0, hasMore: false, query: '' });
 
     const terms = query.toLowerCase().split(/\s+/).filter(Boolean).map(escapeRegex);
     const filter = {
@@ -143,7 +143,8 @@ router.get('/', async (req, res) => {
     if (sort === 'newest') ranked = ranked.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     const total = ranked.length;
     const start = (page - 1) * limit;
-    res.json({ products: ranked.slice(start, start + limit).map(publicProduct), total, page, pageSize: limit, totalPages: Math.ceil(total / limit), query });
+    const totalPages = Math.ceil(total / limit);
+    res.json({ products: ranked.slice(start, start + limit).map(publicProduct), total, page, limit, pageSize: limit, totalPages, hasMore: page < totalPages, query });
   } catch (error) {
     console.error('Error searching products:', error);
     res.status(500).json({ error: 'An error occurred during the search.' });

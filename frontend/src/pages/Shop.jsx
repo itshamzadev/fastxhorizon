@@ -8,7 +8,6 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  Pagination,
   CircularProgress,
   Alert,
   Chip,
@@ -39,14 +38,12 @@ function Shop({ products, addToCart, loading, error }) {
   const [animatedCards, setAnimatedCards] = React.useState([]);
   const [sortOption, setSortOption] = React.useState('featured');
   const [searchQuery, setSearchQuery] = React.useState('');
-  const [searchProducts, setSearchProducts] = React.useState(null);
-  const [searchTotal, setSearchTotal] = React.useState(null);
-  const [searchLoading, setSearchLoading] = React.useState(false);
-  const [searchError, setSearchError] = React.useState(null);
-  const [randomProducts, setRandomProducts] = React.useState([]);
-  const [randomTotal, setRandomTotal] = React.useState(0);
-  const [randomLoading, setRandomLoading] = React.useState(false);
-  const [randomError, setRandomError] = React.useState(null);
+  const [feedProducts, setFeedProducts] = React.useState([]);
+  const [feedTotal, setFeedTotal] = React.useState(0);
+  const [feedHasMore, setFeedHasMore] = React.useState(false);
+  const [feedLoading, setFeedLoading] = React.useState(false);
+  const [feedError, setFeedError] = React.useState(null);
+  const feedEndRef = React.useRef(null);
   const randomSeed = React.useRef(`${Date.now()}-${Math.random().toString(36).slice(2)}`);
   const { notify } = useNotifier();
   const location = useLocation();
@@ -80,25 +77,11 @@ function Shop({ products, addToCart, loading, error }) {
   }, [location.search, uniqueCategories, capitalizeCategory]);
 
   React.useEffect(() => {
-    let active = true;
-    if (!searchQuery || sortOption === 'random') { setSearchProducts(null); setSearchTotal(null); setSearchError(null); setSearchLoading(false); return undefined; }
-    setSearchLoading(true);
-    setSearchError(null);
-    const params = { q: searchQuery, limit: itemsPerPage, page };
-    if (categoryFilter !== 'all') params.category = categoryFilter;
-    if (viewFilter === 'featured') params.featured = 'true';
-    if (viewFilter === 'inStock') params.availability = 'available';
-    if (sortOption !== 'featured') params.sort = sortOption;
-    apiClient.get('search', { params })
-      .then(({ data }) => { if (active) { setSearchProducts(Array.isArray(data) ? data : (data?.products || [])); setSearchTotal(Array.isArray(data) ? data.length : (data?.total || 0)); } })
-      .catch(searchRequestError => { if (active) { setSearchProducts([]); setSearchTotal(0); setSearchError(searchRequestError); } })
-      .finally(() => { if (active) setSearchLoading(false); });
-    return () => { active = false; };
-  }, [searchQuery, sortOption, page, categoryFilter, viewFilter]);
-
-  React.useEffect(() => {
     setPage(1);
-  }, [searchQuery]);
+    setFeedProducts([]);
+    setFeedTotal(0);
+    setFeedHasMore(false);
+  }, [searchQuery, sortOption, categoryFilter, viewFilter]);
 
   React.useEffect(() => {
     const query = searchQuery.trim();
@@ -110,76 +93,45 @@ function Shop({ products, addToCart, loading, error }) {
 
   React.useEffect(() => {
     let active = true;
-    if (sortOption !== 'random') {
-      setRandomLoading(false);
-      setRandomError(null);
-      return undefined;
-    }
-    setRandomLoading(true);
-    setRandomError(null);
-    const params = {
-      limit: itemsPerPage,
-      page,
-      seed: `${randomSeed.current}:${categoryFilter}:${searchQuery}:${viewFilter}`,
-    };
+    setFeedLoading(true);
+    setFeedError(null);
+    const params = { limit: itemsPerPage, page };
     if (categoryFilter !== 'all') params.category = categoryFilter;
-    if (searchQuery) params.search = searchQuery;
     if (viewFilter === 'featured') params.featured = 'true';
     if (viewFilter === 'inStock') params.availability = 'available';
-    apiClient.get('products/random', { params })
+    if (sortOption !== 'featured') params.sort = sortOption;
+    if (searchQuery) params.q = searchQuery;
+    if (sortOption === 'random') params.seed = `${randomSeed.current}:${categoryFilter}:${searchQuery}:${viewFilter}`;
+    const endpoint = searchQuery ? 'search' : (sortOption === 'random' ? 'products/random' : 'products');
+    apiClient.get(endpoint, { params })
       .then(({ data }) => {
         if (!active) return;
-        const payload = Array.isArray(data) ? { products: data, total: data.length } : data;
-        setRandomProducts(Array.isArray(payload?.products) ? payload.products : []);
-        setRandomTotal(Number(payload?.total) || 0);
+        const payload = Array.isArray(data) ? { products: data, total: data.length, hasMore: false } : data;
+        const incoming = Array.isArray(payload?.products) ? payload.products : [];
+        setFeedProducts(previous => {
+          if (page === 1) return incoming;
+          const seen = new Set(previous.map(item => String(item.id || item._id)));
+          return [...previous, ...incoming.filter(item => !seen.has(String(item.id || item._id)))];
+        });
+        setFeedTotal(Number(payload?.total) || 0);
+        setFeedHasMore(Boolean(payload?.hasMore));
       })
-      .catch(randomRequestError => {
-        if (!active) return;
-        setRandomProducts([]);
-        setRandomTotal(0);
-        setRandomError(randomRequestError);
-      })
-      .finally(() => active && setRandomLoading(false));
+      .catch(requestError => { if (active) setFeedError(requestError); })
+      .finally(() => { if (active) setFeedLoading(false); });
     return () => { active = false; };
-  }, [sortOption, page, categoryFilter, searchQuery, viewFilter]);
+  }, [page, searchQuery, sortOption, categoryFilter, viewFilter]);
 
-  const filteredProducts = React.useMemo(() => {
-    const sourceProducts = sortOption === 'random' ? randomProducts : (searchProducts || products);
-    const base = sortOption === 'random' || categoryFilter === 'all' || searchProducts ? sourceProducts : sourceProducts.filter(product => capitalizeCategory(product.category) === categoryFilter || (Array.isArray(product.categoryPath) && product.categoryPath.includes(categoryFilter)));
+  React.useEffect(() => {
+    const node = feedEndRef.current;
+    if (!node || !feedHasMore || feedLoading || typeof IntersectionObserver === 'undefined') return undefined;
+    const observer = new IntersectionObserver(entries => {
+      if (entries[0]?.isIntersecting) setPage(current => current + 1);
+    }, { rootMargin: '700px 0px' });
+    observer.observe(node);
+    return () => observer.disconnect();
+  }, [feedHasMore, feedLoading]);
 
-    const sorted = [...base].sort((a, b) => {
-      switch (sortOption) {
-        case 'priceLow':
-          return (a.price || 0) - (b.price || 0);
-        case 'priceHigh':
-          return (b.price || 0) - (a.price || 0);
-        case 'rating':
-          return (b.rating || 0) - (a.rating || 0);
-        case 'newest':
-          return new Date(b.createdAt || 0) - new Date(a.createdAt || 0);
-        default:
-          return 0;
-      }
-    });
-
-    if (sortOption !== 'random' && !searchProducts && viewFilter === 'inStock') {
-      return sorted.filter(product => product?.inventoryMode === 'SUPPLIER_BASED' ? product.availabilityStatus === 'AVAILABLE_TO_ORDER' : (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode) ? product.availabilityStatus === 'IN_STOCK' : typeof product.stock === 'number' && product.stock > 0));
-    }
-    if (sortOption !== 'random' && !searchProducts && viewFilter === 'featured') {
-      return sorted.filter(product => product.isFeatured || (product.rating || 0) >= 4.5);
-    }
-    return sorted;
-  }, [products, searchProducts, randomProducts, categoryFilter, sortOption, viewFilter, capitalizeCategory]);
-
-  const pageCount = sortOption === 'random' ? Math.max(1, Math.ceil(randomTotal / itemsPerPage)) : searchProducts ? Math.max(1, Math.ceil((searchTotal || 0) / itemsPerPage)) : Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
-  const startIndex = (page - 1) * itemsPerPage;
-  const endIndex = startIndex + itemsPerPage;
-  const productsToShow = sortOption === 'random' || searchProducts ? filteredProducts : filteredProducts.slice(startIndex, endIndex);
-
-  const handlePageChange = (_event, value) => {
-    setPage(value);
-    setAnimatedCards([]);
-  };
+  const productsToShow = feedProducts;
 
   const handleCategoryChange = event => {
     randomSeed.current = `${Date.now()}-${Math.random().toString(36).slice(2)}`;
@@ -217,7 +169,7 @@ function Shop({ products, addToCart, loading, error }) {
     return () => clearTimeout(timer);
   }, [productsToShow]);
 
-  if (loading || searchLoading || randomLoading) {
+  if (loading || (feedLoading && !feedProducts.length)) {
     return (
       <Box
         sx={{
@@ -278,10 +230,10 @@ function Shop({ products, addToCart, loading, error }) {
         </Stack>
       </Paper>
 
-      {searchQuery && <Typography variant="h5" sx={{ mb: 2 }}>Search results for “{searchQuery}” <Typography component="span" variant="body1" color="text.secondary">({searchTotal ?? 0} products)</Typography></Typography>}
-      {(error || searchError || randomError) && (
+      {searchQuery && <Typography variant="h5" sx={{ mb: 2 }}>Search results for “{searchQuery}” <Typography component="span" variant="body1" color="text.secondary">({feedTotal} products)</Typography></Typography>}
+      {(error || feedError) && (
         <Alert severity="error" sx={{ mb: 3 }}>
-          {(randomError || searchError || error)?.message || 'Unable to load products right now. Please try again shortly.'}
+          {(feedError || error)?.message || 'Unable to load products right now. Please try again shortly.'}
         </Alert>
       )}
 
@@ -323,20 +275,20 @@ function Shop({ products, addToCart, loading, error }) {
       </Grid>
 
       <Typography variant="body2" color="text.secondary" sx={{ mt: 3, textAlign: 'center' }}>
-        {filteredProducts.length ? `Showing ${startIndex + 1}-${Math.min(startIndex + productsToShow.length, (sortOption === 'random' ? randomTotal : (searchProducts ? searchTotal : filteredProducts.length)) || 0)} of ${(sortOption === 'random' ? randomTotal : (searchProducts ? searchTotal : filteredProducts.length)) || 0} products` : 'Showing 0 products'}
+        {feedTotal ? `Loaded ${productsToShow.length} of ${feedTotal} products` : 'Showing 0 products'}
       </Typography>
 
-      {!productsToShow.length && !loading && (
+      {!productsToShow.length && !loading && !feedLoading && (
         <Alert severity="info" sx={{ mt: 4 }}>
           No products matched your filters. Try adjusting categories or sorting options.
         </Alert>
       )}
 
-      {pageCount > 1 && (
-        <Box sx={{ display: 'flex', justifyContent: 'center', mt: 4, mb: 3 }}>
-          <Pagination count={pageCount} page={page} onChange={handlePageChange} color="primary" />
-        </Box>
-      )}
+      <Box ref={feedEndRef} sx={{ minHeight: 56, display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 3 }}>
+        {feedLoading && <CircularProgress size={28} />}
+        {!feedLoading && feedHasMore && <Typography variant="body2" color="text.secondary">Loading more products…</Typography>}
+        {!feedLoading && !feedHasMore && feedProducts.length > 0 && <Typography variant="body2" color="text.secondary">You’ve reached the end of this catalog.</Typography>}
+      </Box>
     </Container>
   );
 }

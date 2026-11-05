@@ -1,5 +1,5 @@
 import React from 'react';
-import { render, screen, fireEvent } from '@testing-library/react';
+import { render, screen, fireEvent, within } from '@testing-library/react';
 import { MemoryRouter } from 'react-router-dom';
 import Home from '../pages/Home';
 
@@ -60,12 +60,14 @@ describe('<Home />', () => {
       </MemoryRouter>
     );
 
-    expect(screen.getAllByTestId('product-card')).toHaveLength(24);
+    expect(within(screen.getByTestId('home-product-edit')).getAllByTestId('product-card')).toHaveLength(12);
+    expect(within(screen.getByTestId('home-more-edit')).getAllByTestId('product-card')).toHaveLength(12);
+    expect(within(screen.getByTestId('home-explore-all')).getAllByTestId('product-card')).toHaveLength(24);
     const loadMoreButtons = screen.getAllByRole('button', { name: /load more products/i });
     expect(loadMoreButtons).toHaveLength(2);
     fireEvent.click(loadMoreButtons[0]);
-    expect(screen.getAllByTestId('product-card')).toHaveLength(27);
+    expect(within(screen.getByTestId('home-product-edit')).getAllByTestId('product-card')).toHaveLength(15);
     fireEvent.click(screen.getAllByRole('button', { name: /load more products/i })[0]);
-    expect(screen.getAllByTestId('product-card')).toHaveLength(30);
+    expect(within(screen.getByTestId('home-more-edit')).getAllByTestId('product-card')).toHaveLength(15);
   });
 });

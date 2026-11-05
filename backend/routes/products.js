@@ -15,9 +15,10 @@ const toIdString = value => {
 
 const FALLBACK_POOL_LIMIT = 150;
 const RANDOM_PRODUCTS_MAX_LIMIT = 24;
+const PUBLIC_PAGE_MAX_LIMIT = 24;
 const RANDOM_SEED_MAX_LENGTH = 80;
 
-const RANK_SORT = { rating: -1, numReviews: -1, createdAt: -1 };
+const RANK_SORT = { rating: -1, numReviews: -1, createdAt: -1, _id: 1 };
 
 const PUBLIC_PRODUCT_FIELDS = ['name', 'description', 'shortDescription', 'longDescription', 'category', 'subcategory', 'categoryPath', 'productType', 'tags', 'brand'];
 const publicImageFilter = { $or: [{ image: { $type: 'string', $ne: '' } }, { images: { $elemMatch: { $type: 'string', $ne: '' } } }] };
@@ -463,6 +464,26 @@ const pineconeGroupRecommendations = async (products, limit = 10) => {
  */
 router.get('/', async (req, res) => {
   try {
+    if (req.query.page !== undefined || req.query.limit !== undefined) {
+      const requestedLimit = Number.parseInt(req.query.limit, 10);
+      const limit = Number.isFinite(requestedLimit) ? Math.min(Math.max(requestedLimit, 1), PUBLIC_PAGE_MAX_LIMIT) : PUBLIC_PAGE_MAX_LIMIT;
+      const page = Math.max(Number.parseInt(req.query.page, 10) || 1, 1);
+      const filter = publicRandomFilter(req.query);
+      const sortName = String(req.query.sort || 'featured');
+      const sort = sortName === 'priceLow'
+        ? { price: 1, _id: 1 }
+        : sortName === 'priceHigh'
+          ? { price: -1, _id: 1 }
+          : sortName === 'rating'
+            ? { rating: -1, numReviews: -1, _id: 1 }
+            : sortName === 'newest'
+              ? { createdAt: -1, _id: 1 }
+              : RANK_SORT;
+      const total = await Product.countDocuments(filter);
+      const products = await Product.find(filter).sort(sort).skip((page - 1) * limit).limit(limit).lean();
+      const totalPages = Math.ceil(total / limit);
+      return res.json({ products: products.map(normalizeProduct), total, page, limit, pageSize: limit, totalPages, hasMore: page < totalPages });
+    }
     const products = await Product.find(publicRandomFilter({}));
     res.json(products.map(product => normalizeProduct(typeof product.toObject === 'function' ? { ...product.toObject(), _id: product._id } : product)));
   } catch (err) {
@@ -483,7 +504,7 @@ router.get('/random', async (req, res) => {
     const seed = String(req.query.seed || `${Date.now()}-${Math.random()}`).slice(0, RANDOM_SEED_MAX_LENGTH);
     const filter = publicRandomFilter(req.query);
     const total = await Product.countDocuments(filter);
-    if (!total) return res.json({ products: [], total: 0, page, pageSize: limit, totalPages: 0, seed });
+    if (!total) return res.json({ products: [], total: 0, page, limit, pageSize: limit, totalPages: 0, hasMore: false, seed });
 
     // A seeded rotation of the indexed _id order gives stable, duplicate-free pages
     // without loading the catalog into memory or running an unbounded $sample.
@@ -495,7 +516,8 @@ router.get('/random', async (req, res) => {
       ? await Product.find(filter).sort({ _id: 1 }).skip(0).limit(limit - first.length).lean()
       : [];
     const products = [...first, ...second];
-    res.json({ products: products.map(normalizeProduct), total, page, pageSize: limit, totalPages: Math.ceil(total / limit), seed });
+    const totalPages = Math.ceil(total / limit);
+    res.json({ products: products.map(normalizeProduct), total, page, limit, pageSize: limit, totalPages, hasMore: page < totalPages, seed });
   } catch (err) {
     console.error('Error sampling random storefront products:', err);
     res.status(500).json({ message: 'Server error' });

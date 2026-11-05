@@ -46,7 +46,7 @@ describe('Search API', () => {
 
     expect(res.status).toBe(200);
     expect(Product.find).not.toHaveBeenCalled();
-    expect(res.body).toEqual({ products: [], total: 0, page: 1, pageSize: 12, totalPages: 0, query: '' });
+    expect(res.body).toEqual({ products: [], total: 0, page: 1, limit: 12, pageSize: 12, totalPages: 0, hasMore: false, query: '' });
   });
 
   it('500 → internal server error', async () => {

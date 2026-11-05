@@ -338,7 +338,7 @@ function App() {
         <Box component="main" sx={{ minHeight: 'calc(100vh - 200px)' }}>
           <Container maxWidth="xl" sx={{ pb: 8 }}>
             <Routes>
-              <Route path="/" element={<Home products={products} randomProducts={homeProducts} loading={loading} error={error} randomLoading={homeProductsLoading} randomError={homeProductsError} addToCart={addToCart} />} />
+              <Route path="/" element={<Home products={products} randomProducts={homeProducts} loading={loading} error={error} randomLoading={homeProductsLoading} randomError={homeProductsError} enableRemoteFeed addToCart={addToCart} />} />
 
               <Route path="/shop" element={<Shop products={products} addToCart={addToCart} loading={loading} error={error} />} />
 
