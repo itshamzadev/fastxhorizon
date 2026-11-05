@@ -83,7 +83,9 @@ const productSchema = new mongoose.Schema({
     name: {
         type: String,
         required: true,
-        unique: true,
+        // Product names are customer-facing labels, not stable identifiers.
+        // Multiple supplier items may legitimately share the same name; SKU,
+        // slug and supplierKey provide the uniqueness guarantees instead.
     },
     description: {
         type: String,

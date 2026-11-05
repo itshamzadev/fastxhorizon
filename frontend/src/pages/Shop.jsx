@@ -84,12 +84,17 @@ function Shop({ products, addToCart, loading, error }) {
     if (!searchQuery || sortOption === 'random') { setSearchProducts(null); setSearchTotal(null); setSearchError(null); setSearchLoading(false); return undefined; }
     setSearchLoading(true);
     setSearchError(null);
-    apiClient.get('search', { params: { q: searchQuery, limit: 24 } })
+    const params = { q: searchQuery, limit: itemsPerPage, page };
+    if (categoryFilter !== 'all') params.category = categoryFilter;
+    if (viewFilter === 'featured') params.featured = 'true';
+    if (viewFilter === 'inStock') params.availability = 'available';
+    if (sortOption !== 'featured') params.sort = sortOption;
+    apiClient.get('search', { params })
       .then(({ data }) => { if (active) { setSearchProducts(Array.isArray(data) ? data : (data?.products || [])); setSearchTotal(Array.isArray(data) ? data.length : (data?.total || 0)); } })
       .catch(searchRequestError => { if (active) { setSearchProducts([]); setSearchTotal(0); setSearchError(searchRequestError); } })
       .finally(() => { if (active) setSearchLoading(false); });
     return () => { active = false; };
-  }, [searchQuery, sortOption]);
+  }, [searchQuery, sortOption, page, categoryFilter, viewFilter]);
 
   React.useEffect(() => {
     const query = searchQuery.trim();
@@ -136,7 +141,7 @@ function Shop({ products, addToCart, loading, error }) {
 
   const filteredProducts = React.useMemo(() => {
     const sourceProducts = sortOption === 'random' ? randomProducts : (searchProducts || products);
-    const base = sortOption === 'random' || categoryFilter === 'all' ? sourceProducts : sourceProducts.filter(product => capitalizeCategory(product.category) === categoryFilter || (Array.isArray(product.categoryPath) && product.categoryPath.includes(categoryFilter)));
+    const base = sortOption === 'random' || categoryFilter === 'all' || searchProducts ? sourceProducts : sourceProducts.filter(product => capitalizeCategory(product.category) === categoryFilter || (Array.isArray(product.categoryPath) && product.categoryPath.includes(categoryFilter)));
 
     const sorted = [...base].sort((a, b) => {
       switch (sortOption) {
@@ -153,19 +158,19 @@ function Shop({ products, addToCart, loading, error }) {
       }
     });
 
-    if (sortOption !== 'random' && viewFilter === 'inStock') {
+    if (sortOption !== 'random' && !searchProducts && viewFilter === 'inStock') {
       return sorted.filter(product => product?.inventoryMode === 'SUPPLIER_BASED' ? product.availabilityStatus === 'AVAILABLE_TO_ORDER' : (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode) ? product.availabilityStatus === 'IN_STOCK' : typeof product.stock === 'number' && product.stock > 0));
     }
-    if (sortOption !== 'random' && viewFilter === 'featured') {
+    if (sortOption !== 'random' && !searchProducts && viewFilter === 'featured') {
       return sorted.filter(product => product.isFeatured || (product.rating || 0) >= 4.5);
     }
     return sorted;
   }, [products, searchProducts, randomProducts, categoryFilter, sortOption, viewFilter, capitalizeCategory]);
 
-  const pageCount = sortOption === 'random' ? Math.max(1, Math.ceil(randomTotal / itemsPerPage)) : Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
+  const pageCount = sortOption === 'random' ? Math.max(1, Math.ceil(randomTotal / itemsPerPage)) : searchProducts ? Math.max(1, Math.ceil((searchTotal || 0) / itemsPerPage)) : Math.max(1, Math.ceil(filteredProducts.length / itemsPerPage));
   const startIndex = (page - 1) * itemsPerPage;
   const endIndex = startIndex + itemsPerPage;
-  const productsToShow = sortOption === 'random' ? filteredProducts : filteredProducts.slice(startIndex, endIndex);
+  const productsToShow = sortOption === 'random' || searchProducts ? filteredProducts : filteredProducts.slice(startIndex, endIndex);
 
   const handlePageChange = (_event, value) => {
     setPage(value);

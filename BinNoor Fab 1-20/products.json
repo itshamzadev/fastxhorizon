@@ -1,0 +1,1195 @@
+{
+  "exportedAt": "2026-11-05T14:15:34.714Z",
+  "formatVersion": 3,
+  "source": "FXH_STOCK_MANAGER",
+  "currency": "PKR",
+  "categories": [
+    {
+      "id": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "parent_id": null,
+      "name": "Clothing",
+      "slug": "clothing",
+      "active": 1
+    }
+  ],
+  "brands": [
+    {
+      "id": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "name": "BinNoor Fab",
+      "description": null,
+      "active": 1
+    }
+  ],
+  "fabricTypes": [
+    {
+      "id": "11313cc7-7628-410e-8197-9af146b0b3e4",
+      "name": "SHAMRAY",
+      "description": null,
+      "active": 1
+    }
+  ],
+  "products": [
+    {
+      "id": "FXH-WEB-P-DF8B776AD726402F88D90DD8BFCFBBAD",
+      "importId": "FXH-WEB-P-DF8B776AD726402F88D90DD8BFCFBBAD",
+      "sourceProductId": "df8b776a-d726-402f-88d9-0dd8bfcfbbad",
+      "catalogNumber": 20,
+      "supplierKey": "FXH_STOCK_MANAGER:df8b776a-d726-402f-88d9-0dd8bfcfbbad",
+      "sku": "FXH-WEB-P-DF8B776AD726402F88D90DD8BFCFBBAD",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/372fbc3b-aac3-4f79-9a9f-24974c9503a3.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-9DA321C104DE4090B21B73D5EEBEF81A",
+      "importId": "FXH-WEB-P-9DA321C104DE4090B21B73D5EEBEF81A",
+      "sourceProductId": "9da321c1-04de-4090-b21b-73d5eebef81a",
+      "catalogNumber": 19,
+      "supplierKey": "FXH_STOCK_MANAGER:9da321c1-04de-4090-b21b-73d5eebef81a",
+      "sku": "FXH-WEB-P-9DA321C104DE4090B21B73D5EEBEF81A",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-9da321c104de4090b21b73d5eebef81a",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/ef858fd8-9c44-4425-8916-9317d74220a5.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-AF76A694AFDF411AA06455B881751851",
+      "importId": "FXH-WEB-P-AF76A694AFDF411AA06455B881751851",
+      "sourceProductId": "af76a694-afdf-411a-a064-55b881751851",
+      "catalogNumber": 18,
+      "supplierKey": "FXH_STOCK_MANAGER:af76a694-afdf-411a-a064-55b881751851",
+      "sku": "FXH-WEB-P-AF76A694AFDF411AA06455B881751851",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-af76a694afdf411aa06455b881751851",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/9f80907a-7e15-4178-9e3f-7c8359acfa77.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-86A508F9F5174F6FA365BA886F04AD21",
+      "importId": "FXH-WEB-P-86A508F9F5174F6FA365BA886F04AD21",
+      "sourceProductId": "86a508f9-f517-4f6f-a365-ba886f04ad21",
+      "catalogNumber": 17,
+      "supplierKey": "FXH_STOCK_MANAGER:86a508f9-f517-4f6f-a365-ba886f04ad21",
+      "sku": "FXH-WEB-P-86A508F9F5174F6FA365BA886F04AD21",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-86a508f9f5174f6fa365ba886f04ad21",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/49502733-1aa3-484c-922e-b2c3ab3d57f6.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-29795728A16341639C93B1427F965199",
+      "importId": "FXH-WEB-P-29795728A16341639C93B1427F965199",
+      "sourceProductId": "29795728-a163-4163-9c93-b1427f965199",
+      "catalogNumber": 16,
+      "supplierKey": "FXH_STOCK_MANAGER:29795728-a163-4163-9c93-b1427f965199",
+      "sku": "FXH-WEB-P-29795728A16341639C93B1427F965199",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-29795728a16341639c93b1427f965199",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/9ed1b7d4-5133-490d-be96-149702bdae1b.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-F024E472294842029499EBFB361B599F",
+      "importId": "FXH-WEB-P-F024E472294842029499EBFB361B599F",
+      "sourceProductId": "f024e472-2948-4202-9499-ebfb361b599f",
+      "catalogNumber": 15,
+      "supplierKey": "FXH_STOCK_MANAGER:f024e472-2948-4202-9499-ebfb361b599f",
+      "sku": "FXH-WEB-P-F024E472294842029499EBFB361B599F",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-f024e472294842029499ebfb361b599f",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/48072505-6661-4694-b4da-932f747fe7c7.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-3AAFEC784BB44C12A4E9C52AE14F5F5B",
+      "importId": "FXH-WEB-P-3AAFEC784BB44C12A4E9C52AE14F5F5B",
+      "sourceProductId": "3aafec78-4bb4-4c12-a4e9-c52ae14f5f5b",
+      "catalogNumber": 14,
+      "supplierKey": "FXH_STOCK_MANAGER:3aafec78-4bb4-4c12-a4e9-c52ae14f5f5b",
+      "sku": "FXH-WEB-P-3AAFEC784BB44C12A4E9C52AE14F5F5B",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-3aafec784bb44c12a4e9c52ae14f5f5b",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/9a3d34d0-ebb5-4fb3-85f0-bda9ac79e9cb.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-E26F76D857614915BE9D80D84E410E27",
+      "importId": "FXH-WEB-P-E26F76D857614915BE9D80D84E410E27",
+      "sourceProductId": "e26f76d8-5761-4915-be9d-80d84e410e27",
+      "catalogNumber": 13,
+      "supplierKey": "FXH_STOCK_MANAGER:e26f76d8-5761-4915-be9d-80d84e410e27",
+      "sku": "FXH-WEB-P-E26F76D857614915BE9D80D84E410E27",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-e26f76d857614915be9d80d84e410e27",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/ac7bf9bd-1489-4f11-b356-11334f6f9c8e.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-7510F1BCFC2B45419382752EA9C4FDCA",
+      "importId": "FXH-WEB-P-7510F1BCFC2B45419382752EA9C4FDCA",
+      "sourceProductId": "7510f1bc-fc2b-4541-9382-752ea9c4fdca",
+      "catalogNumber": 12,
+      "supplierKey": "FXH_STOCK_MANAGER:7510f1bc-fc2b-4541-9382-752ea9c4fdca",
+      "sku": "FXH-WEB-P-7510F1BCFC2B45419382752EA9C4FDCA",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-7510f1bcfc2b45419382752ea9c4fdca",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/c0540759-a891-42ee-a3bf-37d4230b7b08.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-95DE6C87B6054C9DB5E17EBED97C3C46",
+      "importId": "FXH-WEB-P-95DE6C87B6054C9DB5E17EBED97C3C46",
+      "sourceProductId": "95de6c87-b605-4c9d-b5e1-7ebed97c3c46",
+      "catalogNumber": 11,
+      "supplierKey": "FXH_STOCK_MANAGER:95de6c87-b605-4c9d-b5e1-7ebed97c3c46",
+      "sku": "FXH-WEB-P-95DE6C87B6054C9DB5E17EBED97C3C46",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-95de6c87b6054c9db5e17ebed97c3c46",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/69c6de96-582e-4d91-ade6-b6850fe7b238.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-FA3DEE98F9DF4FEDABBDD3880B10E1A2",
+      "importId": "FXH-WEB-P-FA3DEE98F9DF4FEDABBDD3880B10E1A2",
+      "sourceProductId": "fa3dee98-f9df-4fed-abbd-d3880b10e1a2",
+      "catalogNumber": 10,
+      "supplierKey": "FXH_STOCK_MANAGER:fa3dee98-f9df-4fed-abbd-d3880b10e1a2",
+      "sku": "FXH-WEB-P-FA3DEE98F9DF4FEDABBDD3880B10E1A2",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-fa3dee98f9df4fedabbdd3880b10e1a2",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/869e3803-10ad-4051-9621-494d3e42dfed.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-62A7A8DE8554452C844855AABDBF77B8",
+      "importId": "FXH-WEB-P-62A7A8DE8554452C844855AABDBF77B8",
+      "sourceProductId": "62a7a8de-8554-452c-8448-55aabdbf77b8",
+      "catalogNumber": 9,
+      "supplierKey": "FXH_STOCK_MANAGER:62a7a8de-8554-452c-8448-55aabdbf77b8",
+      "sku": "FXH-WEB-P-62A7A8DE8554452C844855AABDBF77B8",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-62a7a8de8554452c844855aabdbf77b8",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/5401c9a1-30e3-44ee-9211-5bd3cb4eef49.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-EB3017AAE5D84100BD4081E4C61DEBE2",
+      "importId": "FXH-WEB-P-EB3017AAE5D84100BD4081E4C61DEBE2",
+      "sourceProductId": "eb3017aa-e5d8-4100-bd40-81e4c61debe2",
+      "catalogNumber": 8,
+      "supplierKey": "FXH_STOCK_MANAGER:eb3017aa-e5d8-4100-bd40-81e4c61debe2",
+      "sku": "FXH-WEB-P-EB3017AAE5D84100BD4081E4C61DEBE2",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-eb3017aae5d84100bd4081e4c61debe2",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/02ca75bd-3e75-4ec1-b807-b9ee556010ca.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-6608E732319F4021A4983E02F6DB814F",
+      "importId": "FXH-WEB-P-6608E732319F4021A4983E02F6DB814F",
+      "sourceProductId": "6608e732-319f-4021-a498-3e02f6db814f",
+      "catalogNumber": 7,
+      "supplierKey": "FXH_STOCK_MANAGER:6608e732-319f-4021-a498-3e02f6db814f",
+      "sku": "FXH-WEB-P-6608E732319F4021A4983E02F6DB814F",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-6608e732319f4021a4983e02f6db814f",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/33de5203-7692-4343-aea1-9de344a64468.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-0EF23C3C057B4667ACC289B77B467442",
+      "importId": "FXH-WEB-P-0EF23C3C057B4667ACC289B77B467442",
+      "sourceProductId": "0ef23c3c-057b-4667-acc2-89b77b467442",
+      "catalogNumber": 6,
+      "supplierKey": "FXH_STOCK_MANAGER:0ef23c3c-057b-4667-acc2-89b77b467442",
+      "sku": "FXH-WEB-P-0EF23C3C057B4667ACC289B77B467442",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-0ef23c3c057b4667acc289b77b467442",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/53621404-4733-498f-b0b6-a03d6bbfdb68.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-741BB319E70644FD91D2D70F0E3E7985",
+      "importId": "FXH-WEB-P-741BB319E70644FD91D2D70F0E3E7985",
+      "sourceProductId": "741bb319-e706-44fd-91d2-d70f0e3e7985",
+      "catalogNumber": 5,
+      "supplierKey": "FXH_STOCK_MANAGER:741bb319-e706-44fd-91d2-d70f0e3e7985",
+      "sku": "FXH-WEB-P-741BB319E70644FD91D2D70F0E3E7985",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-741bb319e70644fd91d2d70f0e3e7985",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/90eec3f4-7a21-4722-95c9-fa20eda539c0.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-5850BFB68B7F4040A35B4F0A8A0C8678",
+      "importId": "FXH-WEB-P-5850BFB68B7F4040A35B4F0A8A0C8678",
+      "sourceProductId": "5850bfb6-8b7f-4040-a35b-4f0a8a0c8678",
+      "catalogNumber": 4,
+      "supplierKey": "FXH_STOCK_MANAGER:5850bfb6-8b7f-4040-a35b-4f0a8a0c8678",
+      "sku": "FXH-WEB-P-5850BFB68B7F4040A35B4F0A8A0C8678",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-5850bfb68b7f4040a35b4f0a8a0c8678",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/403eb331-e77f-4f41-942a-432ae4ba9201.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-22998EB61972404E8A7C2958A547252E",
+      "importId": "FXH-WEB-P-22998EB61972404E8A7C2958A547252E",
+      "sourceProductId": "22998eb6-1972-404e-8a7c-2958a547252e",
+      "catalogNumber": 3,
+      "supplierKey": "FXH_STOCK_MANAGER:22998eb6-1972-404e-8a7c-2958a547252e",
+      "sku": "FXH-WEB-P-22998EB61972404E8A7C2958A547252E",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-22998eb61972404e8a7c2958a547252e",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 2999,
+      "originalPrice": 3000,
+      "discountAmount": 1,
+      "discountPercentage": 0.03,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/2f70d6be-2e25-4c8f-8f27-628d324a6664.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-4EA7B9F25F6C481F8EF11DFB3CCB7084",
+      "importId": "FXH-WEB-P-4EA7B9F25F6C481F8EF11DFB3CCB7084",
+      "sourceProductId": "4ea7b9f2-5f6c-481f-8ef1-1dfb3ccb7084",
+      "catalogNumber": 2,
+      "supplierKey": "FXH_STOCK_MANAGER:4ea7b9f2-5f6c-481f-8ef1-1dfb3ccb7084",
+      "sku": "FXH-WEB-P-4EA7B9F25F6C481F8EF11DFB3CCB7084",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-4ea7b9f25f6c481f8ef11dfb3ccb7084",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/11cef6f9-54e8-4a95-b642-bce9e6630179.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-P-986C5F08858042339A8AE1E76CD30E22",
+      "importId": "FXH-WEB-P-986C5F08858042339A8AE1E76CD30E22",
+      "sourceProductId": "986c5f08-8580-4233-9a8a-e1e76cd30e22",
+      "catalogNumber": 1,
+      "supplierKey": "FXH_STOCK_MANAGER:986c5f08-8580-4233-9a8a-e1e76cd30e22",
+      "sku": "FXH-WEB-P-986C5F08858042339A8AE1E76CD30E22",
+      "name": "BinNoor Fab SHAMRAY",
+      "slug": "binnoor-fab-shamray-986c5f08858042339a8ae1e76cd30e22",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "fabricMaterial": "SHAMRAY",
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ],
+      "brandId": "61f3920f-2e11-468a-a0a1-8296c03daeca",
+      "brandName": "BinNoor Fab",
+      "brand": "BinNoor Fab",
+      "categoryId": "a62f7c02-3b26-488e-81a7-c2f0e310b991",
+      "categorySlug": "clothing",
+      "categoryName": "Clothing",
+      "currency": "PKR",
+      "sellingPrice": 3000,
+      "originalPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "quantity": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "in_stock",
+      "status": "draft",
+      "images": [
+        "images/fd8b94f6-82b0-489a-b957-a859b12a766c.png"
+      ]
+    }
+  ],
+  "variants": [
+    {
+      "id": "FXH-WEB-V-3584109B085D411C9A4981737B069301",
+      "importId": "FXH-WEB-V-3584109B085D411C9A4981737B069301",
+      "sourceVariantId": "3584109b-085d-411c-9a49-81737b069301",
+      "product_id": "FXH-WEB-P-986C5F08858042339A8AE1E76CD30E22",
+      "productImportId": "FXH-WEB-P-986C5F08858042339A8AE1E76CD30E22",
+      "sku": "FXH-WEB-V-3584109B085D411C9A4981737B069301",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/fd8b94f6-82b0-489a-b957-a859b12a766c.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-BE90A43A8B3041BC8DDD44D6FD81DAC8",
+      "importId": "FXH-WEB-V-BE90A43A8B3041BC8DDD44D6FD81DAC8",
+      "sourceVariantId": "be90a43a-8b30-41bc-8ddd-44d6fd81dac8",
+      "product_id": "FXH-WEB-P-4EA7B9F25F6C481F8EF11DFB3CCB7084",
+      "productImportId": "FXH-WEB-P-4EA7B9F25F6C481F8EF11DFB3CCB7084",
+      "sku": "FXH-WEB-V-BE90A43A8B3041BC8DDD44D6FD81DAC8",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/11cef6f9-54e8-4a95-b642-bce9e6630179.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-A36936712EC44917A45996F914251486",
+      "importId": "FXH-WEB-V-A36936712EC44917A45996F914251486",
+      "sourceVariantId": "a3693671-2ec4-4917-a459-96f914251486",
+      "product_id": "FXH-WEB-P-22998EB61972404E8A7C2958A547252E",
+      "productImportId": "FXH-WEB-P-22998EB61972404E8A7C2958A547252E",
+      "sku": "FXH-WEB-V-A36936712EC44917A45996F914251486",
+      "size": null,
+      "color": null,
+      "price": 2999,
+      "compareAtPrice": 3000,
+      "discountAmount": 1,
+      "discountPercentage": 0.03,
+      "available_quantity": 1,
+      "images": [
+        "images/2f70d6be-2e25-4c8f-8f27-628d324a6664.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-3529B82CAD49410CABD1EDB9316F3BA7",
+      "importId": "FXH-WEB-V-3529B82CAD49410CABD1EDB9316F3BA7",
+      "sourceVariantId": "3529b82c-ad49-410c-abd1-edb9316f3ba7",
+      "product_id": "FXH-WEB-P-5850BFB68B7F4040A35B4F0A8A0C8678",
+      "productImportId": "FXH-WEB-P-5850BFB68B7F4040A35B4F0A8A0C8678",
+      "sku": "FXH-WEB-V-3529B82CAD49410CABD1EDB9316F3BA7",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/403eb331-e77f-4f41-942a-432ae4ba9201.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-DECBB2F1A12B47BEAA71A0A726F1D99F",
+      "importId": "FXH-WEB-V-DECBB2F1A12B47BEAA71A0A726F1D99F",
+      "sourceVariantId": "decbb2f1-a12b-47be-aa71-a0a726f1d99f",
+      "product_id": "FXH-WEB-P-741BB319E70644FD91D2D70F0E3E7985",
+      "productImportId": "FXH-WEB-P-741BB319E70644FD91D2D70F0E3E7985",
+      "sku": "FXH-WEB-V-DECBB2F1A12B47BEAA71A0A726F1D99F",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/90eec3f4-7a21-4722-95c9-fa20eda539c0.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-EFE8EED0629E4D7B8E9E5DA3CEA91020",
+      "importId": "FXH-WEB-V-EFE8EED0629E4D7B8E9E5DA3CEA91020",
+      "sourceVariantId": "efe8eed0-629e-4d7b-8e9e-5da3cea91020",
+      "product_id": "FXH-WEB-P-0EF23C3C057B4667ACC289B77B467442",
+      "productImportId": "FXH-WEB-P-0EF23C3C057B4667ACC289B77B467442",
+      "sku": "FXH-WEB-V-EFE8EED0629E4D7B8E9E5DA3CEA91020",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/53621404-4733-498f-b0b6-a03d6bbfdb68.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-DDB2534A15FD4BC3899E9DEF43D10449",
+      "importId": "FXH-WEB-V-DDB2534A15FD4BC3899E9DEF43D10449",
+      "sourceVariantId": "ddb2534a-15fd-4bc3-899e-9def43d10449",
+      "product_id": "FXH-WEB-P-6608E732319F4021A4983E02F6DB814F",
+      "productImportId": "FXH-WEB-P-6608E732319F4021A4983E02F6DB814F",
+      "sku": "FXH-WEB-V-DDB2534A15FD4BC3899E9DEF43D10449",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/33de5203-7692-4343-aea1-9de344a64468.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-F3ADFAB1669F4FB9BEE4F32C894B11F0",
+      "importId": "FXH-WEB-V-F3ADFAB1669F4FB9BEE4F32C894B11F0",
+      "sourceVariantId": "f3adfab1-669f-4fb9-bee4-f32c894b11f0",
+      "product_id": "FXH-WEB-P-EB3017AAE5D84100BD4081E4C61DEBE2",
+      "productImportId": "FXH-WEB-P-EB3017AAE5D84100BD4081E4C61DEBE2",
+      "sku": "FXH-WEB-V-F3ADFAB1669F4FB9BEE4F32C894B11F0",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/02ca75bd-3e75-4ec1-b807-b9ee556010ca.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-25DE21117AED4BF888564D439442FA84",
+      "importId": "FXH-WEB-V-25DE21117AED4BF888564D439442FA84",
+      "sourceVariantId": "25de2111-7aed-4bf8-8856-4d439442fa84",
+      "product_id": "FXH-WEB-P-62A7A8DE8554452C844855AABDBF77B8",
+      "productImportId": "FXH-WEB-P-62A7A8DE8554452C844855AABDBF77B8",
+      "sku": "FXH-WEB-V-25DE21117AED4BF888564D439442FA84",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/5401c9a1-30e3-44ee-9211-5bd3cb4eef49.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-B5229B3278724096BA0ADB30F025F2E2",
+      "importId": "FXH-WEB-V-B5229B3278724096BA0ADB30F025F2E2",
+      "sourceVariantId": "b5229b32-7872-4096-ba0a-db30f025f2e2",
+      "product_id": "FXH-WEB-P-FA3DEE98F9DF4FEDABBDD3880B10E1A2",
+      "productImportId": "FXH-WEB-P-FA3DEE98F9DF4FEDABBDD3880B10E1A2",
+      "sku": "FXH-WEB-V-B5229B3278724096BA0ADB30F025F2E2",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/869e3803-10ad-4051-9621-494d3e42dfed.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-05E2B0136AFE44B88645A8293B116981",
+      "importId": "FXH-WEB-V-05E2B0136AFE44B88645A8293B116981",
+      "sourceVariantId": "05e2b013-6afe-44b8-8645-a8293b116981",
+      "product_id": "FXH-WEB-P-95DE6C87B6054C9DB5E17EBED97C3C46",
+      "productImportId": "FXH-WEB-P-95DE6C87B6054C9DB5E17EBED97C3C46",
+      "sku": "FXH-WEB-V-05E2B0136AFE44B88645A8293B116981",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/69c6de96-582e-4d91-ade6-b6850fe7b238.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-C4F2EBE93225439DB272E16B561548FF",
+      "importId": "FXH-WEB-V-C4F2EBE93225439DB272E16B561548FF",
+      "sourceVariantId": "c4f2ebe9-3225-439d-b272-e16b561548ff",
+      "product_id": "FXH-WEB-P-7510F1BCFC2B45419382752EA9C4FDCA",
+      "productImportId": "FXH-WEB-P-7510F1BCFC2B45419382752EA9C4FDCA",
+      "sku": "FXH-WEB-V-C4F2EBE93225439DB272E16B561548FF",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/c0540759-a891-42ee-a3bf-37d4230b7b08.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-37A229ABD2E64461AAB7E5E43D19A560",
+      "importId": "FXH-WEB-V-37A229ABD2E64461AAB7E5E43D19A560",
+      "sourceVariantId": "37a229ab-d2e6-4461-aab7-e5e43d19a560",
+      "product_id": "FXH-WEB-P-E26F76D857614915BE9D80D84E410E27",
+      "productImportId": "FXH-WEB-P-E26F76D857614915BE9D80D84E410E27",
+      "sku": "FXH-WEB-V-37A229ABD2E64461AAB7E5E43D19A560",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/ac7bf9bd-1489-4f11-b356-11334f6f9c8e.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-7800E653B7D641FBB6CB5FC30171485A",
+      "importId": "FXH-WEB-V-7800E653B7D641FBB6CB5FC30171485A",
+      "sourceVariantId": "7800e653-b7d6-41fb-b6cb-5fc30171485a",
+      "product_id": "FXH-WEB-P-3AAFEC784BB44C12A4E9C52AE14F5F5B",
+      "productImportId": "FXH-WEB-P-3AAFEC784BB44C12A4E9C52AE14F5F5B",
+      "sku": "FXH-WEB-V-7800E653B7D641FBB6CB5FC30171485A",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/9a3d34d0-ebb5-4fb3-85f0-bda9ac79e9cb.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-39C3A77B4200410ABA8CB619E8748C76",
+      "importId": "FXH-WEB-V-39C3A77B4200410ABA8CB619E8748C76",
+      "sourceVariantId": "39c3a77b-4200-410a-ba8c-b619e8748c76",
+      "product_id": "FXH-WEB-P-F024E472294842029499EBFB361B599F",
+      "productImportId": "FXH-WEB-P-F024E472294842029499EBFB361B599F",
+      "sku": "FXH-WEB-V-39C3A77B4200410ABA8CB619E8748C76",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/48072505-6661-4694-b4da-932f747fe7c7.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-337E5217B0724722A5B976291E3F3924",
+      "importId": "FXH-WEB-V-337E5217B0724722A5B976291E3F3924",
+      "sourceVariantId": "337e5217-b072-4722-a5b9-76291e3f3924",
+      "product_id": "FXH-WEB-P-29795728A16341639C93B1427F965199",
+      "productImportId": "FXH-WEB-P-29795728A16341639C93B1427F965199",
+      "sku": "FXH-WEB-V-337E5217B0724722A5B976291E3F3924",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/9ed1b7d4-5133-490d-be96-149702bdae1b.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-C054BE10CE2845B897FA4EAAF0F16C40",
+      "importId": "FXH-WEB-V-C054BE10CE2845B897FA4EAAF0F16C40",
+      "sourceVariantId": "c054be10-ce28-45b8-97fa-4eaaf0f16c40",
+      "product_id": "FXH-WEB-P-86A508F9F5174F6FA365BA886F04AD21",
+      "productImportId": "FXH-WEB-P-86A508F9F5174F6FA365BA886F04AD21",
+      "sku": "FXH-WEB-V-C054BE10CE2845B897FA4EAAF0F16C40",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/49502733-1aa3-484c-922e-b2c3ab3d57f6.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-5819904001244A0881BD44A54F86F538",
+      "importId": "FXH-WEB-V-5819904001244A0881BD44A54F86F538",
+      "sourceVariantId": "58199040-0124-4a08-81bd-44a54f86f538",
+      "product_id": "FXH-WEB-P-AF76A694AFDF411AA06455B881751851",
+      "productImportId": "FXH-WEB-P-AF76A694AFDF411AA06455B881751851",
+      "sku": "FXH-WEB-V-5819904001244A0881BD44A54F86F538",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/9f80907a-7e15-4178-9e3f-7c8359acfa77.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-CA94F8598C1B414EB87A1F959847B6C9",
+      "importId": "FXH-WEB-V-CA94F8598C1B414EB87A1F959847B6C9",
+      "sourceVariantId": "ca94f859-8c1b-414e-b87a-1f959847b6c9",
+      "product_id": "FXH-WEB-P-9DA321C104DE4090B21B73D5EEBEF81A",
+      "productImportId": "FXH-WEB-P-9DA321C104DE4090B21B73D5EEBEF81A",
+      "sku": "FXH-WEB-V-CA94F8598C1B414EB87A1F959847B6C9",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/ef858fd8-9c44-4425-8916-9317d74220a5.png"
+      ]
+    },
+    {
+      "id": "FXH-WEB-V-2998DBD914D7462BB3272738BB42AD09",
+      "importId": "FXH-WEB-V-2998DBD914D7462BB3272738BB42AD09",
+      "sourceVariantId": "2998dbd9-14d7-462b-b327-2738bb42ad09",
+      "product_id": "FXH-WEB-P-DF8B776AD726402F88D90DD8BFCFBBAD",
+      "productImportId": "FXH-WEB-P-DF8B776AD726402F88D90DD8BFCFBBAD",
+      "sku": "FXH-WEB-V-2998DBD914D7462BB3272738BB42AD09",
+      "size": null,
+      "color": null,
+      "price": 3000,
+      "compareAtPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "available_quantity": 1,
+      "images": [
+        "images/372fbc3b-aac3-4f79-9a9f-24974c9503a3.png"
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "formatVersion": 3,
+  "source": "FXH_STOCK_MANAGER",
+  "exportedAt": "2026-11-05T14:15:34.714Z",
+  "catalogNumberRange": {
+    "from": 1,
+    "to": 20
+  },
+  "products": 20,
+  "variants": 20,
+  "mediaFiles": 20,
+  "includesInternalCosts": false,
+  "publicIdentifiers": "generated-from-stable-local-record-ids"
+}

@@ -1,0 +1,119 @@
+{
+  "mode": "apply",
+  "source": "E:\\Fast X Horizon\\BinNoor Fab 1-20",
+  "target": "127.0.0.1/fastxhorizon_local",
+  "before": {
+    "products": 230,
+    "highestGlobalSku": 230,
+    "invalidSkuCount": 0,
+    "existingBinNoor": 20
+  },
+  "validation": {
+    "products": 20,
+    "variants": 20,
+    "images": 20,
+    "missingImages": 0,
+    "brand": "BinNoor Fab",
+    "fabric": "SHAMRAY",
+    "category": "clothing",
+    "categoryExists": true
+  },
+  "allocation": [],
+  "skippedAlreadyImported": [
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:0ef23c3c-057b-4667-acc2-89b77b467442",
+      "sku": "FXH-FXH-BN-0225"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:22998eb6-1972-404e-8a7c-2958a547252e",
+      "sku": "FXH-FXH-BN-0228"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:29795728-a163-4163-9c93-b1427f965199",
+      "sku": "FXH-FXH-BN-0215"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:3aafec78-4bb4-4c12-a4e9-c52ae14f5f5b",
+      "sku": "FXH-FXH-BN-0217"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:4ea7b9f2-5f6c-481f-8ef1-1dfb3ccb7084",
+      "sku": "FXH-FXH-BN-0229"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:5850bfb6-8b7f-4040-a35b-4f0a8a0c8678",
+      "sku": "FXH-FXH-BN-0227"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:62a7a8de-8554-452c-8448-55aabdbf77b8",
+      "sku": "FXH-FXH-BN-0222"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:6608e732-319f-4021-a498-3e02f6db814f",
+      "sku": "FXH-FXH-BN-0224"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:741bb319-e706-44fd-91d2-d70f0e3e7985",
+      "sku": "FXH-FXH-BN-0226"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:7510f1bc-fc2b-4541-9382-752ea9c4fdca",
+      "sku": "FXH-FXH-BN-0219"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:86a508f9-f517-4f6f-a365-ba886f04ad21",
+      "sku": "FXH-FXH-BN-0214"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:95de6c87-b605-4c9d-b5e1-7ebed97c3c46",
+      "sku": "FXH-FXH-BN-0220"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:986c5f08-8580-4233-9a8a-e1e76cd30e22",
+      "sku": "FXH-FXH-BN-0230"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:9da321c1-04de-4090-b21b-73d5eebef81a",
+      "sku": "FXH-FXH-BN-0212"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:af76a694-afdf-411a-a064-55b881751851",
+      "sku": "FXH-FXH-BN-0213"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:df8b776a-d726-402f-88d9-0dd8bfcfbbad",
+      "sku": "FXH-FXH-BN-0211"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:e26f76d8-5761-4915-be9d-80d84e410e27",
+      "sku": "FXH-FXH-BN-0218"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:eb3017aa-e5d8-4100-bd40-81e4c61debe2",
+      "sku": "FXH-FXH-BN-0223"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:f024e472-2948-4202-9499-ebfb361b599f",
+      "sku": "FXH-FXH-BN-0216"
+    },
+    {
+      "supplierKey": "FXH_STOCK_MANAGER:fa3dee98-f9df-4fed-abbd-d3880b10e1a2",
+      "sku": "FXH-FXH-BN-0221"
+    }
+  ],
+  "warnings": [
+    "All 20 source products are already imported; no product writes required."
+  ],
+  "errors": [],
+  "indexCompatibility": {
+    "changed": false,
+    "action": "already-compatible"
+  },
+  "after": {
+    "products": 230,
+    "imported": 0,
+    "imagesCopied": 0,
+    "alreadyImported": 20
+  },
+  "generatedAt": "2026-11-05T14:29:30.493Z"
+}

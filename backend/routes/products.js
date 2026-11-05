@@ -19,7 +19,7 @@ const RANDOM_SEED_MAX_LENGTH = 80;
 
 const RANK_SORT = { rating: -1, numReviews: -1, createdAt: -1 };
 
-const PUBLIC_PRODUCT_FIELDS = ['name', 'description', 'shortDescription', 'longDescription', 'category', 'subcategory', 'categoryPath', 'productType', 'tags', 'brand', 'sku'];
+const PUBLIC_PRODUCT_FIELDS = ['name', 'description', 'shortDescription', 'longDescription', 'category', 'subcategory', 'categoryPath', 'productType', 'tags', 'brand'];
 const publicImageFilter = { $or: [{ image: { $type: 'string', $ne: '' } }, { images: { $elemMatch: { $type: 'string', $ne: '' } } }] };
 const publicFlexibleFields = product => ({
   productType: product.productType === 'DIGITAL' ? 'DIGITAL' : 'PHYSICAL',
@@ -67,7 +67,6 @@ const normalizeProduct = product => ({
   category: product.category,
   subcategory: product.subcategory,
   categoryPath: product.categoryPath,
-  sku: product.sku || '',
   productType: product.productType,
   tags: product.tags,
   slug: product.slug,
@@ -80,8 +79,9 @@ const normalizeProduct = product => ({
   images: publicImages(product),
   variantsEnabled: Boolean(product.variantsEnabled),
   variantAttributes: Array.isArray(product.variantAttributes) ? product.variantAttributes : [],
-  variants: Array.isArray(product.variants) ? product.variants.filter(variant => variant.enabled !== false).map(variant => ({ id: variant._id, key: variant.key, options: variant.options || {}, sku: variant.sku || '', price: variant.price, compareAtPrice: variant.compareAtPrice ?? null, images: variant.images || [], inventoryMode: variant.inventoryMode, stock: variant.stock, availabilityStatus: variant.availabilityStatus })) : [],
+  variants: Array.isArray(product.variants) ? product.variants.filter(variant => variant.enabled !== false).map(variant => ({ id: variant._id, key: variant.key, options: variant.options || {}, price: variant.price, compareAtPrice: variant.compareAtPrice ?? null, images: variant.images || [], inventoryMode: variant.inventoryMode, stock: variant.stock, availabilityStatus: variant.availabilityStatus })) : [],
   brand: product.brand,
+  fabricMaterial: product.fabricMaterial || '',
   stock: product.stock,
   inventoryMode: product.inventoryMode === 'SUPPLIER_BASED' ? 'SUPPLIER_BASED' : (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product.inventoryMode) ? 'AVAILABILITY_BASED' : 'NUMERIC'),
   availabilityStatus: product.availabilityStatus || (product.stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK'),

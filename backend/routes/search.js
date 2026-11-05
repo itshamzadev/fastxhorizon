@@ -4,11 +4,10 @@ const Product = require('../models/product');
 
 const MAX_QUERY_LENGTH = 100;
 const MAX_PAGE_SIZE = 24;
-const MAX_MATCHES_FOR_RANKING = 200;
-const PUBLIC_FIELDS = 'name description shortDescription category subcategory categoryPath productType tags slug image images price currency brand sku storeName stock inventoryMode availabilityStatus rating numReviews createdAt specifications attributes physicalConfiguration digitalConfiguration supplierName sourceFormat supplierKey';
+const PUBLIC_FIELDS = 'name description shortDescription category subcategory categoryPath productType tags slug image images price currency brand storeName stock inventoryMode availabilityStatus rating numReviews createdAt specifications attributes physicalConfiguration digitalConfiguration supplierName sourceFormat supplierKey';
 const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const normalizeQuery = value => String(value || '').trim().slice(0, MAX_QUERY_LENGTH);
-const searchableFields = ['name', 'description', 'shortDescription', 'category', 'subcategory', 'categoryPath', 'productType', 'tags', 'brand', 'sku'];
+const searchableFields = ['name', 'description', 'shortDescription', 'category', 'subcategory', 'categoryPath', 'productType', 'tags', 'brand'];
 const publicImages = product => {
   const values = Array.isArray(product.images) ? product.images : (product.image ? [product.image] : []);
   return /yourmart|arto/i.test(`${product.supplierName || ''} ${product.sourceFormat || ''} ${product.supplierKey || ''}`) ? values.filter((value) => !/^https?:\/\//i.test(String(value || ''))) : values;
@@ -30,7 +29,6 @@ const publicProduct = product => ({
   price: product.price,
   currency: product.currency || 'PKR',
   brand: product.brand || '',
-  sku: product.sku || '',
   storeName: product.storeName || 'FASTXHORIZON',
   stock: product.stock,
   inventoryMode: product.inventoryMode,
@@ -126,14 +124,23 @@ router.get('/', async (req, res) => {
       $or: [{ image: { $type: 'string', $ne: '' } }, { images: { $elemMatch: { $type: 'string', $ne: '' } } }],
       $and: terms.map(term => ({ $or: searchableFields.map(field => ({ [field]: { $regex: term, $options: 'i' } })) })),
     };
+    const category = String(req.query.category || '').trim().slice(0, 80);
+    if (category) filter.$and.push({ $or: [{ category }, { subcategory: category }, { categoryPath: category }] });
+    if (req.query.featured === 'true') filter.$and.push({ $or: [{ featured: true }, { rating: { $gte: 4.5 } }] });
+    if (req.query.availability === 'available') filter.$and.push({ $or: [{ inventoryMode: 'SUPPLIER_BASED', availabilityStatus: 'AVAILABLE_TO_ORDER' }, { inventoryMode: { $in: ['AVAILABILITY_BASED', 'AVAILABILITY'] }, availabilityStatus: 'IN_STOCK' }, { inventoryMode: { $nin: ['SUPPLIER_BASED', 'AVAILABILITY_BASED', 'AVAILABILITY'] }, stock: { $gt: 0 } }] });
     const queryBuilder = Product.find(filter);
     const matches = typeof queryBuilder.select === 'function'
-      ? await queryBuilder.select(PUBLIC_FIELDS).limit(MAX_MATCHES_FOR_RANKING).lean()
+      ? await queryBuilder.select(PUBLIC_FIELDS).lean()
       : await queryBuilder;
-    const ranked = matches
+    let ranked = matches
       .map(product => ({ product, score: scoreProduct(product, terms) }))
       .sort((a, b) => b.score - a.score || new Date(b.product.createdAt || 0) - new Date(a.product.createdAt || 0))
       .map(entry => entry.product);
+    const sort = String(req.query.sort || 'relevance');
+    if (sort === 'priceLow') ranked = ranked.sort((a, b) => (a.price || 0) - (b.price || 0));
+    if (sort === 'priceHigh') ranked = ranked.sort((a, b) => (b.price || 0) - (a.price || 0));
+    if (sort === 'rating') ranked = ranked.sort((a, b) => (b.rating || 0) - (a.rating || 0) || new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+    if (sort === 'newest') ranked = ranked.sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
     const total = ranked.length;
     const start = (page - 1) * limit;
     res.json({ products: ranked.slice(start, start + limit).map(publicProduct), total, page, pageSize: limit, totalPages: Math.ceil(total / limit), query });

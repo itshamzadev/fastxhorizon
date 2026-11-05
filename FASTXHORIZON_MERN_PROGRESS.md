@@ -1288,3 +1288,109 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Added IPC handlers with the existing context-isolated preload boundary; no MongoDB or production connection was introduced.
 - TypeScript, renderer build and SQLite smoke test passed. Rebuilt installer: `fxh-stock-management-software/release/FASTXHORIZON Stock Manager Setup 0.1.0.exe` (unsigned local build; SHA-256 `CD8E3F08EFE652C8AEF6FE0364E6500A805AEE332BB8C3C5FD194E8859F9A5D6`).
 - Categories, deliveries, expenses, returns, CSV import and two-laptop sync remain planned modules; no fake inventory data was added.
+
+### Stock Manager product variants and pricing (November 5, 2026)
+
+- Added safe SQLite migrations for short descriptions, brand/fabric metadata, variant original price and stored media references; existing records are preserved.
+- Product entry now supports multiple color/size variants, separate quantity per color, getting cost, original/MRP and selling price, automatic discount percentage, short/full details and brand name.
+- Added multi-image selection through Electron's secure IPC; selected files are copied into app-controlled user media storage and references are stored per variant.
+- TypeScript and SQLite smoke tests passed. Updated NSIS installer: `fxh-stock-management-software/release/FASTXHORIZON Stock Manager Setup 0.1.0.exe` (unsigned local build; SHA-256 `DDC351682238CEBCF7013CF2B71441CC86FB63E30C170C5261427C6214C803B4`).
+- Existing-record editing UI and CSV bulk import remain next enhancements; no stock has been fabricated or seeded.
+
+### Stock Manager simplified product entry (November 5, 2026)
+
+- Replaced required Base SKU with optional Model; products without a model receive an internal generated product SKU while color variants remain uniquely identified.
+- Removed Short detail and Size from the active clothing entry form; Description is now the single product detail field.
+- Added editable discount amount per color. Changing discount automatically updates selling price from original price; getting cost, original price and selling price remain separate.
+- TypeScript, renderer build and updated NSIS installer completed successfully.
+### Stock Manager color entry (November 5, 2026)
+- Product color is optional; products can be saved without a known color.
+- Color rows remain removable, and separate images can still be attached per color when known.
+- The form labels color as optional and stores an empty color as an empty catalog value rather than blocking save.
+
+### Stock Manager website export privacy (November 5, 2026)
+- Website Catalog JSON now excludes internal getting cost, unit cost, stock value, suppliers, sales and profit reports.
+- Website export retains catalog fields, selling prices, original prices, available quantity and approved media references.
+- Full internal data remains available only through the separate SQLite backup workflow.
+
+### Stock Manager pricing UX (November 5, 2026)
+- Discount now updates automatically from original price minus selling price while retaining manual edit support.
+- Rebuilt the renderer and NSIS installer after the pricing change.
+
+### Stock Manager product editing (November 5, 2026)
+- Added an Edit action in the Products table for product details and first-variant pricing/cost updates.
+- Updates use a transactional SQLite IPC operation and preserve existing stock movement history.
+- TypeScript, renderer and NSIS builds passed.
+
+### Stock Manager category management (November 5, 2026)
+
+- Added a persistent Category Management section with Categories, Brands and Fabric Types tabs, search, add/edit and safe deactivation actions.
+- Added the `fabric_types` SQLite table and idempotent migration of existing product brand/fabric text values into managed catalog tables; records used by products cannot be deleted.
+- Product entry now loads active category, brand and fabric options from SQLite, with category/subcategory filtering and inline `+ Add New` controls for brands and fabric types.
+- Website catalog export now includes stable category hierarchy, brands and fabric types; full SQLite backup continues to preserve all management data.
+- Verification: `npm run typecheck`, `npm run build:renderer`, `npm run db:smoke` and `npm run dist` passed. `better-sqlite3` was rebuilt for the local Node runtime before the smoke test. The unsigned installer was regenerated at `fxh-stock-management-software/release/FASTXHORIZON Stock Manager Setup 0.1.0.exe`.
+- Follow-up: Removed Category and Subcategory from the visible management and product-entry workflows. The section is now Brand & Fabric Management; brand and fabric remain optional, searchable and persist in SQLite.
+
+### Stock Manager website export hardening (November 5, 2026)
+
+- Website export now produces a validated ZIP containing `products.json`, `products.csv`, category/brand/fabric files, manifest and actual controlled product media under `images/`.
+- Brand IDs are resolved from `brand_id` or the matching managed brand name; clothing type is persisted and exported; SKU, public prices, available quantities and variant media references are preserved.
+- Internal purchase/unit costs, stock valuation and supplier financial fields are excluded from public website exports.
+- Added `npm run test:export` covering brand ID mapping, clothing type, quantities, public price fields and media references. TypeScript, renderer, export smoke, SQLite smoke and Electron distribution builds passed.
+- ZIP reliability fix: export now writes to an exclusive temporary `.partial` file, waits for archive and file-stream close, validates the completed size, closes all handles and atomically renames to `.zip`. Windows `Expand-Archive` regression test passed.
+- Public catalog refinement: website ZIP now exposes only customer catalog data (name, brand, fabric, original/final prices, calculated discount and images) plus required private import metadata; clothing type is no longer required or exported. Public product serializers no longer return product or variant SKUs, while backend order processing remains ID-based.
+
+### Final website catalog export fix (November 5, 2026)
+
+- Fixed the image attachment mismatch: the product form stores selected files as `images`, while the SQLite writer previously read only `imagePaths`. Both fields are now accepted, so selected JPG/PNG/WebP files persist in variant `image_paths` and are available to export.
+- Website exports no longer reuse internal model numbers or local stock SKUs. They generate stable `FXH-WEB-*` product/variant identifiers from stable local record IDs, include an idempotent `supplierKey`, and add deterministic suffixes for duplicate product names.
+- Extracted the production ZIP writer into `electron/websiteExport.ts` so the same validated path is exercised by the app and tests. Missing or unsafe media paths fail explicitly; existing media is copied under `images/`, with no internal purchase costs or private files.
+- Added an end-to-end test that creates temporary test data and a real attached image, exports the ZIP, extracts it with Windows `Expand-Archive`, and verifies image bytes, JSON references, privacy, brand/fabric and price/discount values.
+- Public search serialization no longer exposes SKU fields or searches public SKU data.
+- Verification passed: `npm run typecheck`, `npm run test:export`, `npm run test:website-export`, `npm run test:zip`, `npm run db:smoke`, and `npm run dist`. The rebuilt unsigned installer is `fxh-stock-management-software/release/FASTXHORIZON Stock Manager Setup 0.1.0.exe`.
+
+### Stock Manager permanent product deletion (November 5, 2026)
+
+- The Products table Delete action now performs a transactional permanent deletion instead of archiving: product variants, stock movements, related line items and orphaned purchase/sale records are removed, while mixed sale/purchase headers are preserved.
+- Product media files are removed only when no other variant still references them. The operation is scoped to the selected local product and does not affect brands, categories or unrelated records.
+- Added secure preload/IPC support and verified with a temporary SQLite deletion test, including attached image cleanup. TypeScript and renderer builds passed.
+- Permanent deletion now also removes linked sale/purchase headers, transaction lines and audit references so the selected product leaves no current-database trace. Mixed transactions are intentionally removed as part of the explicitly requested full-delete behavior.
+
+### Stock Manager numbered website exports (November 5, 2026)
+
+- Added persistent sequential `catalog_number` values to products. Existing records were assigned `1` through `11` in creation order; future products receive the next number.
+- Website export now supports a stable From/To product-number range, so an initial `1–10` export can be followed by an `11+` export without re-exporting older products. The selected range and number bounds are recorded in `manifest.json`.
+- Verification passed: database numbering is sequential through product 11, TypeScript checks passed, renderer/Electron code rebuilt, and the local app restarted successfully.
+- Products table now shows each stable catalog number and the first persisted product image thumbnail through a secure media-read IPC path; missing images show a clear placeholder. The local app was rebuilt and restarted successfully.
+
+### Local BinNoor Fab catalog import (November 5, 2026)
+
+- Added a loopback-only, read-only-by-default importer at `backend/scripts/import-binnoor-local.js`; it validates the Stock Manager v3 export, rejects non-local MongoDB targets, preserves source IDs, and is idempotent on `supplierKey`.
+- Imported the 20 real BinNoor Fab products into local `fastxhorizon_local` only. Existing ARTO Mall products remain 210; total local products are now 230. New SKUs are the global sequence `FXH-FXH-BN-0211` through `FXH-FXH-BN-0230`.
+- Copied and verified all 20 source PNG images into the backend-controlled local media directory as `/media/products/<original-filename>`. Products remain `draft`, with brand `BinNoor Fab`, fabric `SHAMRAY`, Clothing category, source prices and quantities preserved.
+- Created a verified local EJSON backup before writes at `others/docs/binnoor-local-backup-2026-11-05T14-28-51-033Z` and wrote the import report to `others/docs/binnoor-fab-local-import-report.json`.
+- Removed the obsolete unique MongoDB `name_1` index and removed `unique: true` from the Product model because duplicate customer-facing names are valid; stable SKU, slug and supplierKey remain unique. No existing product records were rewritten.
+- Reimport dry-run found all 20 products already present and planned zero inserts. Backend tests passed: 15 suites, 65 tests.
+
+### BinNoor production readiness (November 5, 2026)
+
+- Added `backend/scripts/prepare-binnoor-production.js`, defaulting to a production read-only dry-run. It validates only the 20 BinNoor source records, checks production SKUs/indexes/categories, uses stable `supplierKey`/source IDs, and never falls back to local MongoDB.
+- Production apply is gated by `PRODUCTION_IMPORT_CONFIRM=YES`, `PRODUCTION_BACKUP_VERIFIED=YES`, `PRODUCTION_MEDIA_PERSISTENT=YES`, an absolute `MEDIA_STORAGE_ROOT`, and explicit approval for a unique `name_1` index migration where required.
+- The production media target is `/app/media/products`, backed by `/opt/fastxhorizon/persistent-media/media:/app/media`; the script refuses to copy media anywhere else.
+- No production URI was available in the local environment during preparation, so no production connection or mutation was attempted. Readiness remains pending the private Coolify URI, verified backup, production dry-run output and explicit approval.
+
+### BinNoor production migration package (November 5, 2026)
+
+- Generated `others/binnoor-production-migration/` and `others/binnoor-production-migration.zip` from local MongoDB only. The package contains exactly 20 BinNoor Fab products, exact SKUs `FXH-FXH-BN-0211` through `FXH-FXH-BN-0230`, Clothing category, BinNoor Fab brand and SHAMRAY fabric data.
+- Included and checksum-verified all 20 real product images under `media/`. Public import references use `/media/products/<filename>` and are intended for the persistent `/app/media/products` directory.
+- Excluded purchase costs, profit fields, supplier financial metadata, Stock Manager internal supplier SKU/model fields and other private operational fields.
+- Added portable `import-binnoor-production.js` and `verify-binnoor-production.js` templates. They require the exact `fastxhorizon_production` database, reject loopback targets, support dry-run/idempotent import/verification, preserve existing products, and guard media persistence, backup confirmation and the production `name_1` index issue.
+- ZIP verification passed with Windows `Expand-Archive`: 28 files total, 20 images, 20 products, all required package files present. No production command was executed.
+
+### Storefront catalog and media rendering (November 5, 2026)
+
+- Removed the search ranking cap that hid matches after 200 products. Search now applies category, featured and availability filters on the backend, returns accurate totals/pages, and supports price/rating/newest sorting across the complete matching catalog.
+- Shop search now requests the active page from the API rather than loading only the first 24 search results; existing six-card visual pagination remains intact for the full catalog. Homepage discovery remains intentionally curated and links to Shop for the complete catalog.
+- Product cards and product-detail thumbnails now use centered `object-fit: contain` rendering with stable backgrounds; intentional editorial/banner images continue using `cover`. Full-size product details already use contain and remain zoomable.
+- Verified local BinNoor PNG media exists and the production configuration remains `MEDIA_STORAGE_ROOT=/app/media`, mounted from `/opt/fastxhorizon/persistent-media/media` and served by the API origin `https://api.fastxhorizon.com`.
+- Verification: backend 15 suites/65 tests passed; focused frontend Shop/Home tests 2 suites/7 tests passed; frontend production build compiled successfully. Existing unrelated snapshot tests remain stale for prior logo/owners/checkout UI changes (3 snapshot suites), and were not rewritten by this media/catalog task.

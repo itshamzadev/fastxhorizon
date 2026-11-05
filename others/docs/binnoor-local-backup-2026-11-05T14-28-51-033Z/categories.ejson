@@ -1,0 +1,200 @@
+[
+  {
+    "_id": {
+      "$oid": "6ae5ecffbe2548830ceb957d"
+    },
+    "name": "Jewellery",
+    "slug": "jewellery",
+    "parentSlug": null,
+    "description": "",
+    "image": "",
+    "active": true,
+    "createdAt": {
+      "$date": "2026-10-31T13:28:31.979Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-31T13:28:31.979Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ae5ecffbe2548830ceb9582"
+    },
+    "name": "Rings",
+    "slug": "rings",
+    "parentSlug": "jewellery",
+    "description": "",
+    "image": "",
+    "active": true,
+    "createdAt": {
+      "$date": "2026-10-31T13:28:31.984Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-31T13:28:31.984Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ae5ecffbe2548830ceb9586"
+    },
+    "name": "Jewellery Sets",
+    "slug": "jewellery-sets",
+    "parentSlug": "jewellery",
+    "description": "",
+    "image": "",
+    "active": true,
+    "createdAt": {
+      "$date": "2026-10-31T13:28:31.986Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-31T13:28:31.986Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ae5ecffbe2548830ceb9589"
+    },
+    "name": "Bridal Sets",
+    "slug": "bridal-sets",
+    "parentSlug": "jewellery",
+    "description": "",
+    "image": "",
+    "active": true,
+    "createdAt": {
+      "$date": "2026-10-31T13:28:31.988Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-31T13:28:31.988Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ae5ecffbe2548830ceb958c"
+    },
+    "name": "Bracelets",
+    "slug": "bracelets",
+    "parentSlug": "jewellery",
+    "description": "",
+    "image": "",
+    "active": true,
+    "createdAt": {
+      "$date": "2026-10-31T13:28:31.990Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-31T13:28:31.990Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ae5ecffbe2548830ceb958f"
+    },
+    "name": "Necklaces",
+    "slug": "necklaces",
+    "parentSlug": "jewellery",
+    "description": "",
+    "image": "",
+    "active": true,
+    "createdAt": {
+      "$date": "2026-10-31T13:28:31.991Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-31T13:28:31.991Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ae5ecffbe2548830ceb9592"
+    },
+    "name": "Earrings",
+    "slug": "earrings",
+    "parentSlug": "jewellery",
+    "description": "",
+    "image": "",
+    "active": true,
+    "createdAt": {
+      "$date": "2026-10-31T13:28:31.992Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-31T13:28:31.992Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ae5ecffbe2548830ceb9595"
+    },
+    "name": "Bangles",
+    "slug": "bangles",
+    "parentSlug": "jewellery",
+    "description": "",
+    "image": "",
+    "active": true,
+    "createdAt": {
+      "$date": "2026-10-31T13:28:31.993Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-31T13:28:31.993Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ae5ecffbe2548830ceb9598"
+    },
+    "name": "Necklace & Bracelet Sets",
+    "slug": "necklace-bracelet-sets",
+    "parentSlug": "jewellery",
+    "description": "",
+    "image": "",
+    "active": true,
+    "createdAt": {
+      "$date": "2026-10-31T13:28:31.995Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-31T13:28:31.995Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ae60730e7cc26ba80b607d0"
+    },
+    "name": "Watches",
+    "slug": "watches",
+    "parentSlug": null,
+    "description": "",
+    "image": "",
+    "active": true,
+    "createdAt": {
+      "$date": "2026-10-31T15:20:16.734Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-31T15:20:16.734Z"
+    },
+    "__v": 0
+  },
+  {
+    "_id": {
+      "$oid": "6ae60730e7cc26ba80b607d3"
+    },
+    "name": "Women's Watches",
+    "slug": "women-s-watches",
+    "parentSlug": "watches",
+    "description": "",
+    "image": "",
+    "active": true,
+    "createdAt": {
+      "$date": "2026-10-31T15:20:16.743Z"
+    },
+    "updatedAt": {
+      "$date": "2026-10-31T15:20:16.743Z"
+    },
+    "__v": 0
+  }
+]

@@ -1,0 +1,22 @@
+{
+  "packageType": "fastxhorizon-binnoor-production-migration",
+  "schemaVersion": 1,
+  "source": "fastxhorizon_local",
+  "createdAt": "2026-11-05T14:50:49.929Z",
+  "productCount": 20,
+  "imageCount": 20,
+  "skuRange": {
+    "from": "FXH-FXH-BN-0211",
+    "to": "FXH-FXH-BN-0230"
+  },
+  "statusOnImport": "draft",
+  "includesInternalCosts": false,
+  "excludes": [
+    "confirmedSupplierCost",
+    "operationalCostEstimate",
+    "targetProfit",
+    "estimatedNetProfit",
+    "supplierSKU",
+    "supplierImageSources"
+  ]
+}

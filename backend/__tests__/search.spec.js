@@ -25,7 +25,7 @@ describe('Search API', () => {
       { _id: '1', name: 'FooBar', description: 'Test product', price: 10 },
       { _id: '2', name: 'BarBaz', description: 'Another test', price: 20 },
     ];
-    Product.find.mockReturnValue({ select: () => ({ limit: () => ({ lean: jest.fn().mockResolvedValue(fakeProducts) }) }) });
+    Product.find.mockReturnValue({ select: () => ({ lean: jest.fn().mockResolvedValue(fakeProducts) }) });
 
     const res = await request(app).get('/api/search?q=bar');
 
@@ -40,7 +40,7 @@ describe('Search API', () => {
       { _id: 'a', name: 'Alpha', description: 'Desc A', price: 5 },
       { _id: 'b', name: 'Beta', description: 'Desc B', price: 15 },
     ];
-    Product.find.mockReturnValue({ select: () => ({ limit: () => ({ lean: jest.fn().mockResolvedValue(allProducts) }) }) });
+    Product.find.mockReturnValue({ select: () => ({ lean: jest.fn().mockResolvedValue(allProducts) }) });
 
     const res = await request(app).get('/api/search');
 
@@ -50,7 +50,7 @@ describe('Search API', () => {
   });
 
   it('500 → internal server error', async () => {
-    Product.find.mockReturnValue({ select: () => ({ limit: () => ({ lean: jest.fn().mockRejectedValue(new Error('DB error')) }) }) });
+    Product.find.mockReturnValue({ select: () => ({ lean: jest.fn().mockRejectedValue(new Error('DB error')) }) });
 
     const res = await request(app).get('/api/search?q=test');
     expect(res.status).toBe(500);

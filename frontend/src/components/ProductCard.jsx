@@ -75,7 +75,7 @@ export default function ProductCard({ product, addToCart }) {
     >
       <Box sx={{ position: 'absolute', inset: 0, overflow: 'hidden', bgcolor: '#202126', borderRadius: '6px' }}>
         {imageSource && !imageFailed ? (
-          <CardMedia component="img" className="product-media" alt={product?.name || 'Product image'} src={imageSource} loading="lazy" onError={() => setImageFailed(true)} sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'cover', transition: 'transform 0.35s ease' }} />
+          <CardMedia component="img" className="product-media" alt={product?.name || 'Product image'} src={imageSource} loading="lazy" onError={() => setImageFailed(true)} sx={{ position: 'absolute', inset: 0, width: '100%', height: '100%', objectFit: 'contain', objectPosition: 'center', backgroundColor: '#F4F0E9', transition: 'transform 0.35s ease' }} />
         ) : (
           <Box className="product-media-fallback" sx={{ position: 'absolute', inset: 0, display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#D8D1C6', background: '#292D32' }}>
             <ImageNotSupportedRoundedIcon sx={{ fontSize: { xs: 28, sm: 36 }, opacity: 0.65 }} aria-hidden="true" />

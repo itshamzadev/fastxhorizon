@@ -1,0 +1,765 @@
+{
+  "schemaVersion": 1,
+  "products": [
+    {
+      "sourceProductId": "df8b776a-d726-402f-88d9-0dd8bfcfbbad",
+      "supplierKey": "FXH_STOCK_MANAGER:df8b776a-d726-402f-88d9-0dd8bfcfbbad",
+      "sku": "FXH-FXH-BN-0211",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-df8b776a-d726-402f-88d9-0dd8bfcfbbad",
+      "images": [
+        "/media/products/372fbc3b-aac3-4f79-9a9f-24974c9503a3.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "9da321c1-04de-4090-b21b-73d5eebef81a",
+      "supplierKey": "FXH_STOCK_MANAGER:9da321c1-04de-4090-b21b-73d5eebef81a",
+      "sku": "FXH-FXH-BN-0212",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-9da321c104de4090b21b73d5eebef81a-9da321c1-04de-4090-b21b-73d5eebef81a",
+      "images": [
+        "/media/products/ef858fd8-9c44-4425-8916-9317d74220a5.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "af76a694-afdf-411a-a064-55b881751851",
+      "supplierKey": "FXH_STOCK_MANAGER:af76a694-afdf-411a-a064-55b881751851",
+      "sku": "FXH-FXH-BN-0213",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-af76a694afdf411aa06455b881751851-af76a694-afdf-411a-a064-55b881751851",
+      "images": [
+        "/media/products/9f80907a-7e15-4178-9e3f-7c8359acfa77.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "86a508f9-f517-4f6f-a365-ba886f04ad21",
+      "supplierKey": "FXH_STOCK_MANAGER:86a508f9-f517-4f6f-a365-ba886f04ad21",
+      "sku": "FXH-FXH-BN-0214",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-86a508f9f5174f6fa365ba886f04ad21-86a508f9-f517-4f6f-a365-ba886f04ad21",
+      "images": [
+        "/media/products/49502733-1aa3-484c-922e-b2c3ab3d57f6.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "29795728-a163-4163-9c93-b1427f965199",
+      "supplierKey": "FXH_STOCK_MANAGER:29795728-a163-4163-9c93-b1427f965199",
+      "sku": "FXH-FXH-BN-0215",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-29795728a16341639c93b1427f965199-29795728-a163-4163-9c93-b1427f965199",
+      "images": [
+        "/media/products/9ed1b7d4-5133-490d-be96-149702bdae1b.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "f024e472-2948-4202-9499-ebfb361b599f",
+      "supplierKey": "FXH_STOCK_MANAGER:f024e472-2948-4202-9499-ebfb361b599f",
+      "sku": "FXH-FXH-BN-0216",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-f024e472294842029499ebfb361b599f-f024e472-2948-4202-9499-ebfb361b599f",
+      "images": [
+        "/media/products/48072505-6661-4694-b4da-932f747fe7c7.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "3aafec78-4bb4-4c12-a4e9-c52ae14f5f5b",
+      "supplierKey": "FXH_STOCK_MANAGER:3aafec78-4bb4-4c12-a4e9-c52ae14f5f5b",
+      "sku": "FXH-FXH-BN-0217",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-3aafec784bb44c12a4e9c52ae14f5f5b-3aafec78-4bb4-4c12-a4e9-c52ae14f5f5b",
+      "images": [
+        "/media/products/9a3d34d0-ebb5-4fb3-85f0-bda9ac79e9cb.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "e26f76d8-5761-4915-be9d-80d84e410e27",
+      "supplierKey": "FXH_STOCK_MANAGER:e26f76d8-5761-4915-be9d-80d84e410e27",
+      "sku": "FXH-FXH-BN-0218",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-e26f76d857614915be9d80d84e410e27-e26f76d8-5761-4915-be9d-80d84e410e27",
+      "images": [
+        "/media/products/ac7bf9bd-1489-4f11-b356-11334f6f9c8e.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "7510f1bc-fc2b-4541-9382-752ea9c4fdca",
+      "supplierKey": "FXH_STOCK_MANAGER:7510f1bc-fc2b-4541-9382-752ea9c4fdca",
+      "sku": "FXH-FXH-BN-0219",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-7510f1bcfc2b45419382752ea9c4fdca-7510f1bc-fc2b-4541-9382-752ea9c4fdca",
+      "images": [
+        "/media/products/c0540759-a891-42ee-a3bf-37d4230b7b08.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "95de6c87-b605-4c9d-b5e1-7ebed97c3c46",
+      "supplierKey": "FXH_STOCK_MANAGER:95de6c87-b605-4c9d-b5e1-7ebed97c3c46",
+      "sku": "FXH-FXH-BN-0220",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-95de6c87b6054c9db5e17ebed97c3c46-95de6c87-b605-4c9d-b5e1-7ebed97c3c46",
+      "images": [
+        "/media/products/69c6de96-582e-4d91-ade6-b6850fe7b238.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "fa3dee98-f9df-4fed-abbd-d3880b10e1a2",
+      "supplierKey": "FXH_STOCK_MANAGER:fa3dee98-f9df-4fed-abbd-d3880b10e1a2",
+      "sku": "FXH-FXH-BN-0221",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-fa3dee98f9df4fedabbdd3880b10e1a2-fa3dee98-f9df-4fed-abbd-d3880b10e1a2",
+      "images": [
+        "/media/products/869e3803-10ad-4051-9621-494d3e42dfed.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "62a7a8de-8554-452c-8448-55aabdbf77b8",
+      "supplierKey": "FXH_STOCK_MANAGER:62a7a8de-8554-452c-8448-55aabdbf77b8",
+      "sku": "FXH-FXH-BN-0222",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-62a7a8de8554452c844855aabdbf77b8-62a7a8de-8554-452c-8448-55aabdbf77b8",
+      "images": [
+        "/media/products/5401c9a1-30e3-44ee-9211-5bd3cb4eef49.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "eb3017aa-e5d8-4100-bd40-81e4c61debe2",
+      "supplierKey": "FXH_STOCK_MANAGER:eb3017aa-e5d8-4100-bd40-81e4c61debe2",
+      "sku": "FXH-FXH-BN-0223",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-eb3017aae5d84100bd4081e4c61debe2-eb3017aa-e5d8-4100-bd40-81e4c61debe2",
+      "images": [
+        "/media/products/02ca75bd-3e75-4ec1-b807-b9ee556010ca.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "6608e732-319f-4021-a498-3e02f6db814f",
+      "supplierKey": "FXH_STOCK_MANAGER:6608e732-319f-4021-a498-3e02f6db814f",
+      "sku": "FXH-FXH-BN-0224",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-6608e732319f4021a4983e02f6db814f-6608e732-319f-4021-a498-3e02f6db814f",
+      "images": [
+        "/media/products/33de5203-7692-4343-aea1-9de344a64468.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "0ef23c3c-057b-4667-acc2-89b77b467442",
+      "supplierKey": "FXH_STOCK_MANAGER:0ef23c3c-057b-4667-acc2-89b77b467442",
+      "sku": "FXH-FXH-BN-0225",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-0ef23c3c057b4667acc289b77b467442-0ef23c3c-057b-4667-acc2-89b77b467442",
+      "images": [
+        "/media/products/53621404-4733-498f-b0b6-a03d6bbfdb68.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "741bb319-e706-44fd-91d2-d70f0e3e7985",
+      "supplierKey": "FXH_STOCK_MANAGER:741bb319-e706-44fd-91d2-d70f0e3e7985",
+      "sku": "FXH-FXH-BN-0226",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-741bb319e70644fd91d2d70f0e3e7985-741bb319-e706-44fd-91d2-d70f0e3e7985",
+      "images": [
+        "/media/products/90eec3f4-7a21-4722-95c9-fa20eda539c0.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "5850bfb6-8b7f-4040-a35b-4f0a8a0c8678",
+      "supplierKey": "FXH_STOCK_MANAGER:5850bfb6-8b7f-4040-a35b-4f0a8a0c8678",
+      "sku": "FXH-FXH-BN-0227",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-5850bfb68b7f4040a35b4f0a8a0c8678-5850bfb6-8b7f-4040-a35b-4f0a8a0c8678",
+      "images": [
+        "/media/products/403eb331-e77f-4f41-942a-432ae4ba9201.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "22998eb6-1972-404e-8a7c-2958a547252e",
+      "supplierKey": "FXH_STOCK_MANAGER:22998eb6-1972-404e-8a7c-2958a547252e",
+      "sku": "FXH-FXH-BN-0228",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 2999,
+      "originalPrice": 3000,
+      "sellingPrice": 2999,
+      "discountAmount": 1,
+      "discountPercentage": 0.03,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-22998eb61972404e8a7c2958a547252e-22998eb6-1972-404e-8a7c-2958a547252e",
+      "images": [
+        "/media/products/2f70d6be-2e25-4c8f-8f27-628d324a6664.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "4ea7b9f2-5f6c-481f-8ef1-1dfb3ccb7084",
+      "supplierKey": "FXH_STOCK_MANAGER:4ea7b9f2-5f6c-481f-8ef1-1dfb3ccb7084",
+      "sku": "FXH-FXH-BN-0229",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-4ea7b9f25f6c481f8ef11dfb3ccb7084-4ea7b9f2-5f6c-481f-8ef1-1dfb3ccb7084",
+      "images": [
+        "/media/products/11cef6f9-54e8-4a95-b642-bce9e6630179.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    },
+    {
+      "sourceProductId": "986c5f08-8580-4233-9a8a-e1e76cd30e22",
+      "supplierKey": "FXH_STOCK_MANAGER:986c5f08-8580-4233-9a8a-e1e76cd30e22",
+      "sku": "FXH-FXH-BN-0230",
+      "name": "BinNoor Fab SHAMRAY",
+      "description": "EXCLUSIVE GOLDEN SHAMRAY SHIRT 2.75 MTR\nPREMIUM GOLDEN SHAMRAY DUPATTA 2.25 MTR\nLUXURY GOLDEN SHAMRAY TROUSER 2.25 MTR",
+      "category": "Clothing",
+      "subcategory": "",
+      "categoryPath": [
+        "Clothing"
+      ],
+      "brand": "BinNoor Fab",
+      "fabric": "SHAMRAY",
+      "currency": "PKR",
+      "price": 3000,
+      "originalPrice": 3000,
+      "sellingPrice": 3000,
+      "discountAmount": 0,
+      "discountPercentage": 0,
+      "stock": 1,
+      "inventoryMode": "NUMERIC",
+      "availabilityStatus": "IN_STOCK",
+      "status": "draft",
+      "slug": "binnoor-fab-shamray-986c5f08858042339a8ae1e76cd30e22-986c5f08-8580-4233-9a8a-e1e76cd30e22",
+      "images": [
+        "/media/products/fd8b94f6-82b0-489a-b957-a859b12a766c.png"
+      ],
+      "specifications": [
+        {
+          "key": "fabric",
+          "label": "Fabric",
+          "value": "SHAMRAY",
+          "type": "text",
+          "public": true,
+          "order": 0
+        }
+      ]
+    }
+  ]
+}
