@@ -1,5 +1,5 @@
 {
-  "mode": "apply",
+  "mode": "dry-run",
   "source": "E:\\Fast X Horizon\\BinNoor Fab 1-20",
   "target": "127.0.0.1/fastxhorizon_local",
   "before": {
@@ -109,11 +109,5 @@
     "changed": false,
     "action": "already-compatible"
   },
-  "after": {
-    "products": 230,
-    "imported": 0,
-    "imagesCopied": 0,
-    "alreadyImported": 20
-  },
-  "generatedAt": "2026-11-05T14:29:30.493Z"
+  "generatedAt": "2026-11-06T09:21:34.195Z"
 }

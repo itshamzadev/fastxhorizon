@@ -1,0 +1,24 @@
+{
+  "formatVersion": 4,
+  "source": "FXH_STOCK_MANAGER",
+  "packageType": "BINNOOR_FAB_21_145_PRODUCTION_MIGRATION",
+  "generatedAt": "2026-11-07T17:21:09.560Z",
+  "sourceFolder": "21 to 145",
+  "sourceCatalogNumberRange": {
+    "from": 21,
+    "to": 138
+  },
+  "products": 118,
+  "variants": 123,
+  "mediaFiles": 123,
+  "totalPhysicalQuantity": 125,
+  "excludedAlreadyImported": 0,
+  "expectedProductionSkuRange": {
+    "from": "FXH-FXH-BN-0231",
+    "to": "FXH-FXH-BN-0348"
+  },
+  "currency": "PKR",
+  "includesInternalCosts": false,
+  "publicIdentifiers": "generated-from-stable-local-record-ids",
+  "notes": []
+}

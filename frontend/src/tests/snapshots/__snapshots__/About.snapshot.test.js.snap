@@ -228,7 +228,7 @@ exports[`About snapshot matches the rendered markup 1`] = `
               <span
                 class="MuiChip-label MuiChip-labelMedium css-6od3lo-MuiChip-label"
               >
-                2018
+                2026
               </span>
             </div>
             <h6
@@ -239,88 +239,7 @@ exports[`About snapshot matches the rendered markup 1`] = `
             <p
               class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
             >
-              Established FASTXHORIZON (PRIVATE) LIMITED as a general multi-category online marketplace.
-            </p>
-          </div>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 css-1b3l6lk-MuiGrid-root"
-        >
-          <div
-            class="MuiStack-root css-10kbc59-MuiStack-root"
-          >
-            <div
-              class="MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorPrimary MuiChip-filledPrimary css-1fmm6ef-MuiChip-root"
-            >
-              <span
-                class="MuiChip-label MuiChip-labelMedium css-6od3lo-MuiChip-label"
-              >
-                2020
-              </span>
-            </div>
-            <h6
-              class="MuiTypography-root MuiTypography-h6 css-tjvwag-MuiTypography-root"
-            >
-              Global Warehouses
-            </h6>
-            <p
-              class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
-            >
-              Expanded the marketplace catalogue while keeping product discovery clear and customer-focused.
-            </p>
-          </div>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 css-1b3l6lk-MuiGrid-root"
-        >
-          <div
-            class="MuiStack-root css-10kbc59-MuiStack-root"
-          >
-            <div
-              class="MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorPrimary MuiChip-filledPrimary css-1fmm6ef-MuiChip-root"
-            >
-              <span
-                class="MuiChip-label MuiChip-labelMedium css-6od3lo-MuiChip-label"
-              >
-                2022
-              </span>
-            </div>
-            <h6
-              class="MuiTypography-root MuiTypography-h6 css-tjvwag-MuiTypography-root"
-            >
-              Creator Collective
-            </h6>
-            <p
-              class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
-            >
-              Introduced our invite-only creator program to co-design exclusive bundles and gear edits.
-            </p>
-          </div>
-        </div>
-        <div
-          class="MuiGrid-root MuiGrid-item MuiGrid-grid-xs-12 MuiGrid-grid-sm-6 css-1b3l6lk-MuiGrid-root"
-        >
-          <div
-            class="MuiStack-root css-10kbc59-MuiStack-root"
-          >
-            <div
-              class="MuiChip-root MuiChip-filled MuiChip-sizeMedium MuiChip-colorPrimary MuiChip-filledPrimary css-1fmm6ef-MuiChip-root"
-            >
-              <span
-                class="MuiChip-label MuiChip-labelMedium css-6od3lo-MuiChip-label"
-              >
-                2024
-              </span>
-            </div>
-            <h6
-              class="MuiTypography-root MuiTypography-h6 css-tjvwag-MuiTypography-root"
-            >
-              Broader Marketplace
-            </h6>
-            <p
-              class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
-            >
-              Celebrated 50,000 VIP members and expanded our line to include modular smart home ecosystems.
+              FASTXHORIZON began in 2026 as a multi-category online marketplace, starting with a clear and customer-focused catalog.
             </p>
           </div>
         </div>

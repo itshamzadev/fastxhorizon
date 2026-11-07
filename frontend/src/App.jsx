@@ -336,7 +336,7 @@ function App() {
         <ScrollToTop />
         <NavigationBar cartItemCount={cart.length} />
         <Box component="main" sx={{ minHeight: 'calc(100vh - 200px)' }}>
-          <Container maxWidth="xl" sx={{ pb: 8 }}>
+          <Container maxWidth="xl" className="app-route-container" sx={{ pb: 8 }}>
             <Routes>
               <Route path="/" element={<Home products={products} randomProducts={homeProducts} loading={loading} error={error} randomLoading={homeProductsLoading} randomError={homeProductsError} enableRemoteFeed addToCart={addToCart} />} />
 

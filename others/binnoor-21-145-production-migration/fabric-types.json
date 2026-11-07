@@ -1,0 +1,26 @@
+[
+  {
+    "id": "c32acd08-16a9-46a1-99c4-7cbf5c075e20",
+    "name": "Khaddar",
+    "description": null,
+    "active": 1
+  },
+  {
+    "id": "cea1d11b-e3ec-4734-8e1f-ce6bd09ea9bf",
+    "name": "DHANAK",
+    "description": null,
+    "active": 1
+  },
+  {
+    "id": "9ac6860e-cbe4-42aa-bb86-3e17cb1881aa",
+    "name": "KARANDI",
+    "description": null,
+    "active": 1
+  },
+  {
+    "id": "53937ac1-c35f-47f6-8b66-a8fc46cc9891",
+    "name": "WOOL",
+    "description": null,
+    "active": 1
+  }
+]

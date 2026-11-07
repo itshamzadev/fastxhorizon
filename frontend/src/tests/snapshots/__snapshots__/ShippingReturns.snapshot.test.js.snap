@@ -25,7 +25,7 @@ exports[`ShippingReturns snapshot matches the rendered markup 1`] = `
       <p
         class="MuiTypography-root MuiTypography-body1 css-81jeky-MuiTypography-root"
       >
-        We confirm order handling details after checkout and keep the relevant status information available in your account.
+        We check every order carefully. If clothing colour runs, fades or the fabric arrives damaged, contact us promptly for return support.
       </p>
     </div>
     <div
@@ -125,12 +125,27 @@ exports[`ShippingReturns snapshot matches the rendered markup 1`] = `
         <h5
           class="MuiTypography-root MuiTypography-h5 css-bezmlo-MuiTypography-root"
         >
-          Returns and refunds
+          Clothing colour and fabric protection
         </h5>
         <p
           class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
         >
-          Return eligibility, item condition requirements and any applicable charges are communicated for the relevant order. Contact support before sending an item back so the request can be recorded correctly.
+          If a clothing item arrives with fabric damage, or its colour visibly runs, fades or transfers during the first reasonable use, contact support as soon as possible. Send your order number, a description and clear photos or video. After review, we can arrange an approved return, replacement or refund according to the case.
+        </p>
+        <p
+          class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
+        >
+          The item must not be washed, dry-cleaned, altered or deliberately damaged. Please follow the care instructions. Normal wear, incorrect washing, perfume or chemical damage, colour preference, sizing preference and change of mind are not manufacturing defects.
+        </p>
+        <h5
+          class="MuiTypography-root MuiTypography-h5 css-bezmlo-MuiTypography-root"
+        >
+          Other returns
+        </h5>
+        <p
+          class="MuiTypography-root MuiTypography-body2 css-r40f8v-MuiTypography-root"
+        >
+          For an unused eligible product, request a return before sending it back. Keep tags, packaging and order information. Hygiene-sensitive, customised, clearance and clearly marked final-sale products may not be returnable.
         </p>
         <hr
           class="MuiDivider-root MuiDivider-fullWidth css-9mgopn-MuiDivider-root"

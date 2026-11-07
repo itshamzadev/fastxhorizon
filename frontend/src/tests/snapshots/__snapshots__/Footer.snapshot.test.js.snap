@@ -22,7 +22,7 @@ exports[`Footer snapshot matches the rendered markup 1`] = `
             <img
               alt="FastXHorizon"
               class="MuiBox-root css-17eeraq"
-              src="/fastxhorizon.png"
+              src="/fastxhorizon.png?v=2.5"
             />
           </a>
           <p
@@ -59,6 +59,12 @@ exports[`Footer snapshot matches the rendered markup 1`] = `
               href="/about"
             >
               About
+            </a>
+            <a
+              class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-yeaeka-MuiTypography-root-MuiLink-root"
+              href="/owners"
+            >
+              Owners & Leadership
             </a>
             <a
               class="MuiTypography-root MuiTypography-inherit MuiLink-root MuiLink-underlineNone css-yeaeka-MuiTypography-root-MuiLink-root"

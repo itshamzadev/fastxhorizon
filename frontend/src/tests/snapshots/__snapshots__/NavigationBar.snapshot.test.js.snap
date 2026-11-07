@@ -22,7 +22,7 @@ exports[`NavigationBar snapshot matches the rendered markup 1`] = `
             <img
               alt="FastXHorizon"
               class="logo-image MuiBox-root css-0"
-              src="/fastxhorizon.png"
+              src="/fastxhorizon.png?v=2.5"
             />
           </a>
           <nav
@@ -46,6 +46,12 @@ exports[`NavigationBar snapshot matches the rendered markup 1`] = `
               href="/about"
             >
               About
+            </a>
+            <a
+              class="luxury-nav-link"
+              href="/owners"
+            >
+              Owners
             </a>
           </nav>
         </div>

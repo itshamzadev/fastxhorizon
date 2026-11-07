@@ -191,7 +191,7 @@ function Shop({ products, addToCart, loading, error }) {
   }
 
   return (
-    <Container maxWidth="xl" className="luxury-page luxury-shop" sx={{ pb: 8 }}>
+    <Container maxWidth="xl" className="luxury-page luxury-shop marketplace-shop" sx={{ pb: 8 }}>
       <Paper className="luxury-page__hero"
         elevation={0}
         sx={{ p: { xs: 3, md: 5 }, borderRadius: 4, mb: 4, background: '#E8E1D8', border: '1px solid #C5A47E' }}
@@ -202,7 +202,7 @@ function Shop({ products, addToCart, loading, error }) {
               Shop
             </Typography>
             <Typography variant="body1" sx={{ mt: 1, color: 'text.secondary', maxWidth: 520 }}>
-              Browse our curated collection of tech essentials. Filter by category, availability, and sort to find your perfect match.
+              Browse jewellery, clothing, watches and more. Filter by category, availability and price to find what fits you.
             </Typography>
           </Box>
           <Stack direction={{ xs: 'column', sm: 'row' }} spacing={2}>
@@ -269,7 +269,7 @@ function Shop({ products, addToCart, loading, error }) {
       <Grid container className="product-grid" spacing={0}>
         {productsToShow.map((product, index) => (
           <Grid item key={product.id} xs={6} sm={6} md={4} lg={3} xl={2} className={animatedCards.includes(index) ? 'product-card-animated' : ''}>
-            <ProductCard product={product} addToCart={addToCart} />
+            <ProductCard product={product} priority={page === 1 && index < 4} addToCart={addToCart} />
           </Grid>
         ))}
       </Grid>
@@ -289,6 +289,7 @@ function Shop({ products, addToCart, loading, error }) {
         {!feedLoading && feedHasMore && <Typography variant="body2" color="text.secondary">Loading more products…</Typography>}
         {!feedLoading && !feedHasMore && feedProducts.length > 0 && <Typography variant="body2" color="text.secondary">You’ve reached the end of this catalog.</Typography>}
       </Box>
+      {!feedLoading && feedHasMore && <Box className="marketplace-load-more"><button type="button" className="marketplace-outline-button marketplace-load-more__native" onClick={() => setPage(current => current + 1)}>Load more products</button></Box>}
     </Container>
   );
 }

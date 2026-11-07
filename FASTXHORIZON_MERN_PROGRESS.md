@@ -1405,3 +1405,59 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Home now has a dedicated “Explore all products” infinite section. It requests 24-product API pages as the sentinel enters the viewport and continues until the backend reports `hasMore: false`; curated sections retain their own Load More and See All behavior.
 - Verification: frontend focused Home/Shop tests passed (2 suites, 8 tests), backend tests passed (15 suites, 65 tests), frontend production build compiled successfully. No MongoDB records or production deployment were changed.
 - Live deployment check: `https://api.fastxhorizon.com/api/products?page=1&limit=24` still returns the legacy bare array (not the new paginated envelope), and the live frontend bundle `main.d683f0df.js` does not contain the new Explore-all marker. Local changes are therefore not deployed; Coolify must rebuild the backend and frontend from the new commit after it is pushed.
+
+### Storefront image loading optimization (November 5, 2026)
+
+- Product card images now use asynchronous decoding, eager/high-priority loading for the first four visible cards and lazy loading for later cards, preserving complete `contain` rendering.
+- Persistent `/media/products` responses now advertise a 30-day immutable cache so repeat browsing does not redownload the same PNG/WebP assets. Existing image files and database paths were not changed.
+- Frontend focused Home/Shop tests and production build passed; backend media route syntax validation passed. Deployment is still pending.
+
+### Temu-style customer product cards (November 6, 2026)
+
+- Rebuilt the shared `ProductCard` used by Home, Shop, search, wishlist, related products and recommendations. Product images now occupy a clean top media area; all name, rating, price, discount, availability and actions are rendered below the image.
+- Removed the dark transparent information overlay. Genuine compare-at/original/MRP fields are shown with strikethrough and a calculated discount badge only when the original price is higher than the current public price. No internal purchase-cost fields are used.
+- Preserved centered `object-fit: contain`, lazy/eager image loading behavior, cart handling, wishlist handling and product navigation. No MongoDB, inventory, pricing, order or payment logic was changed.
+- Verification: focused Home/Shop tests passed (2 suites, 8 tests); frontend production build compiled successfully.
+
+### Compact marketplace card refinement (November 6, 2026)
+
+- Corrected the remaining oversized card behavior: removed the forced aspect-ratio/padding layout and large minimum heights, then applied a compact responsive grid of 2 columns on mobile, 3 at 768px, 4 at 1024px, 5 at 1200px and 6 at 1536px+.
+- Product cards now use a compact 150/175/195px image area by viewport size, with a two-line title, genuine pricing hierarchy, optional real rating/review data, availability and a small cart action below the image.
+- Visual QA screenshots were captured at desktop (1440px) and mobile (390px); the rendered cards show complete images, readable prices and dense marketplace-style rows without the old overlay or repeated store label.
+- Verification: `git diff --check` passed; frontend focused Home/Shop tests passed (2 suites, 8 tests); frontend production build passed with `build/static/js/main.753f98cb.js` and `build/static/css/main.23c4239a.css`.
+
+### FASTXHORIZON 3.0 marketplace homepage (November 6, 2026)
+
+- Replaced the oversized editorial homepage composition with a compact marketplace flow: concise hero, dynamic category tiles, featured products, conditional Clothing and Jewellery collections, New Arrivals, and the complete Explore All Products feed.
+- Category tiles are derived from the actual public catalog and link to filtered Shop routes. Clothing and Jewellery sections appear only when matching public products exist; no products or promotional prices are fabricated.
+- Preserved database-level pagination and the existing IntersectionObserver feed. Explore All requests 24-product pages, appends stable-ID de-duplicated records, continues until API `hasMore` is false, and retains the Shop fallback link.
+- Added responsive homepage styling for compact spacing, readable cards, 2-column mobile discovery, dense desktop grids, neutral/gold branding, and overflow-safe mobile layout. Featured and Explore sections now use a consistent dark marketplace surface so their light headings remain readable.
+- Visual verification performed with local Chrome screenshots at desktop 1440px and mobile 390px: `qa-screenshots/homepage-3.0/home-desktop.png` and `home-mobile.png`. The rendered result shows the compact hero/category/product structure and no large editorial blank areas.
+- Verification: Home/Shop focused tests passed (2 suites, 8 tests); clean frontend production build passed with `build/static/js/main.0ae2684e.js` and `build/static/css/main.680c1d95.css`; `git diff --check` passed. No production database or deployment was changed.
+
+### Local BinNoor visibility correction (November 6, 2026)
+
+- Local verification found the 20 BinNoor products were present in `fastxhorizon_local` but still had `status: draft`, so the public API correctly excluded them. The local-only BinNoor records were activated; production was not connected or modified.
+- Local API verification now returns 230 products: 207 Jewellery, 3 Watches and 20 Clothing. The BinNoor records use the expected BinNoor Fab/Clothing data and are now available to the localhost storefront.
+- Corrected the homepage dark product-section layout after visual review: removed the problematic viewport-wide negative margins that clipped the left heading and stretched the section, and replaced them with a contained, padded panel with safe mobile spacing.
+- Rebuilt frontend successfully after the UI correction.
+- Removed the remaining box-in-box homepage treatment: product sections now share the light marketplace background without dark rounded wrappers, nested section panels, oversized copy or unnecessary section borders. Headings are now compact and use Featured Products, New Arrivals, Clothing, Jewellery and Explore All Products labels.
+- Visual QA rechecked at 1366px and 390px using local Chrome screenshots in `qa-screenshots/homepage-open/desktop.png` and `mobile.png`. Product grids remain compact and open; the local Clothing category shows 20 available items.
+- Final frontend build passed with `build/static/js/main.0bbe3c7a.js` and `build/static/css/main.e7734c95.css`.
+
+### BinNoor Fab products 21–145 migration package (November 7, 2026)
+
+- Inspected the supplied `21 to 145` export. The actual source contains 118 unique product records (catalog numbers 21–138), 123 variants, 123 image files and 125 physical units; it does not contain 125 unique products. Source IDs and supplier keys are unique, with no invalid records, missing images or price/discount validation errors. Duplicate customer-facing names are preserved safely through stable source keys and generated slugs.
+- Generated `others/binnoor-21-145-production-migration/` and `others/binnoor-21-145-production-migration.zip`. Production SKUs are assigned sequentially as `FXH-FXH-BN-0231` through `FXH-FXH-BN-0348`, pending the package dry-run confirmation of the actual production SKU head.
+- Included 118 products, 123 variants and 123 SHA-256-verified PNG/JPG/WebP-compatible media files. Public references use `/media/products/<filename>`; internal costs, supplier financial fields and Stock Manager model/SKU values are excluded. Actual brands/fabrics from the source are preserved rather than being overwritten as BinNoor Fab.
+- Added guarded `import-production.js`, `verify-production.js` and `publish-production.js`. They require the exact `fastxhorizon_production` database, reject loopback targets, use stable supplier keys, check SKU sequence/index compatibility, require verified backup/persistent-media confirmations for apply, import drafts only, never delete or change indexes, and publish only this package's records after explicit approval.
+- ZIP validation passed with Windows PowerShell `Expand-Archive`: 133 files extracted, 284,405,277 extracted bytes; ZIP size 274,984,806 bytes. All three migration scripts pass `node --check`. Backend tests passed: 15 suites, 65 tests. No production connection, import or publish was performed.
+
+### Final premium marketplace localhost pass (November 7, 2026)
+
+- Audited the actual route composition and removed the homepage's inherited outer MUI container padding so the marketplace hero and product feed use the full viewport without the previous box-in-box framing. Added overflow-safe mobile sizing for the marketplace content, category grid, hero copy and section headers.
+- Kept the shared compact ProductCard and open light marketplace layout across homepage discovery, Clothing, Jewellery, Shop, wishlist and related-product consumers. Product data, cart, wishlist, checkout and media URL behavior remain unchanged.
+- Added an explicit Load more fallback for the remote Explore All feed while retaining IntersectionObserver auto-loading and stable-ID de-duplication.
+- Local verification: frontend `http://localhost:3000` responded 200; backend `http://127.0.0.1:5000` returned 24 products from a 230-product local catalog with `hasMore: true`. Chrome screenshots: `qa-screenshots/final-marketplace/home-1366-final.png` and `home-390-scale.png`.
+- Tests/build: frontend full suite passed after refreshing nine intentional outdated snapshots (24 suites, 44 tests, 17 snapshots); backend passed 15 suites/65 tests; frontend production build passed with `build/static/js/main.75ea8dac.js` and `build/static/css/main.ca74b508.css`. No production deployment or database write was performed.
+- Shop received the same open marketplace treatment: the inherited dark rounded hero/filter panels are now visually neutral and compact, catalog copy reflects the real multi-category store, and a manual Load more fallback complements IntersectionObserver pagination. Final rebuild passed with `build/static/js/main.dbea0666.js` and `build/static/css/main.319ae98d.css`; frontend tests remained 24 suites/44 tests/17 snapshots passed.

@@ -125,6 +125,8 @@ app.use('/media/products', express.static(productMediaRoot, {
   extensions: [],
   index: false,
   redirect: false,
+  maxAge: '30d',
+  immutable: true,
   fallthrough: true,
 }));
 

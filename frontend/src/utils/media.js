@@ -1,6 +1,6 @@
 import { API_BASE_URL } from '../services/apiClient';
 
-const API_ORIGIN = API_BASE_URL.replace(/\/api\/?$/, '');
+const API_ORIGIN = String(API_BASE_URL || '').replace(/\/api\/?$/, '');
 
 export function resolveMediaUrl(value) {
   if (typeof value !== 'string') return '';
