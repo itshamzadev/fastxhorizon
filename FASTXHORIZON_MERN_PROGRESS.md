@@ -1468,3 +1468,10 @@ Blocker: no YouMart CSV file is present in the workspace, so exact row/product/i
 - Added append-only pagination with stable-ID de-duplication, disabled/loading button states, actual API totals, stale-request cancellation with `AbortController`, and in-flight request guards. Existing filters, sorting, search, cart and wishlist behavior remain intact.
 - Updated the Shop pagination test from observer simulation to the real button interaction. Frontend full suite passed: 24 suites, 44 tests and 17 snapshots. Focused Home/Shop tests passed: 8 tests. Production frontend build passed with `build/static/js/main.9ad6ee6c.js` and `build/static/css/main.319ae98d.css`.
 - Localhost remains available at `http://localhost:3000`; backend API remains local at `http://127.0.0.1:5000`. No production deployment or database changes were made.
+
+### Mixed category marketplace feed (November 7, 2026)
+
+- Corrected the homepage feed ordering so the default Explore All request uses a deterministic category-balanced `mixed` sort. Clothing, Jewellery and Watches are interleaved instead of one category appearing as a complete block before the next.
+- The mixed backend path preserves active/image/price filters, stable per-category newest ordering, pagination metadata and category-filter behavior. It reads only the per-category prefix needed for the requested page and does not modify product records.
+- Local API verification: `sort=mixed&page=1&limit=24` returned 24 of 230 products with Clothing 11, Jewellery 10 and Watches 3; the first records alternated across categories.
+- Backend tests passed: 15 suites/65 tests. Frontend Home/Shop tests passed: 8 tests. Frontend production build passed with `build/static/js/main.551386b8.js` and `build/static/css/main.319ae98d.css`.

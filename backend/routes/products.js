@@ -480,7 +480,33 @@ router.get('/', async (req, res) => {
               ? { createdAt: -1, _id: 1 }
               : RANK_SORT;
       const total = await Product.countDocuments(filter);
-      const products = await Product.find(filter).sort(sort).skip((page - 1) * limit).limit(limit).lean();
+      let products;
+      if (sortName === 'mixed') {
+        // Keep the feed category-balanced without relying on newer MongoDB window stages.
+        // Only the prefix needed for the requested page is read, then interleaved deterministically.
+        const categories = await Product.distinct('category', filter);
+        const prefixes = await Promise.all(categories.map(category => Product.find({ $and: [filter, { category }] }).sort({ createdAt: -1, _id: 1 }).limit(page * limit).lean()));
+        const prefix = prefixes.flat();
+        const groups = new Map();
+        prefix.forEach(product => {
+          const key = String(product.category || 'Other');
+          if (!groups.has(key)) groups.set(key, []);
+          groups.get(key).push(product);
+        });
+        const mixed = [];
+        let added = true;
+        let position = 0;
+        while (added) {
+          added = false;
+          for (const group of groups.values()) {
+            if (group[position]) { mixed.push(group[position]); added = true; }
+          }
+          position += 1;
+        }
+        products = mixed.slice((page - 1) * limit, page * limit);
+      } else {
+        products = await Product.find(filter).sort(sort).skip((page - 1) * limit).limit(limit).lean();
+      }
       const totalPages = Math.ceil(total / limit);
       return res.json({ products: products.map(normalizeProduct), total, page, limit, pageSize: limit, totalPages, hasMore: page < totalPages });
     }
