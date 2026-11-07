@@ -12,7 +12,6 @@ jest.mock('../services/apiClient', () => ({
 jest.mock('../components/ProductCard', () => ({ product }) => <div data-testid="product-card">{product.name}</div>);
 
 describe('<Shop />', () => {
-  let observerCallback;
   beforeEach(() => {
     apiClient.get.mockImplementation((_endpoint, { params } = {}) => {
       const total = 26;
@@ -20,11 +19,6 @@ describe('<Shop />', () => {
       const products = makeProducts(total).slice(start, start + 24);
       return Promise.resolve({ data: { products, total, page: params?.page || 1, limit: 24, totalPages: 2, hasMore: start + products.length < total } });
     });
-    global.IntersectionObserver = class {
-      constructor(callback) { observerCallback = callback; }
-      observe() {}
-      disconnect() {}
-    };
   });
   const renderShop = props => render(<MemoryRouter><Shop {...props} /></MemoryRouter>);
   const makeProducts = (n, category = 'cat') =>
@@ -58,7 +52,7 @@ describe('<Shop />', () => {
 
     expect(await screen.findAllByTestId('product-card')).toHaveLength(24);
 
-    observerCallback([{ isIntersecting: true }]);
+    fireEvent.click(await screen.findByRole('button', { name: /Load More Products/i }));
     await screen.findByText(/Loaded 26 of 26 products/i);
     expect(screen.getAllByTestId('product-card')).toHaveLength(26);
     expect(apiClient.get.mock.calls.some(([, request]) => request.params.page === 2)).toBe(true);

@@ -43,7 +43,7 @@ function Shop({ products, addToCart, loading, error }) {
   const [feedHasMore, setFeedHasMore] = React.useState(false);
   const [feedLoading, setFeedLoading] = React.useState(false);
   const [feedError, setFeedError] = React.useState(null);
-  const feedEndRef = React.useRef(null);
+  const feedRequestRef = React.useRef(false);
   const randomSeed = React.useRef(`${Date.now()}-${Math.random().toString(36).slice(2)}`);
   const { notify } = useNotifier();
   const location = useLocation();
@@ -93,6 +93,8 @@ function Shop({ products, addToCart, loading, error }) {
 
   React.useEffect(() => {
     let active = true;
+    const controller = new AbortController();
+    feedRequestRef.current = true;
     setFeedLoading(true);
     setFeedError(null);
     const params = { limit: itemsPerPage, page };
@@ -103,7 +105,7 @@ function Shop({ products, addToCart, loading, error }) {
     if (searchQuery) params.q = searchQuery;
     if (sortOption === 'random') params.seed = `${randomSeed.current}:${categoryFilter}:${searchQuery}:${viewFilter}`;
     const endpoint = searchQuery ? 'search' : (sortOption === 'random' ? 'products/random' : 'products');
-    apiClient.get(endpoint, { params })
+    apiClient.get(endpoint, { params, signal: controller.signal })
       .then(({ data }) => {
         if (!active) return;
         const payload = Array.isArray(data) ? { products: data, total: data.length, hasMore: false } : data;
@@ -116,20 +118,10 @@ function Shop({ products, addToCart, loading, error }) {
         setFeedTotal(Number(payload?.total) || 0);
         setFeedHasMore(Boolean(payload?.hasMore));
       })
-      .catch(requestError => { if (active) setFeedError(requestError); })
-      .finally(() => { if (active) setFeedLoading(false); });
-    return () => { active = false; };
+      .catch(requestError => { if (active && requestError?.code !== 'ERR_CANCELED') setFeedError(requestError); })
+      .finally(() => { if (active) { feedRequestRef.current = false; setFeedLoading(false); } });
+    return () => { active = false; feedRequestRef.current = false; controller.abort(); };
   }, [page, searchQuery, sortOption, categoryFilter, viewFilter]);
-
-  React.useEffect(() => {
-    const node = feedEndRef.current;
-    if (!node || !feedHasMore || feedLoading || typeof IntersectionObserver === 'undefined') return undefined;
-    const observer = new IntersectionObserver(entries => {
-      if (entries[0]?.isIntersecting) setPage(current => current + 1);
-    }, { rootMargin: '700px 0px' });
-    observer.observe(node);
-    return () => observer.disconnect();
-  }, [feedHasMore, feedLoading]);
 
   const productsToShow = feedProducts;
 
@@ -284,12 +276,12 @@ function Shop({ products, addToCart, loading, error }) {
         </Alert>
       )}
 
-      <Box ref={feedEndRef} sx={{ minHeight: 56, display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 3 }}>
+      <Box sx={{ minHeight: 56, display: 'flex', justifyContent: 'center', alignItems: 'center', mt: 3 }}>
         {feedLoading && <CircularProgress size={28} />}
         {!feedLoading && feedHasMore && <Typography variant="body2" color="text.secondary">Loading more products…</Typography>}
         {!feedLoading && !feedHasMore && feedProducts.length > 0 && <Typography variant="body2" color="text.secondary">You’ve reached the end of this catalog.</Typography>}
       </Box>
-      {!feedLoading && feedHasMore && <Box className="marketplace-load-more"><button type="button" className="marketplace-outline-button marketplace-load-more__native" onClick={() => setPage(current => current + 1)}>Load more products</button></Box>}
+      {!feedLoading && feedHasMore && <Box className="marketplace-load-more"><button type="button" className="marketplace-outline-button marketplace-load-more__native" disabled={feedLoading || feedRequestRef.current} onClick={() => { if (!feedRequestRef.current) setPage(current => current + 1); }}>Load More Products</button></Box>}
     </Container>
   );
 }
