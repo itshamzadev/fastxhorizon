@@ -1,0 +1,11 @@
+node_modules/
+dist/
+dist-electron/
+release/
+release-runtime-check/
+*.db
+*.db-shm
+*.db-wal
+backups/
+exports/
+.env

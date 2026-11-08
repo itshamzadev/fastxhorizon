@@ -15,6 +15,7 @@ const adminRoutes = require('./routes/admin');
 const paymentRoutes = require('./routes/payments');
 const mobileRoutes = require('./routes/mobile');
 const { retryPendingNotifications } = require('./services/adminNotifications');
+const { retryPendingOrderStockEvents } = require('./services/stockManagerOutbox');
 const { swaggerUi, swaggerSpec, setupSwaggerUi, setupSwaggerJson } = require('./docs/swagger');
 
 // Create Express App
@@ -79,6 +80,8 @@ mongoose
 
     retryPendingNotifications().catch((error) => console.error('Notification outbox retry failed:', error.message));
     setInterval(() => retryPendingNotifications().catch((error) => console.error('Notification outbox retry failed:', error.message)), 60_000).unref();
+    retryPendingOrderStockEvents().catch((error) => console.error('Stock Manager outbox retry failed:', error.message));
+    setInterval(() => retryPendingOrderStockEvents().catch((error) => console.error('Stock Manager outbox retry failed:', error.message)), 30_000).unref();
 
     // 3. Start Express server
     app.listen(PORT, BIND_HOST, () => {
@@ -171,6 +174,8 @@ app.use('/api/admin/auth', adminAuthRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/payments', paymentRoutes.adminRouter);
 app.use('/api/admin/inventory', require('./routes/inventoryAdmin'));
+app.use('/api/stock-manager', require('./routes/stockManagerSync'));
+app.use('/api/stock-manager/catalog', require('./routes/stockManagerCatalog'));
 app.use('/api/admin/reviews', reviewRoutes.admin);
 app.use('/api/mobile', mobileRoutes);
 

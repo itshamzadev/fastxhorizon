@@ -98,6 +98,8 @@ const OrderSchema = new mongoose.Schema(
     statusHistory: { type: [StatusEntrySchema], default: [] },
     estimatedDelivery: { type: Date },
     paymentSubmissionId: { type: mongoose.Schema.Types.ObjectId, ref: 'PaymentSubmission', default: null },
+    stockSyncState: { type: String, enum: ['PENDING', 'APPLIED', 'ERROR'], default: 'PENDING', index: true },
+    stockSyncLastError: { type: String, default: '' },
     marketingConsent: { type: Boolean, default: false },
   },
   { timestamps: true }

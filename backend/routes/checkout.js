@@ -9,6 +9,7 @@ const { enqueueAdminNotification } = require('../services/adminNotifications');
 const auth = require('../middleware/auth');
 const { sendTikTokEvent } = require('../services/tiktokEventsApi');
 const { sendMetaEvent } = require('../services/metaConversionsApi');
+const { enqueueOrderStockEvents, markOrderStockSyncFailed } = require('../services/stockManagerOutbox');
 
 const router = express.Router();
 
@@ -254,6 +255,11 @@ router.post('/create-order', auth, async (req, res) => {
           ? (availabilityMode ? candidate : await Product.findOneAndUpdate({ _id: item.productId, stock: { $gte: item.quantity }, status: { $ne: 'archived' } }, { $inc: { stock: -item.quantity }, $set: { updatedAt: new Date() } }, { new: true }))
           : null;
         if (!updated) throw new Error('INSUFFICIENT_STOCK');
+        if (!availabilityMode && !supplierBased && Number(updated.stock) === 0) {
+          await Product.updateOne({ _id: updated._id, stock: 0 }, { $set: { availabilityStatus: 'OUT_OF_STOCK', updatedAt: new Date() } });
+        } else if (!availabilityMode && !supplierBased && Number(updated.stock) > 0) {
+          await Product.updateOne({ _id: updated._id, stock: { $gt: 0 } }, { $set: { availabilityStatus: 'IN_STOCK', updatedAt: new Date() } });
+        }
         reserved.push({ ...item, availabilityMode });
       }
     } catch (reservationError) {
@@ -283,6 +289,7 @@ router.post('/create-order', auth, async (req, res) => {
 
     try {
       await order.save();
+      try { await enqueueOrderStockEvents(order); } catch (eventError) { await markOrderStockSyncFailed(order, eventError); console.error('Stock Manager order outbox deferred:', eventError.message); }
     } catch (saveError) {
       await Promise.all(reserved.filter(item => !item.availabilityMode).map(item => Product.updateOne({ _id: item.productId }, { $inc: { stock: item.quantity } })));
       if (saveError?.code === 11000 && idempotencyKey) {

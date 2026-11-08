@@ -104,6 +104,8 @@ const productSchema = new mongoose.Schema({
         required: true,
     },
     subcategory: { type: String, trim: true, default: '' },
+    clothingType: { type: String, trim: true, default: '' },
+    fabricMaterial: { type: String, trim: true, default: '' },
     categoryPath: { type: [String], default: [] },
     productType: { type: String, enum: ['PHYSICAL', 'DIGITAL'], default: 'PHYSICAL' },
     shortDescription: { type: String, trim: true, maxlength: 300, default: '' },
