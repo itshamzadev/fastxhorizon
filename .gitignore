@@ -30,6 +30,10 @@ others/docs/*.backup*
 **/*supplier*.csv
 others/docs/yourmart-*
 qa-screenshots/*
+e2e/report/
+e2e/artifacts/
+e2e/.private-evidence/
+test-results/
 orders-app/*
 # Local-only demo seeders and fixtures; never publish them with production code.
 backend/scripts/add-local-demo-products.js
