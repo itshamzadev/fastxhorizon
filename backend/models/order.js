@@ -82,6 +82,7 @@ const StatusEntrySchema = new mongoose.Schema(
 const OrderSchema = new mongoose.Schema(
   {
     orderNumber: { type: String, required: true, unique: true, index: true },
+    idempotencyKey: { type: String, trim: true, unique: true, sparse: true, index: true },
     email: { type: String, required: true, index: true },
     name: { type: String, required: true },
     phone: { type: String, required: true },

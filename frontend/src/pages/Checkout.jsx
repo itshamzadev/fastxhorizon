@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useRef, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import CheckoutForm from '../components/CheckoutForm';
 import {
@@ -39,6 +39,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
   const [loading, setLoading] = useState(false);
   const [checkoutStep, setCheckoutStep] = useState(1);
   const { notify } = useNotifier();
+  const idempotencyKeyRef = useRef(null);
 
   const [showCartSummary, setShowCartSummary] = useState(true);
   const [selectedItems, setSelectedItems] = useState(() => {
@@ -64,11 +65,15 @@ function Checkout({ cartItems = [], onOrderComplete }) {
 
     setLoading(true);
     setErrorMessage('');
+    if (!idempotencyKeyRef.current) {
+      idempotencyKeyRef.current = window.crypto?.randomUUID?.() || `checkout-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+    }
 
     try {
       const orderPayload = {
         ...formData,
         marketingConsent: hasMetaConsent(),
+        idempotencyKey: idempotencyKeyRef.current,
         items: itemsToPurchase
           .map(item => ({
             productId: item._id || item.id,

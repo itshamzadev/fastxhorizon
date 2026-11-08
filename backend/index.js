@@ -154,6 +154,8 @@ setupSwaggerUi(app);
 
 // Routes
 app.use('/api/products', productRoutes);
+const reviewRoutes = require('./routes/reviews');
+app.use('/api/reviews', reviewRoutes);
 app.use('/api/checkout', checkoutRoutes);
 app.use('/api/orders', orderRoutes);
 app.use('/api/search', require('./routes/search'));
@@ -163,10 +165,13 @@ app.use('/api/newsletter', require('./routes/newsletter'));
 app.use('/api/analytics/tiktok', require('./routes/tiktokEvents'));
 app.use('/api/analytics/meta/events', require('./routes/metaEvents'));
 app.use('/api/payments', paymentRoutes.publicRouter);
+app.use('/api/arrangements', require('./routes/arrangements'));
 app.use('/api/auth', authRoutes);
 app.use('/api/admin/auth', adminAuthRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/payments', paymentRoutes.adminRouter);
+app.use('/api/admin/inventory', require('./routes/inventoryAdmin'));
+app.use('/api/admin/reviews', reviewRoutes.admin);
 app.use('/api/mobile', mobileRoutes);
 
 module.exports = app;

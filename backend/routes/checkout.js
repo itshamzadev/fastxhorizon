@@ -140,6 +140,7 @@ router.post('/create-order', auth, async (req, res) => {
   try {
     const { items, name, email, phone, shippingAddress } = req.body;
     const paymentMethod = req.body?.paymentMethod;
+    const idempotencyKey = String(req.body?.idempotencyKey || req.get('Idempotency-Key') || '').trim();
 
     if (!Array.isArray(items) || !items.length || !name || !email || !phone || !shippingAddress || !['automatic', 'manual', 'cod'].includes(paymentMethod)) {
       return res.status(400).json({ error: 'Missing required fields' });
@@ -152,6 +153,12 @@ router.post('/create-order', auth, async (req, res) => {
 
     if (!trimmedName || !trimmedPhone || !trimmedAddress) {
       return res.status(400).json({ error: 'Name, phone number and shipping address are required.' });
+    }
+
+    if (idempotencyKey.length > 120) return res.status(400).json({ error: 'Invalid checkout idempotency key.' });
+    if (idempotencyKey) {
+      const previous = await Order.findOne({ idempotencyKey }).lean();
+      if (previous) return res.status(200).json({ message: 'Order already created.', orderNumber: previous.orderNumber, paymentStatus: previous.paymentStatus, paymentLifecycle: previous.paymentLifecycle, availabilityStatus: previous.availabilityStatus, items: previous.items, total: previous.total, statusHistory: previous.statusHistory, statusFlow: STATUS_FLOW, idempotent: true });
     }
 
     if (!emailRegex.test(trimmedEmail)) {
@@ -257,6 +264,7 @@ router.post('/create-order', auth, async (req, res) => {
     const orderNumber = await generateOrderNumber();
     const order = new Order({
       orderNumber,
+      idempotencyKey: idempotencyKey || undefined,
       email: trimmedEmail.toLowerCase(),
       name: trimmedName,
       phone: trimmedPhone,
@@ -277,6 +285,10 @@ router.post('/create-order', auth, async (req, res) => {
       await order.save();
     } catch (saveError) {
       await Promise.all(reserved.filter(item => !item.availabilityMode).map(item => Product.updateOne({ _id: item.productId }, { $inc: { stock: item.quantity } })));
+      if (saveError?.code === 11000 && idempotencyKey) {
+        const previous = await Order.findOne({ idempotencyKey }).lean();
+        if (previous) return res.status(200).json({ message: 'Order already created.', orderNumber: previous.orderNumber, paymentStatus: previous.paymentStatus, paymentLifecycle: previous.paymentLifecycle, availabilityStatus: previous.availabilityStatus, items: previous.items, total: previous.total, statusHistory: previous.statusHistory, statusFlow: STATUS_FLOW, idempotent: true });
+      }
       throw saveError;
     }
 

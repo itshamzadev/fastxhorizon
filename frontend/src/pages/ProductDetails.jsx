@@ -15,6 +15,7 @@ import {
   Rating,
   Stack,
   Typography,
+  TextField,
   IconButton,
   Tab,
   Tabs,
@@ -37,6 +38,8 @@ import ProductCard from '../components/ProductCard';
 import { trackProductEvent } from '../analytics/tiktokEvents';
 import { trackMetaProduct } from '../analytics/metaEvents';
 import SeoMeta, { SITE_URL } from '../components/SeoMeta';
+import { getCustomerToken } from '../services/wishlist';
+import { getValidDiscount } from '../utils/pricing';
 
 function SimilarProductsError({ onRetry }) {
   const [showDetails, setShowDetails] = React.useState(false);
@@ -117,6 +120,9 @@ function ProductDetails({ addToCart }) {
   const [ordersEnabled, setOrdersEnabled] = useState(false);
   const [tab, setTab] = useState(0);
   const [zoomOpen, setZoomOpen] = useState(false);
+  const [reviews, setReviews] = useState({ reviews: [], average: 0, total: 0, distribution: {} });
+  const [reviewForm, setReviewForm] = useState({ rating: 5, title: '', comment: '' });
+  const [reviewMessage, setReviewMessage] = useState('');
   const { wishlist, toggleWishlist, wishlistPending } = useWishlist();
 
   const normalizeProduct = useCallback(prod => {
@@ -234,6 +240,17 @@ function ProductDetails({ addToCart }) {
   }, []);
 
   useEffect(() => { setGalleryIndex(0); setSelectedOptions({}); }, [product?.id]);
+  useEffect(() => {
+    if (!product?.id) return undefined;
+    let active = true;
+    apiClient.get(`reviews/product/${product.id}`).then(({ data }) => active && setReviews(data.data || data)).catch(() => active && setReviews({ reviews: [], average: 0, total: 0, distribution: {} }));
+    return () => { active = false; };
+  }, [product?.id]);
+  const submitReview = async event => {
+    event.preventDefault(); setReviewMessage('');
+    if (!getCustomerToken()) { setReviewMessage('Please sign in before submitting a review.'); return; }
+    try { await apiClient.post('reviews', { productId: product.id, ...reviewForm }); setReviewMessage('Review submitted for moderation.'); setReviewForm({ rating: 5, title: '', comment: '' }); } catch (reviewError) { setReviewMessage(reviewError.response?.data?.message || 'Unable to submit review.'); }
+  };
 
   const formatCategory = value => {
     if (typeof value !== 'string' || !value.length) {
@@ -248,12 +265,14 @@ function ProductDetails({ addToCart }) {
   const selectionComplete = variantAttributes.length > 0 && variantAttributes.every(attribute => selectedOptions[attribute.name]);
   const selectedVariant = selectionComplete ? (variants.find(variant => Object.entries(selectedOptions).every(([key, value]) => variant.options?.[key] === value)) || null) : null;
   const displayedPrice = selectedVariant?.price ?? product?.price;
+  const { originalPrice: displayedOriginalPrice, discountPercent: displayedDiscountPercent } = getValidDiscount(displayedPrice, selectedVariant?.compareAtPrice ?? product?.compareAtPrice);
   const displayedSku = selectedVariant?.sku || product?.sku;
   const displayedImages = selectedVariant?.images?.length ? selectedVariant.images : images;
   const supplierProduct = product?.inventoryMode === 'SUPPLIER_BASED';
   const supplierVariant = selectedVariant?.inventoryMode === 'SUPPLIER_BASED';
   const productAvailable = supplierProduct ? product.availabilityStatus === 'AVAILABLE_TO_ORDER' : (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode) ? product.availabilityStatus === 'IN_STOCK' : Number(product?.stock) > 0);
   const variantAvailable = selectedVariant ? (selectedVariant.inventoryMode === 'SUPPLIER_BASED' ? selectedVariant.availabilityStatus === 'AVAILABLE_TO_ORDER' : (selectedVariant.inventoryMode === 'AVAILABILITY_BASED' ? selectedVariant.availabilityStatus === 'IN_STOCK' : Number(selectedVariant.stock) > 0)) : productAvailable;
+  const canArrange = product?.allowArrangeOnRequest === true && !variantAvailable && product?.inventoryMode === 'NUMERIC';
   const isWishlisted = wishlist.some(item => String(item?._id || item?.id) === String(product?.id));
   const handleAddToCart = useCallback(() => { if (product && ordersEnabled && variantAvailable) addToCart({ ...product, price: displayedPrice, sku: displayedSku, image: displayedImages[0] || product.image, selectedVariantId: selectedVariant?.id, selectedVariant }); }, [addToCart, displayedImages, displayedPrice, displayedSku, ordersEnabled, product, selectedVariant, variantAvailable]);
 
@@ -335,14 +354,14 @@ function ProductDetails({ addToCart }) {
             <Typography variant="overline" sx={{ color: '#2359CE', letterSpacing: '.14em', fontWeight: 800 }}>{formatCategory(product.category)} · {product.storeName || 'FASTXHORIZON'}</Typography>
             <Typography component="h1" sx={{ color: '#202A3C', fontSize: { xs: '1.45rem', sm: '1.7rem', md: '2rem' }, fontWeight: 750, lineHeight: 1.2, letterSpacing: '-.02em', mb: 1, display: '-webkit-box', WebkitLineClamp: 4, WebkitBoxOrient: 'vertical', overflow: 'hidden' }}>{product.name}</Typography>
             <Stack direction="row" alignItems="center" spacing={1} sx={{ mb: 1 }}>{product.numReviews > 0 ? <><Rating value={product.rating || 0} precision={.1} readOnly size="small" /><Typography variant="body2" sx={{ color: '#667085' }}>{Number(product.rating || 0).toFixed(1)} ({product.numReviews})</Typography></> : <Typography variant="body2" sx={{ color: '#667085' }}>No reviews yet</Typography>}</Stack>
-            <Box sx={{ mb: 1.5, pb: 1.5, borderBottom: '1px solid #D7DEE8' }}><Typography variant="caption" sx={{ display: 'block', color: '#667085', letterSpacing: '.12em', textTransform: 'uppercase' }}>Price</Typography><Typography variant="h4" sx={{ color: '#2359CE', fontSize: { xs: '1.65rem', md: '2rem' }, fontWeight: 850 }}>{formatPrice(displayedPrice)}</Typography></Box>
+            <Box sx={{ mb: 1.5, pb: 1.5, borderBottom: '1px solid #D7DEE8' }}><Typography variant="caption" sx={{ display: 'block', color: '#667085', letterSpacing: '.12em', textTransform: 'uppercase' }}>Price</Typography><Stack direction="row" spacing={1} alignItems="baseline" flexWrap="wrap"><Typography variant="h4" sx={{ color: '#2359CE', fontSize: { xs: '1.65rem', md: '2rem' }, fontWeight: 850 }}>{formatPrice(displayedPrice)}</Typography>{displayedOriginalPrice && <Typography component="span" sx={{ color: '#98A2B3', textDecoration: 'line-through' }}>{formatPrice(displayedOriginalPrice)}</Typography>}{displayedDiscountPercent > 0 && <Chip size="small" label={`${displayedDiscountPercent}% OFF`} sx={{ bgcolor: '#FFF1E8', color: '#B54708', fontWeight: 800 }} />}</Stack></Box>
             <Typography sx={{ color: '#4B5567', mb: 2, display: '-webkit-box', WebkitLineClamp: 3, WebkitBoxOrient: 'vertical', overflow: 'hidden', lineHeight: 1.55 }}>{product.shortDescription || product.description}</Typography>
 
             {product.variantsEnabled && variantAttributes.length > 0 && <Stack spacing={2} sx={{ mb: 2 }}>{variantAttributes.filter(attribute => attribute.values?.length).map(attribute => <Box key={attribute.name}><Typography variant="subtitle2" sx={{ color: '#202A3C', mb: .75 }}>{attribute.name}: <b style={{ color: '#2359CE' }}>{selectedOptions[attribute.name] || 'Select'}</b></Typography><Stack direction="row" spacing={1} flexWrap="wrap">{attribute.values.map(value => { const candidate = { ...selectedOptions, [attribute.name]: value }; const available = variants.some(variant => variant.enabled !== false && Object.entries(candidate).every(([key, option]) => variant.options?.[key] === option)); return <Button key={value} size="small" variant={selectedOptions[attribute.name] === value ? 'contained' : 'outlined'} disabled={!available} onClick={() => { setSelectedOptions(current => ({ ...current, [attribute.name]: value })); setGalleryIndex(0); }} sx={{ color: selectedOptions[attribute.name] === value ? '#fff' : '#344054', borderColor: '#B8C5D8', '&:hover': { borderColor: '#2359CE', bgcolor: '#F1F0FA' }, '&.Mui-disabled': { color: '#AAB4C3', borderColor: '#E0E5ED' } }}>{value}</Button> })}</Stack></Box>)}</Stack>}
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}><Typography variant="body2" sx={{ color: '#667085' }}>Availability:</Typography><Chip label={selectedVariant?.inventoryMode === 'SUPPLIER_BASED' || supplierProduct ? (variantAvailable ? 'Available to Order' : 'Out of Stock') : (variantAvailable ? 'In Stock' : 'Out of Stock')} color={variantAvailable ? 'success' : 'error'} size="small" sx={{ color: '#FFFFFF' }} /></Box>
             <Box sx={{ mb: 2, px: 1.5, py: 1.1, borderLeft: '3px solid #F4B86A', bgcolor: '#F1F0FA', borderRadius: 1.5 }}><Typography variant="body2" sx={{ color: '#202A3C', fontWeight: 750 }}>{supplierProduct || supplierVariant ? 'Available to Order' : (variantAvailable ? 'In Stock' : 'Out of Stock')}</Typography><Typography variant="caption" sx={{ color: '#667085' }}>{supplierProduct || supplierVariant ? 'Subject to supplier confirmation. Ordering is currently paused.' : (!ordersEnabled ? 'Online ordering is temporarily unavailable.' : 'Availability confirmed by FastXHORIZON.')}</Typography></Box>
-            <Stack direction="row" spacing={1} sx={{ mb: 1 }}><Button variant="contained" startIcon={<ShoppingCartRoundedIcon />} onClick={handleAddToCart} disabled={!ordersEnabled || !variantAvailable || (product.variantsEnabled && variantAttributes.length > 0 && !selectedVariant)} sx={{ bgcolor: '#2359CE', '&:hover': { bgcolor: '#1745A6' } }}>Add to Cart</Button><IconButton aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'} aria-pressed={isWishlisted} disabled={wishlistPending.has(String(product.id))} onClick={() => toggleWishlist(product)} sx={{ color: isWishlisted ? '#D98A28' : '#2359CE', border: '1px solid #B8C5D8', '&:hover': { bgcolor: '#F1F0FA' } }}>{isWishlisted ? <FavoriteRoundedIcon /> : <FavoriteBorderRoundedIcon />}</IconButton></Stack>
+            <Stack direction="row" spacing={1} sx={{ mb: 1 }}><Button variant="contained" startIcon={<ShoppingCartRoundedIcon />} onClick={handleAddToCart} disabled={!ordersEnabled || !variantAvailable || (product.variantsEnabled && variantAttributes.length > 0 && !selectedVariant)} sx={{ bgcolor: '#2359CE', '&:hover': { bgcolor: '#1745A6' } }}>Add to Cart</Button>{canArrange && <Button variant="outlined" onClick={() => navigate(`/arrange/${product.id}`)} sx={{ borderColor: '#C5A47E', color: '#8A6B3E' }}>Arrange on Request</Button>}<IconButton aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'} aria-pressed={isWishlisted} disabled={wishlistPending.has(String(product.id))} onClick={() => toggleWishlist(product)} sx={{ color: isWishlisted ? '#D98A28' : '#2359CE', border: '1px solid #B8C5D8', '&:hover': { bgcolor: '#F1F0FA' } }}>{isWishlisted ? <FavoriteRoundedIcon /> : <FavoriteBorderRoundedIcon />}</IconButton></Stack>
           </Grid>
         </Grid>
       </Box>
@@ -353,7 +372,7 @@ function ProductDetails({ addToCart }) {
         <Box sx={{ p: { xs: 1, md: 2 }, mt: 1, color: '#344054', borderTop: '1px solid #E0E5ED' }}>
           {tab === 0 && <Typography sx={{ whiteSpace: 'pre-line', lineHeight: 1.8 }}>{product.longDescription || product.description || 'No description available.'}</Typography>}
           {tab === 1 && <Stack spacing={1.25}><Typography><b style={{ color: '#2359CE' }}>Category:</b> {formatCategory(product.category)}</Typography>{product.brand && <Typography><b style={{ color: '#2359CE' }}>Brand:</b> {product.brand}</Typography>}{Array.isArray(product.specifications) && product.specifications.filter(item => item?.value).map(item => <Typography key={item.key}><b style={{ color: '#2359CE' }}>{item.label}:</b> {item.value}{item.unit ? ` ${item.unit}` : ''}</Typography>)}{product.productType === 'DIGITAL' && product.digitalConfiguration && <Box sx={{ mt: 1, pt: 1.5, borderTop: '1px solid #E0E5ED' }}><Typography variant="subtitle2" sx={{ color: '#2359CE', mb: 1 }}>Digital product information</Typography>{product.digitalConfiguration.version && <Typography>Version: {product.digitalConfiguration.version}</Typography>}{product.digitalConfiguration.supportedPlatforms?.length > 0 && <Typography>Platforms: {product.digitalConfiguration.supportedPlatforms.join(', ')}</Typography>}{product.digitalConfiguration.licenseType && <Typography>License: {product.digitalConfiguration.licenseType}</Typography>}{product.digitalConfiguration.downloadLimit && <Typography>Download limit: {product.digitalConfiguration.downloadLimit}</Typography>}{product.digitalConfiguration.accessDurationDays && <Typography>Access duration: {product.digitalConfiguration.accessDurationDays} days</Typography>}</Box>}</Stack>}
-          {tab === 2 && <Box><Rating value={product.numReviews ? product.rating || 0 : 0} readOnly /><Typography sx={{ color: '#667085', mt: 1 }}>{product.numReviews ? `${product.numReviews} genuine review(s)` : 'No reviews yet.'}</Typography></Box>}
+          {tab === 2 && <Box><Stack direction="row" spacing={1} alignItems="center"><Rating value={reviews.average} precision={.1} readOnly /><Typography sx={{ color: '#667085' }}>{reviews.total ? `${reviews.average.toFixed(1)} (${reviews.total} approved review${reviews.total === 1 ? '' : 's'})` : 'No approved reviews yet.'}</Typography></Stack>{reviews.reviews.map(review => <Box key={review.id} sx={{ mt: 2, pt: 2, borderTop: '1px solid #E0E5ED' }}><Stack direction="row" spacing={1} alignItems="center"><Rating value={review.rating} readOnly size="small" /><Typography fontWeight={700}>{review.title || 'Customer review'}</Typography></Stack><Typography sx={{ mt: .5 }}>{review.comment}</Typography><Typography variant="caption" color="text.secondary">{review.customerName}{review.verifiedPurchase ? ' · Verified purchase' : ''}</Typography></Box>)}{getCustomerToken() ? <Box component="form" onSubmit={submitReview} sx={{ mt: 3, pt: 2, borderTop: '1px solid #E0E5ED' }}><Typography variant="subtitle1" fontWeight={700}>Write a review</Typography><Rating value={reviewForm.rating} onChange={(_event, value) => value && setReviewForm(current => ({ ...current, rating: value }))} sx={{ mt: 1 }} /><TextField fullWidth size="small" label="Title (optional)" value={reviewForm.title} onChange={event => setReviewForm(current => ({ ...current, title: event.target.value }))} sx={{ mt: 1.5 }} /><TextField fullWidth multiline minRows={3} label="Your review" required value={reviewForm.comment} onChange={event => setReviewForm(current => ({ ...current, comment: event.target.value }))} sx={{ mt: 1.5 }} /><Button type="submit" variant="contained" sx={{ mt: 1.5 }}>Submit for review</Button>{reviewMessage && <Typography variant="caption" display="block" sx={{ mt: 1 }} color="text.secondary">{reviewMessage}</Typography>}</Box> : <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid #E0E5ED' }}><Typography color="text.secondary">Sign in to share your experience.</Typography><Button variant="outlined" sx={{ mt: 1 }} onClick={() => navigate(`/login?returnTo=${encodeURIComponent(`/product/${product.id}`)}`)}>Log in to Write a Review</Button></Box>}</Box>}
           {tab === 3 && <Typography sx={{ color: '#667085' }}>Shipping and return details will be communicated after your order is confirmed. No delivery time is promised.</Typography>}
         </Box>
       </Box>

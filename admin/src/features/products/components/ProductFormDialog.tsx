@@ -35,6 +35,7 @@ interface FormValues {
   category: string
   subcategory: string
   price: string
+  compareAtPrice: string
   inventory: string
   status: string
   image: string
@@ -65,6 +66,7 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
     category: 'electronics',
     subcategory: '',
     price: '',
+    compareAtPrice: '',
     inventory: '0',
     status: 'draft',
     image: '',
@@ -78,6 +80,9 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
     physicalConfigJson: '',
     seoJson: '',
   })
+  const sellingPreview = Number(form.values.price)
+  const originalPreview = Number(form.values.compareAtPrice)
+  const discountPreview = Number.isFinite(sellingPreview) && Number.isFinite(originalPreview) && originalPreview > sellingPreview && originalPreview > 0 ? Math.round(((originalPreview - sellingPreview) / originalPreview) * 100) : 0
 
   useEffect(() => {
     if (!open) return
@@ -87,6 +92,7 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
       category: product?.category ?? 'electronics',
       subcategory: product?.subcategory ?? '',
       price: product !== undefined ? String(product.price) : '',
+      compareAtPrice: product?.compareAtPrice != null ? String(product.compareAtPrice) : '',
       inventory: product !== undefined ? String(product.inventory) : '0',
       status: product?.status ?? 'draft',
       image: product?.image ?? '',
@@ -256,6 +262,11 @@ export function ProductFormDialog({ open, onClose, product }: ProductFormDialogP
               form.clearError('price')
             }}
           />
+        </Field>
+
+        <Field id="product-compare-at-price" label="Original retail price (PKR)" hint="Optional. Used only when higher than the current selling price." error={form.errors.compareAtPrice}>
+          <Input id="product-compare-at-price" type="number" min="0" step="0.01" value={form.values.compareAtPrice} invalid={Boolean(form.errors.compareAtPrice)} onChange={(event) => { form.setField('compareAtPrice', event.target.value); form.clearError('compareAtPrice') }} />
+          <small className="field__hint">{discountPreview > 0 ? `${discountPreview}% OFF preview` : 'No valid discount will be shown.'}</small>
         </Field>
 
         {form.values.inventoryMode === 'NUMERIC' ? <Field id="product-inventory" label="Inventory quantity" required error={form.errors.inventory}>

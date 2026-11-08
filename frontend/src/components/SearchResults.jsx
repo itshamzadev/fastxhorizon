@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import { List, ListItem, ListItemText, ListItemAvatar, Avatar, Typography, Paper, CircularProgress, Button, Box, Alert } from '@mui/material';
 import { formatPrice } from '../utils/currency';
 import { resolveMediaUrl } from '../utils/media';
+import { getValidDiscount } from '../utils/pricing';
 
 function SearchResults({ results, onResultClick, setSearchResults, variant = 'popover', query = '', loading = false, error = '', onRetry, onViewAll }) {
   const handleItemClick = () => {
@@ -52,6 +53,7 @@ function SearchResults({ results, onResultClick, setSearchResults, variant = 'po
         ) : results.length > 0 ? (
           results.slice(0, limit).map(product => {
             const pid = product._id || product.id;
+            const pricing = getValidDiscount(product.price, product.compareAtPrice);
             return (
               <ListItem key={pid} alignItems="flex-start" component={Link} to={`/product/${pid}`} onClick={handleItemClick} sx={listItemSx}>
                 <ListItemAvatar>
@@ -62,7 +64,7 @@ function SearchResults({ results, onResultClick, setSearchResults, variant = 'po
                   secondary={
                     <React.Fragment>
                       <Typography sx={{ display: 'inline' }} component="span" variant="body2" color="text.primary">
-                        {formatPrice(product.price)}
+                        {formatPrice(pricing.sellingPrice)}{pricing.originalPrice ? ` · ${formatPrice(pricing.originalPrice)} · ${pricing.discountPercent}% OFF` : ''}
                       </Typography>
                       {product.shortDescription || product.description ? ` - ${String(product.shortDescription || product.description).slice(0, 50)}...` : ''}
                     </React.Fragment>

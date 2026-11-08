@@ -4,7 +4,7 @@ const Product = require('../models/product');
 
 const MAX_QUERY_LENGTH = 100;
 const MAX_PAGE_SIZE = 24;
-const PUBLIC_FIELDS = 'name description shortDescription category subcategory categoryPath productType tags slug image images price currency brand storeName stock inventoryMode availabilityStatus rating numReviews createdAt specifications attributes physicalConfiguration digitalConfiguration supplierName sourceFormat supplierKey';
+const PUBLIC_FIELDS = 'name description shortDescription category subcategory categoryPath productType tags slug image images price compareAtPrice currency brand storeName stock inventoryMode availabilityStatus allowArrangeOnRequest rating numReviews createdAt specifications attributes physicalConfiguration digitalConfiguration supplierName sourceFormat supplierKey';
 const escapeRegex = value => value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
 const normalizeQuery = value => String(value || '').trim().slice(0, MAX_QUERY_LENGTH);
 const searchableFields = ['name', 'description', 'shortDescription', 'category', 'subcategory', 'categoryPath', 'productType', 'tags', 'brand'];
@@ -27,12 +27,14 @@ const publicProduct = product => ({
   image: publicImages(product)[0] || '',
   images: publicImages(product),
   price: product.price,
+  compareAtPrice: product.compareAtPrice ?? null,
   currency: product.currency || 'PKR',
   brand: product.brand || '',
   storeName: product.storeName || 'FASTXHORIZON',
   stock: product.stock,
   inventoryMode: product.inventoryMode,
   availabilityStatus: product.availabilityStatus,
+  allowArrangeOnRequest: product.allowArrangeOnRequest === true,
   rating: product.rating || 0,
   numReviews: product.numReviews || 0,
   createdAt: product.createdAt,

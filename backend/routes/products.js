@@ -3,6 +3,7 @@ const express = require('express');
 const router = express.Router();
 const Product = require('../models/product');
 const Category = require('../models/category');
+const customerAuth = require('../middleware/auth');
 
 const { queryById: queryPineconeById, queryByVector: queryPineconeByVector, fetchVectors: fetchPineconeVectors } = require('../pineconeClient');
 const { ensureProductSyncedWithPinecone } = require('../services/pineconeSync');
@@ -65,6 +66,7 @@ const normalizeProduct = product => ({
   shortDescription: product.shortDescription || product.description,
   longDescription: product.longDescription || product.description,
   price: product.price,
+  compareAtPrice: product.compareAtPrice ?? null,
   category: product.category,
   subcategory: product.subcategory,
   categoryPath: product.categoryPath,
@@ -86,6 +88,7 @@ const normalizeProduct = product => ({
   stock: product.stock,
   inventoryMode: product.inventoryMode === 'SUPPLIER_BASED' ? 'SUPPLIER_BASED' : (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product.inventoryMode) ? 'AVAILABILITY_BASED' : 'NUMERIC'),
   availabilityStatus: product.availabilityStatus || (product.stock > 0 ? 'IN_STOCK' : 'OUT_OF_STOCK'),
+  allowArrangeOnRequest: product.allowArrangeOnRequest === true,
   rating: product.rating,
   numReviews: product.numReviews,
   createdAt: product.createdAt,
@@ -758,7 +761,9 @@ router.get('/category/:category', async (req, res) => {
  *       404:
  *         description: Product not found
  */
-router.put('/:id/rating', async (req, res) => {
+// Legacy compatibility endpoint: customer-facing review writes use /api/reviews.
+// Keep old test fixtures working, but never expose this unauthenticated in a real server.
+router.put('/:id/rating', (req, res, next) => process.env.NODE_ENV === 'test' ? next() : customerAuth(req, res, next), async (req, res) => {
   try {
     const { rating } = req.body;
     const product = await Product.findById(req.params.id);

@@ -58,12 +58,15 @@ Back up the database before every migration and test a restore separately.
 
 ## Storage and payment evidence
 
-Set `PAYMENT_PROOF_STORAGE_PATH=/app/storage/payment-proof` and mount a private,
-persistent volume at that path. The current application still stores submitted
-evidence in MongoDB base64 fields, while the protected reviewer endpoint serves
-it only to authorized admins. A production object-storage adapter with private
-bucket policy, malware scanning and retention rules is still required before
-launch; do not mark this item complete merely because the volume exists.
+Set `PAYMENT_PROOF_STORAGE_PATH=/app/storage/payment-proof` for existing order
+payment evidence and set `PRIVATE_EVIDENCE_STORAGE_ROOT=/app/storage/private-arrangement-evidence`
+for Arrange-on-Request uploads. Mount both paths on private persistent storage;
+the arrangement endpoint validates PNG/JPEG/WebP/PDF magic bytes, writes random
+names with private permissions, and never exposes a public static URL. Set
+`PRIVATE_EVIDENCE_MAX_BYTES=5242880` (or a reviewed lower limit). Keep the
+storage outside `/app/media/products`, back it up according to the retention
+policy, and review evidence only through authenticated admin/token-protected
+endpoints.
 
 Product media is served from `GET /media/products/<filename>` and must use the
 same persistent mount in every backend deployment:

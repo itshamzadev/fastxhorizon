@@ -29,6 +29,7 @@ export interface Product {
   subcategory?: string
   /** Price in major units (e.g. dollars), not cents. */
   price: number
+  compareAtPrice?: number | null
   inventory: number
   inventoryMode?: InventoryMode
   availabilityStatus?: AvailabilityStatus
@@ -53,6 +54,7 @@ export interface CreateProductInput {
   category: string
   subcategory?: string
   price: number
+  compareAtPrice?: number | null
   inventory: number
   inventoryMode?: InventoryMode
   availabilityStatus?: AvailabilityStatus

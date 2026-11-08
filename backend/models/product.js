@@ -20,6 +20,7 @@ const ProductVariantSchema = new mongoose.Schema({
     inventoryMode: { type: String, enum: ['NUMERIC', 'AVAILABILITY_BASED', 'SUPPLIER_BASED'], default: 'NUMERIC' },
     stock: { type: Number, min: 0, default: 0 },
     availabilityStatus: { type: String, enum: ['IN_STOCK', 'OUT_OF_STOCK', 'AVAILABLE_TO_ORDER'], default: 'OUT_OF_STOCK' },
+    allowArrangeOnRequest: { type: Boolean, default: false },
     enabled: { type: Boolean, default: true },
 }, { _id: true });
 
@@ -96,6 +97,7 @@ const productSchema = new mongoose.Schema({
         required: true,
         min: 0,
     },
+    compareAtPrice: { type: Number, min: 0, default: null },
     currency: { type: String, enum: ['PKR'], default: 'PKR' },
     category: {
         type: String,
@@ -130,6 +132,7 @@ const productSchema = new mongoose.Schema({
     },
     inventoryMode: { type: String, enum: ['NUMERIC', 'AVAILABILITY_BASED', 'AVAILABILITY', 'SUPPLIER_BASED'], default: 'NUMERIC' },
     availabilityStatus: { type: String, enum: ['IN_STOCK', 'OUT_OF_STOCK', 'AVAILABLE_TO_ORDER'], default: 'OUT_OF_STOCK' },
+    allowArrangeOnRequest: { type: Boolean, default: false },
     supplierKey: { type: String, trim: true, sparse: true, unique: true },
     supplierName: { type: String, trim: true, default: '' },
     supplierSKU: { type: String, trim: true, default: '' },

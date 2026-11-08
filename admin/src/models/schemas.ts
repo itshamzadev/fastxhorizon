@@ -66,6 +66,7 @@ export const createProductSchema = z.object({
     .number('Enter a valid price')
     .positive('Price must be greater than zero')
     .max(1_000_000, 'Price looks unrealistic'),
+  compareAtPrice: z.coerce.number().min(0, 'Original price cannot be negative').max(1_000_000, 'Original price looks unrealistic').optional(),
   inventory: z.coerce
     .number('Enter a valid quantity')
     .int('Inventory must be a whole number')

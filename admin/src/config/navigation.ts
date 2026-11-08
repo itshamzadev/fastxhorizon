@@ -7,6 +7,7 @@ import {
   Settings,
   ShoppingCart,
   Users,
+  Star,
 } from 'lucide-react'
 import type { LucideIcon } from 'lucide-react'
 
@@ -51,6 +52,8 @@ export const NAV_SECTIONS: NavSection[] = [
       { label: 'Orders', to: '/dashboard/orders', icon: ShoppingCart },
       { label: 'Newsletter', to: '/dashboard/newsletter', icon: Mail },
       { label: 'Payments', to: '/dashboard/payments', icon: CreditCard },
+      { label: 'Inventory & Arrangements', to: '/dashboard/inventory', icon: Package },
+      { label: 'Reviews', to: '/dashboard/reviews', icon: Star },
       { label: 'Categories', to: '/dashboard/categories', icon: Package, superAdminOnly: true },
     ],
   },

@@ -16,20 +16,14 @@ import { useNavigate } from 'react-router-dom';
 import { useWishlist } from '../context/WishlistContext';
 import { formatPrice } from '../utils/currency';
 import { resolveMediaUrl } from '../utils/media';
-
-function resolveOriginalPrice(product, price) {
-  const candidates = [product?.compareAtPrice, product?.originalPrice, product?.mrp, product?.retailPrice, product?.originalRetailPrice];
-  const original = candidates.map(Number).find(value => Number.isFinite(value) && value > price);
-  return original || null;
-}
+import { getValidDiscount } from '../utils/pricing';
 
 export default function ProductCard({ product, addToCart, priority = false }) {
   const navigate = useNavigate();
   const canonicalId = product?._id || product?.id;
-  const price = Number(product?.price);
-  const safePrice = Number.isFinite(price) ? price : 0;
-  const originalPrice = resolveOriginalPrice(product, safePrice);
-  const discountPercent = originalPrice ? Math.round(((originalPrice - safePrice) / originalPrice) * 100) : 0;
+  const defaultVariant = Array.isArray(product?.variants) ? product.variants.find(variant => variant.enabled !== false) : null;
+  const price = Number(product?.price ?? defaultVariant?.price);
+  const { sellingPrice: safePrice, originalPrice, discountPercent } = getValidDiscount(Number.isFinite(price) ? price : 0, product?.compareAtPrice ?? defaultVariant?.compareAtPrice);
   const stock = Number.isFinite(Number(product?.stock)) ? Number(product.stock) : 0;
   const reviewCount = Number.isFinite(Number(product?.numReviews)) ? Math.max(0, Number(product.numReviews)) : 0;
   const ratingValue = reviewCount > 0 && Number.isFinite(Number(product?.rating)) ? Math.min(5, Math.max(0, Number(product.rating))) : 0;
@@ -43,7 +37,9 @@ export default function ProductCard({ product, addToCart, priority = false }) {
 
   const handleViewDetails = () => { if (canonicalId) navigate(`/product/${canonicalId}`); };
   const handleCardClick = event => { if (!canonicalId || event.target.closest('button')) return; handleViewDetails(); };
+  const canArrange = product?.allowArrangeOnRequest === true && !inStock && product?.inventoryMode === 'NUMERIC';
   const handleAddToCart = event => { event.stopPropagation(); if (inStock && typeof addToCart === 'function') addToCart(product); };
+  const handleArrange = event => { event.stopPropagation(); if (canonicalId && canArrange) navigate(`/arrange/${canonicalId}`); };
   const handleWishlistToggle = event => { event.stopPropagation(); event.preventDefault(); if (canonicalId && !wishlistIsPending) void toggleWishlist(product); };
   const actionButtonSx = { width: 38, height: 38, bgcolor: '#FFFFFF', color: '#292D32', border: '1px solid #C5A47E', boxShadow: '0 4px 12px rgba(41,45,50,.18)', '&:hover': { bgcolor: '#FFF9EF', color: '#2456A6', transform: 'scale(1.05)' }, '&:focus-visible': { outline: '2px solid #C5A47E', outlineOffset: 2 }, '&.Mui-disabled': { color: '#8B9196', bgcolor: '#E8E1D8' } };
 
@@ -57,7 +53,7 @@ export default function ProductCard({ product, addToCart, priority = false }) {
         <Typography component="h3" sx={{ color: '#1F2937', fontSize: { xs: '0.78rem', sm: '0.86rem' }, fontWeight: 600, lineHeight: 1.28, display: '-webkit-box', WebkitLineClamp: 2, WebkitBoxOrient: 'vertical', overflow: 'hidden', minHeight: { xs: '2rem', sm: '2.2rem' } }}>{product?.name || 'Unnamed product'}</Typography>
         {reviewCount > 0 && <Stack direction="row" spacing={0.35} alignItems="center" sx={{ mt: 0.45, minHeight: 16 }}><Rating name={`rating-${canonicalId}`} value={ratingValue} precision={0.1} readOnly size="small" sx={{ color: '#D49B2A', fontSize: '0.76rem' }} /><Typography component="span" sx={{ color: '#6B7280', fontSize: '0.62rem' }}>{ratingValue.toFixed(1)} ({reviewCount})</Typography></Stack>}
         <Stack direction="row" spacing={0.6} alignItems="baseline" sx={{ mt: 0.45, flexWrap: 'wrap' }}><Typography sx={{ color: '#B65C43', fontSize: { xs: '0.92rem', sm: '1rem' }, fontWeight: 900, whiteSpace: 'nowrap' }}>{formatPrice(safePrice)}</Typography>{originalPrice && <Typography component="span" sx={{ color: '#9CA3AF', fontSize: '0.68rem', textDecoration: 'line-through', whiteSpace: 'nowrap' }}>{formatPrice(originalPrice)}</Typography>}{discountPercent > 0 && <Typography component="span" sx={{ color: '#B65C43', fontSize: '0.64rem', fontWeight: 800 }}>-{discountPercent}%</Typography>}</Stack>
-        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1} sx={{ mt: 0.35 }}><Typography component="span" sx={{ color: inStock ? '#256B58' : '#B65C43', fontSize: '0.62rem', fontWeight: 700 }}>{inStock ? (supplierAvailable ? 'Available' : 'In stock') : 'Out of stock'}</Typography><Tooltip title={inStock ? 'Add to cart' : 'Out of stock'} arrow><span><IconButton aria-label={inStock ? `Add ${product?.name || 'product'} to cart` : `${product?.name || 'Product'} is out of stock`} disabled={!inStock || typeof addToCart !== 'function'} onClick={event => { event.preventDefault(); handleAddToCart(event); }} sx={{ ...actionButtonSx, width: 32, height: 32 }}><ShoppingCartRoundedIcon sx={{ fontSize: 16 }} /></IconButton></span></Tooltip></Stack>
+        <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1} sx={{ mt: 0.35 }}>{canArrange ? <Typography component="button" onClick={handleArrange} sx={{ border: 0, p: 0, bgcolor: 'transparent', color: '#2456A6', fontSize: '0.62rem', fontWeight: 800, cursor: 'pointer' }}>Arrange on request</Typography> : <Typography component="span" sx={{ color: inStock ? '#256B58' : '#B65C43', fontSize: '0.62rem', fontWeight: 700 }}>{inStock ? (supplierAvailable ? 'Available' : 'In stock') : 'Sold out'}</Typography>}<Tooltip title={inStock ? 'Add to cart' : canArrange ? 'Arrange on request' : 'Sold out'} arrow><span><IconButton aria-label={inStock ? `Add ${product?.name || 'product'} to cart` : canArrange ? `Arrange ${product?.name || 'product'} on request` : `${product?.name || 'Product'} is sold out`} disabled={!inStock || typeof addToCart !== 'function'} onClick={event => { event.preventDefault(); handleAddToCart(event); }} sx={{ ...actionButtonSx, width: 32, height: 32 }}><ShoppingCartRoundedIcon sx={{ fontSize: 16 }} /></IconButton></span></Tooltip></Stack>
       </CardContent>
     </Card>
   );
