@@ -4,9 +4,9 @@ import fs from 'node:fs';
 import archiverModule = require('archiver');
 const archiver = (_format: string, options?: Record<string, unknown>) => new archiverModule.ZipArchive(options);
 import { randomUUID } from 'node:crypto';
-import { openDatabase, dashboard, listProducts, addProduct, updateProduct, archiveProduct, listVariants, listCategories, listCategoryManagement, listBrands, listFabricTypes, createManagedEntry, updateManagedEntry, archiveManagedEntry, listSuppliers, listSales, financialReport, receiveStock, createSale, addSupplier, exportCatalog, parseImagePaths, queueSyncEvent, listPendingSyncEvents, listPendingCatalogProducts, listCatalogPublicationHistory, markCatalogPublication, listSyncConflicts, resolveSyncConflict, markSyncEvents } from './database';
+import { openDatabase, dashboard, listProducts, addProduct, updateProduct, archiveProduct, listVariants, listCategories, listCategoryManagement, listBrands, listFabricTypes, createManagedEntry, updateManagedEntry, archiveManagedEntry, listSuppliers, listSales, financialReport, receiveStock, createSale, addSupplier, exportCatalog, parseImagePaths, queueSyncEvent, listPendingSyncEvents, listPendingCatalogProducts, listCatalogPublicationHistory, markCatalogPublication, listSyncConflicts, resolveSyncConflict, markSyncEvents, retryFailedSyncEvents, importExistingCatalogProducts } from './database';
 import { createWebsiteExport } from './websiteExport';
-import { parseIpc, saleSchema, stockReceiveSchema, productIdSchema, syncRegistrationSchema, syncConfigSchema, syncEventSchema } from './validation';
+import { parseIpc, saleSchema, stockReceiveSchema, productIdSchema, syncRegistrationSchema, syncConfigSchema, syncTestSchema, syncEventSchema } from './validation';
 import { runSynchronization } from './syncService';
 import { publishCatalogWithMedia } from './catalogPublisher';
 
@@ -50,15 +50,53 @@ function registerIpc() {
   ipcMain.handle('sales:create', (_event, input) => createSale(db, parseIpc(saleSchema, input)));
   ipcMain.handle('sync:queue', (_event, input) => queueSyncEvent(db, parseIpc(syncEventSchema, input)));
   ipcMain.handle('sync:pending', (_event, limit?: number) => listPendingSyncEvents(db, limit));
+  ipcMain.handle('sync:retry-failed', () => retryFailedSyncEvents(db));
   ipcMain.handle('sync:conflicts', (_event, limit?: number) => listSyncConflicts(db, limit));
   ipcMain.handle('sync:conflict:resolve', (_event, input: { id: string; resolution: 'resolved' | 'retry' }) => resolveSyncConflict(db, input.id, input.resolution));
   ipcMain.handle('catalog:pending', (_event, limit?: number) => listPendingCatalogProducts(db, limit));
   ipcMain.handle('catalog:history', (_event, limit?: number) => listCatalogPublicationHistory(db, limit));
   ipcMain.handle('catalog:publish-with-media', (_event, selectedIds?: string[]) => publishCatalogWithMedia(db, path.resolve(app.getPath('userData')), selectedIds));
   ipcMain.handle('catalog:publish', (_event, selectedIds?: string[]) => publishCatalog(db, selectedIds));
+  ipcMain.handle('catalog:fetch-existing', async (_event, input: { page?: number; limit?: number }) => {
+    if (!safeStorage.isEncryptionAvailable()) throw new Error('Windows secure credential storage is unavailable.');
+    const settings = Object.fromEntries((db.prepare("SELECT key,value FROM application_settings WHERE key LIKE 'sync.%'").all() as Array<{ key: string; value: string }>).map(row => [row.key, row.value]));
+    if (!settings['sync.apiBaseUrl'] || !settings['sync.deviceId'] || !settings['sync.token']) throw new Error('Register this device before importing website products.');
+    const page = Math.max(1, Math.floor(Number(input?.page || 1))); const limit = Math.min(100, Math.max(1, Math.floor(Number(input?.limit || 50))));
+    const token = safeStorage.decryptString(Buffer.from(settings['sync.token'], 'base64'));
+    const response = await fetch(`${settings['sync.apiBaseUrl'].replace(/\/$/, '')}/stock-manager/catalog/products?page=${page}&limit=${limit}`, { headers: { authorization: `Bearer ${token}`, 'x-fxh-device-id': settings['sync.deviceId'] } });
+    const body = await response.json() as any;
+    if (!response.ok) throw new Error(body.message || `Catalog import request failed (HTTP ${response.status}).`);
+    const data = body.data || { products: [], total: 0, page, limit, totalPages: 0, hasMore: false };
+    const origin = settings['sync.apiBaseUrl'].replace(/\/api\/?$/, '');
+    const absolute = (value: string) => /^https?:\/\//i.test(value) ? value : value.startsWith('/') ? `${origin}${value}` : value;
+    data.products = (data.products || []).map((item: any) => ({ ...item, images: (item.images || []).map(absolute), variants: (item.variants || []).map((variant: any) => ({ ...variant, images: (variant.images || []).map(absolute) })) }));
+    return data;
+  });
+  ipcMain.handle('catalog:import-existing', (_event, input: unknown) => { if (!Array.isArray(input)) throw new Error('Import payload must be an array.'); return importExistingCatalogProducts(db, input as any[]); });
   ipcMain.handle('sync:mark', (_event, input) => markSyncEvents(db, input));
-  ipcMain.handle('sync:config:get', () => { const saved = db.prepare("SELECT key,value FROM application_settings WHERE key IN ('sync.apiBaseUrl','sync.deviceId','sync.deviceName','sync.lastSuccessAt') ORDER BY key").all() as Array<{ key: string; value: string }>; if (!saved.some(item => item.key === 'sync.apiBaseUrl') && process.env.FXH_SYNC_API_URL) saved.push({ key: 'sync.apiBaseUrl', value: process.env.FXH_SYNC_API_URL }); return saved; });
+  ipcMain.handle('sync:config:get', () => { const saved = db.prepare("SELECT key,value FROM application_settings WHERE key IN ('sync.apiBaseUrl','sync.deviceId','sync.deviceName','sync.lastSuccessAt') ORDER BY key").all() as Array<{ key: string; value: string }>; if (!saved.some(item => item.key === 'sync.apiBaseUrl')) saved.push({ key: 'sync.apiBaseUrl', value: process.env.FXH_SYNC_API_URL || 'https://api.fastxhorizon.com/api' }); return saved; });
   ipcMain.handle('sync:config:set', (_event, input) => { const config = parseIpc(syncConfigSchema, input); const timestamp = new Date().toISOString(); for (const [key, value] of Object.entries({ 'sync.apiBaseUrl': config.apiBaseUrl, 'sync.deviceId': config.deviceId, 'sync.deviceName': config.deviceName })) db.prepare('INSERT INTO application_settings(key,value,updated_at) VALUES(?,?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at').run(key, value, timestamp); return true; });
+  ipcMain.handle('sync:test', async (_event, input) => {
+    const config = parseIpc(syncTestSchema, input);
+    const endpoint = config.apiBaseUrl.replace(/\/$/, '');
+    const origin = endpoint.replace(/\/api\/?$/, '');
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 8000);
+    try {
+      const health = await fetch(`${origin}/health`, { signal: controller.signal });
+      if (!health.ok) return { status: 'server_unavailable', message: `API health check returned HTTP ${health.status}.` };
+      const saved = Object.fromEntries((db.prepare("SELECT key,value FROM application_settings WHERE key IN ('sync.apiBaseUrl','sync.deviceId','sync.token')").all() as Array<{ key: string; value: string }>).map(row => [row.key, row.value]));
+      if (!saved['sync.token'] || saved['sync.apiBaseUrl'] !== config.apiBaseUrl) return { status: 'api_reachable_auth_missing', message: 'API is reachable, but this device is not registered for this API URL.' };
+      if (!safeStorage.isEncryptionAvailable()) return { status: 'auth_rejected', message: 'Windows secure credential storage is unavailable.' };
+      const token = safeStorage.decryptString(Buffer.from(saved['sync.token'], 'base64'));
+      const response = await fetch(`${endpoint}/stock-manager/sync/pull`, { signal: controller.signal, headers: { authorization: `Bearer ${token}`, 'x-fxh-device-id': saved['sync.deviceId'] } });
+      if (response.ok) return { status: 'registered', message: 'API reachable and device authentication accepted.' };
+      if (response.status === 401 || response.status === 403) return { status: 'auth_rejected', message: 'API is reachable, but the saved device credentials were rejected or revoked.' };
+      return { status: 'server_unavailable', message: `Sync endpoint returned HTTP ${response.status}.` };
+    } catch (error) {
+      return { status: 'server_unavailable', message: error instanceof Error && error.name === 'AbortError' ? 'The API did not respond within 8 seconds.' : 'The API could not be reached.' };
+    } finally { clearTimeout(timeout); }
+  });
   ipcMain.handle('sync:register', async (_event, input) => { const config = parseIpc(syncRegistrationSchema, input); if (!safeStorage.isEncryptionAvailable()) throw new Error('Windows secure credential storage is unavailable. Device registration was not saved.'); const response = await fetch(`${config.apiBaseUrl.replace(/\/$/, '')}/stock-manager/devices/register`, { method: 'POST', headers: { 'content-type': 'application/json', 'x-fxh-registration-secret': config.registrationSecret }, body: JSON.stringify({ deviceId: config.deviceId, deviceName: config.deviceName }) }); const body = await response.json() as { data?: { token?: string }; message?: string }; if (!response.ok || !body.data?.token) throw new Error(body.message || 'Device registration failed.'); const timestamp = new Date().toISOString(); for (const [key, value] of Object.entries({ 'sync.apiBaseUrl': config.apiBaseUrl, 'sync.deviceId': config.deviceId, 'sync.deviceName': config.deviceName })) db.prepare('INSERT INTO application_settings(key,value,updated_at) VALUES(?,?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at').run(key, value, timestamp); db.prepare('INSERT INTO application_settings(key,value,updated_at) VALUES(?,?,?) ON CONFLICT(key) DO UPDATE SET value=excluded.value,updated_at=excluded.updated_at').run('sync.token', safeStorage.encryptString(body.data.token).toString('base64'), timestamp); return { deviceId: config.deviceId, deviceName: config.deviceName }; });
   ipcMain.handle('sync:push', async () => { if (!safeStorage.isEncryptionAvailable()) throw new Error('Windows secure credential storage is unavailable.'); const settings = Object.fromEntries((db.prepare("SELECT key,value FROM application_settings WHERE key LIKE 'sync.%'").all() as Array<{ key: string; value: string }>).map(row => [row.key, row.value])); if (!settings['sync.apiBaseUrl'] || !settings['sync.deviceId'] || !settings['sync.token']) throw new Error('Register this device before synchronizing.'); const events = listPendingSyncEvents(db) as Array<any>; if (!events.length) return { results: [] }; const payload = { events: events.map(event => ({ eventId: event.event_id, eventType: event.event_type, entityType: event.entity_type, entityId: event.entity_id, idempotencyKey: event.idempotency_key, payload: JSON.parse(event.payload) })) }; const token = safeStorage.decryptString(Buffer.from(settings['sync.token'], 'base64')); const response = await fetch(`${settings['sync.apiBaseUrl'].replace(/\/$/, '')}/stock-manager/sync/push`, { method: 'POST', headers: { 'content-type': 'application/json', authorization: `Bearer ${token}`, 'x-fxh-device-id': settings['sync.deviceId'] }, body: JSON.stringify(payload) }); const body = await response.json() as { data?: { results?: Array<{ eventId: string; status: string; error?: string }> }; message?: string }; if (!response.ok) throw new Error(body.message || 'Synchronization push failed.'); const results = body.data?.results || []; markSyncEvents(db, { eventIds: results.filter(item => item.status === 'APPLIED').map(item => item.eventId), status: 'sent' }); const failed = results.filter(item => item.status === 'FAILED'); if (failed.length) markSyncEvents(db, { eventIds: failed.map(item => item.eventId), status: 'failed', error: failed[0].error }); return { results }; });
   ipcMain.handle('sync:pull', async () => { if (!safeStorage.isEncryptionAvailable()) throw new Error('Windows secure credential storage is unavailable.'); const settings = Object.fromEntries((db.prepare("SELECT key,value FROM application_settings WHERE key LIKE 'sync.%'").all() as Array<{ key: string; value: string }>).map(row => [row.key, row.value])); if (!settings['sync.apiBaseUrl'] || !settings['sync.deviceId'] || !settings['sync.token']) throw new Error('Register this device before synchronizing.'); const token = safeStorage.decryptString(Buffer.from(settings['sync.token'], 'base64')); const response = await fetch(`${settings['sync.apiBaseUrl'].replace(/\/$/, '')}/stock-manager/sync/pull`, { headers: { authorization: `Bearer ${token}`, 'x-fxh-device-id': settings['sync.deviceId'] } }); const body = await response.json() as { data?: { events?: unknown[]; hasMore?: boolean }; message?: string }; if (!response.ok) throw new Error(body.message || 'Synchronization pull failed.'); return body.data || { events: [], hasMore: false }; });

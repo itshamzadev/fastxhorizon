@@ -90,6 +90,11 @@ export function markSyncEvents(db: Database.Database, input: { eventIds: string[
   return true;
 }
 
+export function retryFailedSyncEvents(db: Database.Database) {
+  const timestamp = now();
+  return db.prepare("UPDATE sync_events SET status='pending', last_error=NULL, next_attempt_at=NULL, updated_at=? WHERE status='failed'").run(timestamp).changes;
+}
+
 export function applyRemoteSyncEvent(db: Database.Database, event: { eventId: string; eventType: string; entityType: string; entityId: string; payload: any }) {
   const existing = db.prepare('SELECT status FROM sync_events WHERE event_id=?').get(event.eventId) as { status: string } | undefined;
   if (existing?.status === 'remote_applied') return { status: 'already_applied' };
@@ -164,6 +169,83 @@ export function markCatalogPublication(db: Database.Database, input: { productId
 }
 
 export function listCatalogPublicationHistory(db: Database.Database, limit = 200) { return db.prepare('SELECT * FROM catalog_publication_history ORDER BY created_at DESC LIMIT ?').all(Math.min(Math.max(1, limit), 1000)); }
+
+type RemoteCatalogProduct = {
+  remoteProductId: string; remoteVersion?: number; sku: string; name: string; description?: string;
+  shortDescription?: string; category?: string; subcategory?: string; brandName?: string;
+  fabricMaterial?: string; clothingType?: string; status?: string; images?: string[];
+  variants?: Array<{ remoteVariantId?: string; id?: string; sku: string; color?: string; size?: string; quantity?: number; reservedQuantity?: number; damagedQuantity?: number; sellingPrice?: number; compareAtPrice?: number | null; images?: string[] }>;
+};
+
+function slugForImport(value: string) { return value.toLowerCase().trim().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || `category-${randomUUID().slice(0, 8)}`; }
+
+/** Import a remote catalog snapshot without creating catalog publish events.
+ * Existing local edits are never overwritten: they are returned as conflicts.
+ */
+export function importExistingCatalogProducts(db: Database.Database, input: RemoteCatalogProduct[]) {
+  const report: { imported: any[]; updated: any[]; skipped: any[]; conflicts: any[]; errors: any[] } = { imported: [], updated: [], skipped: [], conflicts: [], errors: [] };
+  for (const remote of input) {
+    try {
+      if (!remote?.remoteProductId || !remote.sku || !remote.name || !Array.isArray(remote.variants) || !remote.variants.length) { report.errors.push({ remoteProductId: remote?.remoteProductId || null, reason: 'Remote product requires an id, SKU, name and at least one variant.' }); continue; }
+      const variants = remote.variants;
+      const result = db.transaction(() => {
+        const mapped = db.prepare("SELECT local_entity_id FROM sync_identity_mappings WHERE local_entity_type='product' AND remote_entity_type='product' AND remote_entity_id=?").get(String(remote.remoteProductId)) as { local_entity_id: string } | undefined;
+        const byRemote = mapped ? db.prepare('SELECT * FROM products WHERE id=?').get(mapped.local_entity_id) as any : undefined;
+        const bySku = db.prepare('SELECT * FROM products WHERE sku=?').get(String(remote.sku).trim()) as any;
+        const product = byRemote || bySku;
+        if (byRemote && bySku && byRemote.id !== bySku.id) return { kind: 'conflict', reason: 'Remote identity and SKU point to different local products.' };
+        if (product && !byRemote && product.remote_product_id && String(product.remote_product_id) !== String(remote.remoteProductId)) return { kind: 'conflict', reason: 'SKU is already linked to another remote product.' };
+        if (product && (product.publish_state === 'pending' || Number(product.local_revision) > Number(product.published_revision))) return { kind: 'conflict', localProductId: product.id, reason: 'Local unsaved catalog changes were not overwritten.' };
+
+        const timestamp = now();
+        let categoryId: string | null = null;
+        const categoryName = String(remote.category || '').trim();
+        if (categoryName) {
+          const existing = db.prepare('SELECT id FROM categories WHERE name=?').get(categoryName) as { id: string } | undefined;
+          if (existing) categoryId = existing.id;
+          else { categoryId = id(); db.prepare('INSERT INTO categories(id,name,slug,active,created_at,updated_at) VALUES(?,?,?,1,?,?)').run(categoryId, categoryName, slugForImport(categoryName), timestamp, timestamp); }
+        }
+        let brandId: string | null = null;
+        const brandName = String(remote.brandName || '').trim();
+        if (brandName) {
+          const existing = db.prepare('SELECT id FROM brands WHERE name=?').get(brandName) as { id: string } | undefined;
+          if (existing) brandId = existing.id;
+          else { brandId = id(); db.prepare('INSERT INTO brands(id,name,active,created_at,updated_at) VALUES(?,?,1,?,?)').run(brandId, brandName, timestamp, timestamp); }
+        }
+        const fabricName = String(remote.fabricMaterial || '').trim();
+        if (fabricName && !db.prepare('SELECT id FROM fabric_types WHERE name=?').get(fabricName)) db.prepare('INSERT INTO fabric_types(id,name,active,created_at,updated_at) VALUES(?,?,1,?,?)').run(id(), fabricName, timestamp, timestamp);
+        const localProductId = product?.id || id();
+        const localRevision = Number(product?.local_revision || 1);
+        if (!product) {
+          const catalogNumber = Number((db.prepare('SELECT coalesce(max(catalog_number),0)+1 value FROM products').get() as { value: number }).value);
+          db.prepare('INSERT INTO products(id,sku,catalog_number,name,category_id,brand_id,brand_name,short_description,description,fabric_material,clothing_type,status,created_at,updated_at,local_revision,published_revision,publish_state,last_published_at,publish_error,remote_product_id,remote_version) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)').run(localProductId, remote.sku, catalogNumber, remote.name, categoryId, brandId, remote.brandName || null, remote.shortDescription || null, remote.description || null, remote.fabricMaterial || null, remote.clothingType || null, ['active', 'draft', 'archived'].includes(String(remote.status)) ? remote.status : 'draft', timestamp, timestamp, localRevision, localRevision, 'published', timestamp, null, String(remote.remoteProductId), Number(remote.remoteVersion || 0));
+        } else {
+          db.prepare('UPDATE products SET sku=?,name=?,category_id=?,brand_id=?,brand_name=?,short_description=?,description=?,fabric_material=?,clothing_type=?,status=?,published_revision=?,publish_state=\'published\',last_published_at=?,publish_error=NULL,remote_product_id=?,remote_version=?,updated_at=? WHERE id=?').run(remote.sku, remote.name, categoryId, brandId, remote.brandName || null, remote.shortDescription || null, remote.description || null, remote.fabricMaterial || null, remote.clothingType || null, ['active', 'draft', 'archived'].includes(String(remote.status)) ? remote.status : product.status, localRevision, timestamp, String(remote.remoteProductId), Number(remote.remoteVersion || 0), timestamp, localProductId);
+        }
+        const existingVariants = db.prepare('SELECT * FROM product_variants WHERE product_id=?').all(localProductId) as any[];
+        for (const incoming of variants) {
+          if (!incoming.sku || Number(incoming.sellingPrice) < 0 || Number(incoming.quantity || 0) < 0) throw new Error(`Invalid variant ${incoming.sku || '(missing SKU)'}.`);
+          const remoteVariantId = String(incoming.remoteVariantId || incoming.id || '');
+          const variantMapping = remoteVariantId ? db.prepare("SELECT local_entity_id FROM sync_identity_mappings WHERE local_entity_type='variant' AND remote_entity_type='variant' AND remote_entity_id=?").get(remoteVariantId) as { local_entity_id: string } | undefined : undefined;
+          let variant = variantMapping ? existingVariants.find(row => row.id === variantMapping.local_entity_id) : undefined;
+          variant ||= existingVariants.find(row => row.sku === incoming.sku);
+          const sameSku = db.prepare('SELECT id,product_id FROM product_variants WHERE sku=?').get(incoming.sku) as { id: string; product_id: string } | undefined;
+          if (sameSku && sameSku.product_id !== localProductId) throw new Error(`Variant SKU ${incoming.sku} belongs to another local product.`);
+          const images = JSON.stringify(Array.isArray(incoming.images) ? incoming.images : []);
+          if (variant) db.prepare('UPDATE product_variants SET sku=?,size=?,color=?,quantity_on_hand=?,reserved_quantity=?,damaged_quantity=?,selling_price=?,original_price=?,image_paths=?,updated_at=? WHERE id=?').run(incoming.sku, incoming.size || null, incoming.color || null, Math.max(0, Number(incoming.quantity || 0)), Math.max(0, Number(incoming.reservedQuantity || 0)), Math.max(0, Number(incoming.damagedQuantity || 0)), Number(incoming.sellingPrice || 0), Math.max(0, Number(incoming.compareAtPrice || 0)), images, timestamp, variant.id);
+          else { const variantId = id(); db.prepare('INSERT INTO product_variants(id,product_id,sku,size,color,quantity_on_hand,reserved_quantity,damaged_quantity,unit_cost,selling_price,original_price,image_paths,created_at,updated_at) VALUES(?,?,?,?,?,?,?,?,?,?,?,?,?,?)').run(variantId, localProductId, incoming.sku, incoming.size || null, incoming.color || null, Math.max(0, Number(incoming.quantity || 0)), Math.max(0, Number(incoming.reservedQuantity || 0)), Math.max(0, Number(incoming.damagedQuantity || 0)), 0, Number(incoming.sellingPrice || 0), Math.max(0, Number(incoming.compareAtPrice || 0)), images, timestamp, timestamp); variant = { id: variantId }; }
+          if (remoteVariantId) db.prepare("INSERT INTO sync_identity_mappings(id,local_entity_type,local_entity_id,remote_entity_type,remote_entity_id,remote_version,sync_state,created_at,updated_at) VALUES(?,?,?,?,?,?,?, ?,?) ON CONFLICT(local_entity_type,local_entity_id) DO UPDATE SET remote_entity_id=excluded.remote_entity_id,remote_version=excluded.remote_version,sync_state='synced',updated_at=excluded.updated_at").run(id(), 'variant', variant.id, 'variant', remoteVariantId, Number(remote.remoteVersion || 0), 'synced', timestamp, timestamp);
+        }
+        db.prepare("INSERT INTO sync_identity_mappings(id,local_entity_type,local_entity_id,remote_entity_type,remote_entity_id,remote_version,sync_state,created_at,updated_at) VALUES(?,?,?,?,?,?,?, ?,?) ON CONFLICT(local_entity_type,local_entity_id) DO UPDATE SET remote_entity_id=excluded.remote_entity_id,remote_version=excluded.remote_version,sync_state='synced',updated_at=excluded.updated_at").run(id(), 'product', localProductId, 'product', String(remote.remoteProductId), Number(remote.remoteVersion || 0), 'synced', timestamp, timestamp);
+        return { kind: product ? 'updated' : 'imported', localProductId, remoteProductId: String(remote.remoteProductId) };
+      })();
+      if (result.kind === 'conflict') report.conflicts.push({ remoteProductId: remote.remoteProductId, ...result });
+      else if (result.kind === 'updated') report.updated.push(result);
+      else report.imported.push(result);
+    } catch (error) { report.errors.push({ remoteProductId: remote.remoteProductId, reason: error instanceof Error ? error.message : 'Import failed.' }); }
+  }
+  return report;
+}
 
 export function addProduct(db: Database.Database, input: { sku?: string; modelName?: string; name: string; category?: string; brandName?: string; shortDescription?: string; description?: string; fabricMaterial?: string; clothingType?: string; colors?: Array<{ sku?: string; size?: string; color?: string; quantity?: number; unitCost?: number; sellingPrice?: number; originalPrice?: number; discount?: number; imagePaths?: string[]; images?: string[] }>; size?: string; color?: string; quantity?: number; unitCost?: number; sellingPrice?: number; originalPrice?: number; imagePaths?: string[] }) {
   const t = now(); const category = input.category || 'Uncategorized'; let cat = db.prepare('SELECT id FROM categories WHERE name=?').get(category) as { id: string } | undefined;

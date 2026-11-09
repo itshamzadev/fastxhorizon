@@ -115,6 +115,11 @@ describe('Stock Manager MongoDB synchronization (isolated)', () => {
     const afterRepeat = await Product.findById(remoteId);
     expect(afterRepeat.variants[0].stock).toBe(1);
     expect(await Product.countDocuments({ supplierKey: `FXH_STOCK_MANAGER:${localProductId}` })).toBe(1);
+    const importedStyleUpdate = await request(app).post('/api/stock-manager/catalog/upsert').set(auth).send({ product: { ...payload, remoteProductId: remoteId, remoteVersion: repeated.body.data.remoteVersion, name: 'Existing identity update' } });
+    expect(importedStyleUpdate.status).toBe(200);
+    expect(importedStyleUpdate.body.data.remoteProductId).toBe(remoteId);
+    expect(await Product.countDocuments({ _id: remoteId })).toBe(1);
+    expect((await Product.findById(remoteId)).name).toBe('Existing identity update');
     const conflict = await request(app).post('/api/stock-manager/catalog/upsert').set(auth).send({ product: { ...payload, localRevision: 2, remoteVersion: 0, name: 'Stale catalog update' } });
     expect(conflict.status).toBe(409);
   }, 30000);
@@ -129,5 +134,16 @@ describe('Stock Manager MongoDB synchronization (isolated)', () => {
     expect(second.body.data.files[0].filename).toBe(first.body.data.files[0].filename);
     const rejected = await request(app).post('/api/stock-manager/catalog/media').set(auth).attach('files', Buffer.from('not an image'), 'bad.png');
     expect(rejected.status).toBe(415);
+  }, 30000);
+
+  run('provides an authenticated read-only catalog snapshot for desktop import', async () => {
+    const response = await request(app).get('/api/stock-manager/catalog/products').set(auth).query({ page: 1, limit: 100 });
+    expect(response.status).toBe(200);
+    expect(response.body.data.products.length).toBeGreaterThan(0);
+    const item = response.body.data.products.find(entry => entry.sku === `${suffix}:CATALOG`.toUpperCase());
+    expect(item).toBeTruthy();
+    expect(item.remoteProductId).toBeTruthy();
+    expect(item.variants[0].remoteVariantId).toBeTruthy();
+    expect(item.confirmedSupplierCost).toBeUndefined();
   }, 30000);
 });
