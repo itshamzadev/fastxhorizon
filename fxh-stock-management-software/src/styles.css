@@ -42,6 +42,31 @@ textarea { width: 100%; min-height: 70px; resize: vertical; border: 1px solid #3
 .variant-image { display: grid; gap: 5px; min-width: 120px; }
 .variant-image small { color: #888; font-size: 10px; }
 .danger-button { border: 1px solid #713b3b; color: #f08b82; background: #3d2020; border-radius: 5px; padding: 8px 10px; font-size: 11px; }
+.sync-center { max-width: 1280px; }
+.sync-subtitle { color: #92939a; font-size: 12px; line-height: 1.6; margin-top: 8px; max-width: 680px; }
+.sync-state { border: 1px solid #303237; border-radius: 999px; color: #aaa; padding: 9px 13px; font-size: 11px; white-space: nowrap; }
+.sync-state-registered { color: #8bd5a1; border-color: #315c42; }
+.sync-state-auth_rejected, .sync-state-server_unavailable { color: #f09a91; border-color: #713b3b; }
+.sync-state-api_reachable_auth_missing { color: #d8b875; border-color: #6b5735; }
+.sync-connection-grid { display: grid; grid-template-columns: 1.2fr .8fr; gap: 16px; margin: 22px 0 16px; }
+.sync-connection-panel { min-height: 0; }
+.sync-actions { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 20px; }
+.help-text { color: #7f8087; font-size: 11px; line-height: 1.6; margin-top: 14px; }
+.sync-summary-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 10px; margin-bottom: 28px; }
+.sync-summary-grid .metric { min-height: 120px; }
+.sync-summary-grid .metric strong { font-size: 16px; line-height: 1.35; margin-top: 12px; }
+.sync-summary-grid .metric small { overflow-wrap: anywhere; }
+.sync-summary-actions { display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap; }
+.sync-list-heading { margin-bottom: 12px; }
+@media (max-width: 1200px) {
+  .sync-connection-grid { grid-template-columns: 1fr; }
+  .sync-summary-grid { grid-template-columns: repeat(2, 1fr); }
+}
+@media (max-width: 760px) {
+  .sync-summary-grid { grid-template-columns: 1fr; }
+  .sync-state { margin-top: 12px; }
+  .sync-center .panel-heading { align-items: flex-start; flex-direction: column; }
+}
 .modal-backdrop { position: static; inset: auto; background: transparent; display: block; z-index: auto; }
 .modal-backdrop .modal { width: 100%; max-height: none; margin: 0 0 24px; box-shadow: none; }
 .modal-backdrop .close { display: none; }
