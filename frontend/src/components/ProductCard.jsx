@@ -29,7 +29,8 @@ export default function ProductCard({ product, addToCart, priority = false }) {
   const ratingValue = reviewCount > 0 && Number.isFinite(Number(product?.rating)) ? Math.min(5, Math.max(0, Number(product.rating))) : 0;
   const supplierAvailable = product?.inventoryMode === 'SUPPLIER_BASED' && product?.availabilityStatus === 'AVAILABLE_TO_ORDER';
   const inStock = supplierAvailable || (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode) ? product?.availabilityStatus === 'IN_STOCK' : stock > 0);
-  const imageSource = resolveMediaUrl(product?.image);
+  const imageValue = product?.image || product?.images?.[0] || product?.imageUrl || product?.thumbnail;
+  const imageSource = resolveMediaUrl(imageValue);
   const [imageFailed, setImageFailed] = React.useState(false);
   const { wishlist, toggleWishlist, wishlistPending } = useWishlist();
   const wishlisted = wishlist.some(item => String(item?._id || item?.id) === String(canonicalId));
