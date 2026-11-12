@@ -515,7 +515,8 @@ button {
   .marketplace-section-title { font-size: 27px !important; }
   .marketplace-category-row { width: 100%; max-width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); }
   .marketplace-category-tile, .marketplace-category-tile img { min-height: 112px; height: 112px; }
-  .marketplace-content .product-grid { width: 100% !important; justify-content: center; column-gap: 12px; row-gap: 14px; }
+  .marketplace-content .product-grid { width: 100% !important; grid-template-columns: repeat(2, minmax(0, 1fr)) !important; justify-content: center; column-gap: 12px; row-gap: 14px; }
+  .marketplace-content .product-grid > .MuiGrid-item { width: auto !important; max-width: none !important; flex-basis: auto !important; }
   .marketplace-content .product-card-premium .MuiCardContent-root { padding: 9px !important; }
   .marketplace-content .product-card-premium .MuiCardContent-root:last-child { padding-bottom: 9px !important; }
   .marketplace-content .product-card-premium .MuiIconButton-root { flex: 0 0 auto; }
