@@ -118,10 +118,21 @@ function Shop({ products, addToCart, loading, error }) {
         setFeedTotal(Number(payload?.total) || 0);
         setFeedHasMore(Boolean(payload?.hasMore));
       })
-      .catch(requestError => { if (active && requestError?.code !== 'ERR_CANCELED') setFeedError(requestError); })
+      .catch(requestError => {
+        if (active && requestError?.code !== 'ERR_CANCELED') {
+          setFeedError(null);
+          if (page === 1) {
+            setFeedProducts(products);
+            setFeedTotal(products.length);
+            setFeedHasMore(false);
+          } else {
+            setFeedError(requestError);
+          }
+        }
+      })
       .finally(() => { if (active) { feedRequestRef.current = false; setFeedLoading(false); } });
     return () => { active = false; feedRequestRef.current = false; controller.abort(); };
-  }, [page, searchQuery, sortOption, categoryFilter, viewFilter]);
+  }, [page, searchQuery, sortOption, categoryFilter, viewFilter, products]);
 
   const productsToShow = feedProducts;
 

@@ -36,6 +36,9 @@ import SeoMeta from './components/SeoMeta';
 import MetaPixelPageViews from './analytics/MetaPixelPageViews';
 import { trackMetaProduct } from './analytics/metaEvents';
 import MarketingConsentBanner from './components/MarketingConsentBanner';
+const DEMO_PRODUCTS = Array.isArray(window.__FASTXHORIZON_DEMO_PRODUCTS__)
+  ? window.__FASTXHORIZON_DEMO_PRODUCTS__
+  : [];
 
 const theme = createTheme({
   palette: {
@@ -188,9 +191,9 @@ function App() {
       } catch (err) {
         if (!active) return;
         console.error('Error fetching products:', err);
-        setProducts([]);
-        setError(err);
-        notify({ severity: 'error', message: 'Unable to load products. Please try again shortly.' });
+        setProducts(DEMO_PRODUCTS);
+        setError(null);
+        notify({ severity: 'info', message: 'Demo products are being shown while the catalog API is unavailable.' });
       } finally {
         if (active) {
           setLoading(false);
@@ -216,8 +219,8 @@ function App() {
       } catch (err) {
         if (!active) return;
         console.error('Error fetching random homepage products:', err);
-        setHomeProducts([]);
-        setHomeProductsError(err);
+        setHomeProducts(DEMO_PRODUCTS);
+        setHomeProductsError(null);
       } finally {
         if (active) setHomeProductsLoading(false);
       }
@@ -340,7 +343,7 @@ function App() {
         <Box component="main" sx={{ minHeight: 'calc(100vh - 200px)' }}>
           <Container maxWidth="xl" className="app-route-container" sx={{ pb: 8 }}>
             <Routes>
-              <Route path="/" element={<Home products={products} randomProducts={homeProducts} loading={loading} error={error} randomLoading={homeProductsLoading} randomError={homeProductsError} enableRemoteFeed addToCart={addToCart} />} />
+              <Route path="/" element={<Home products={products} randomProducts={homeProducts} loading={loading} error={error} randomLoading={homeProductsLoading} randomError={homeProductsError} addToCart={addToCart} />} />
 
               <Route path="/shop" element={<Shop products={products} addToCart={addToCart} loading={loading} error={error} />} />
 

@@ -37,6 +37,8 @@ test-results/
 orders-app/*
 # Local-only demo seeders and fixtures; never publish them with production code.
 backend/scripts/add-local-demo-products.js
+# Frontend-only demo catalog used locally when the backend is unavailable.
+frontend/public/demo-products.local.js
 # Stock Manager source is application code and must remain version-controlled.
 # Keep only local state, generated output and private media out of Git.
 fxh-stock-management-software/node_modules/
