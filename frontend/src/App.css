@@ -412,7 +412,11 @@ button {
 .product-grid {
   display: grid !important;
   width: 100% !important;
-  margin: 0 !important;
+  max-width: 100% !important;
+  margin-inline: auto !important;
+  margin-block: 0;
+  padding-inline: 0;
+  box-sizing: border-box;
   align-items: stretch;
   grid-auto-rows: auto;
   grid-template-columns: repeat(2, minmax(0, 1fr)) !important;
@@ -423,11 +427,12 @@ button {
   display: flex !important;
   align-items: stretch;
   min-width: 0;
-  width: 100% !important;
-  max-width: 100% !important;
+  width: auto !important;
+  max-width: none !important;
   flex-basis: auto !important;
   padding: 0 !important;
   margin: 0 !important;
+  box-sizing: border-box;
 }
 
 .product-grid > .MuiGrid-item > .product-card-premium {
@@ -741,7 +746,7 @@ button {
   .luxury-hero__inner { padding-left: 20px; padding-right: 20px; }
   .luxury-hero__title { max-width: 100%; font-size: clamp(42px, 13vw, 56px) !important; letter-spacing: -.045em; }
   .luxury-hero__visual { min-height: 360px; }
-  .product-grid { max-width: calc(100vw - 64px) !important; }
+  .product-grid { width: 100% !important; max-width: 100% !important; margin-inline: auto !important; padding-inline: 0 !important; box-sizing: border-box; }
   .MuiChip-root { max-width: calc(100vw - 80px); }
   .MuiChip-label { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
   .luxury-category-card { height: 190px; }
