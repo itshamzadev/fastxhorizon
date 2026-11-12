@@ -42,6 +42,7 @@
     "catalog:binnoor:production:dry-run": "node scripts/prepare-binnoor-production.js --dry-run",
     "catalog:binnoor:production:apply": "node scripts/prepare-binnoor-production.js --apply",
     "catalog:binnoor:package": "node scripts/create-binnoor-production-package.js",
+    "media:generate-variants": "node scripts/generate-media-variants.js",
     "repair:arto:v30:local": "node scripts/repair-arto-v30-local.js",
     "seed": "node seed/productSeeds.js dev",
     "dev": "nodemon index.js",

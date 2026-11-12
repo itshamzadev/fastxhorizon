@@ -6,7 +6,8 @@ const sharp = require('sharp');
 
 const MAX_BYTES = Number(process.env.SUPPLIER_IMAGE_MAX_BYTES || 8 * 1024 * 1024);
 const TIMEOUT_MS = Number(process.env.SUPPLIER_IMAGE_TIMEOUT_MS || 10000);
-const STORAGE_ROOT = path.resolve(process.env.MEDIA_STORAGE_ROOT || path.join(process.cwd(), 'data', 'media', 'products'));
+const MEDIA_ROOT = path.resolve(process.env.MEDIA_STORAGE_ROOT || path.join(process.cwd(), 'data', 'media'));
+const STORAGE_ROOT = path.join(MEDIA_ROOT, 'products');
 const HOSTS = {
   artomall: new Set((process.env.SUPPLIER_IMAGE_HOSTS_ARTO || 'artomall.com,www.artomall.com,i0.wp.com').split(',').map((host) => host.trim().toLowerCase()).filter(Boolean)),
   yourmart: new Set((process.env.SUPPLIER_IMAGE_HOSTS_YOURMART || 'admin.yourmart.pk,yourmart.pk,www.yourmart.pk,yourmart.com,www.yourmart.com').split(',').map((host) => host.trim().toLowerCase()).filter(Boolean)),

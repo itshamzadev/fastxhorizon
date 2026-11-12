@@ -128,10 +128,14 @@ app.use('/media/products', express.static(productMediaRoot, {
   extensions: [],
   index: false,
   redirect: false,
-  maxAge: '30d',
+  maxAge: '365d',
   immutable: true,
+  setHeaders(res) {
+    res.setHeader('Cache-Control', 'public, max-age=31536000, immutable');
+  },
   fallthrough: true,
 }));
+app.use('/media/variants', require('./routes/mediaVariants'));
 
 app.get('/health', (req, res) => {
   res.status(200).json({ status: 'ok', service: 'fastxhorizon-api' });

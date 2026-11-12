@@ -15,7 +15,7 @@ import FavoriteBorderRoundedIcon from '@mui/icons-material/FavoriteBorderRounded
 import { useNavigate } from 'react-router-dom';
 import { useWishlist } from '../context/WishlistContext';
 import { formatPrice } from '../utils/currency';
-import { resolveMediaUrl } from '../utils/media';
+import { resolveMediaUrl, responsiveMediaProps } from '../utils/media';
 import { getValidDiscount } from '../utils/pricing';
 
 export default function ProductCard({ product, addToCart, priority = false }) {
@@ -31,6 +31,7 @@ export default function ProductCard({ product, addToCart, priority = false }) {
   const inStock = supplierAvailable || (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode) ? product?.availabilityStatus === 'IN_STOCK' : stock > 0);
   const imageValue = product?.image || product?.images?.[0] || product?.imageUrl || product?.thumbnail;
   const imageSource = resolveMediaUrl(imageValue);
+  const imageProps = responsiveMediaProps(imageValue, priority ? 480 : 320);
   const [imageFailed, setImageFailed] = React.useState(false);
   const { wishlist, toggleWishlist, wishlistPending } = useWishlist();
   const wishlisted = wishlist.some(item => String(item?._id || item?.id) === String(canonicalId));
@@ -47,7 +48,7 @@ export default function ProductCard({ product, addToCart, priority = false }) {
   return (
     <Card className="product-card-premium" onClick={handleCardClick} sx={{ width: '100%', height: '100%', minHeight: 0, minWidth: 0, cursor: canonicalId ? 'pointer' : 'default', display: 'flex', flexDirection: 'column', overflow: 'hidden', bgcolor: '#FFFFFF', color: '#292D32', border: '1px solid rgba(197,164,126,0.32)', borderRadius: '5px', boxShadow: '0 3px 12px rgba(41,45,50,0.08)', transition: 'transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease', '&:hover': { transform: 'translateY(-2px)', boxShadow: '0 8px 18px rgba(15,23,42,0.13)', borderColor: '#C5A47E' }, '&:focus-within': { borderColor: '#2456A6', boxShadow: '0 0 0 3px rgba(36,86,166,0.20)' }, '&:hover .product-media': { transform: 'scale(1.025)' } }}>
       <Box sx={{ position: 'relative', flex: '0 0 auto', height: { xs: 138, sm: 175, md: 195 }, overflow: 'hidden', bgcolor: '#F7F3EC' }}>
-        {imageSource && !imageFailed ? <CardMedia component="img" className="product-media" alt={product?.name || 'Product image'} src={imageSource} loading={priority ? 'eager' : 'lazy'} fetchPriority={priority ? 'high' : 'auto'} decoding="async" onError={() => setImageFailed(true)} sx={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', transition: 'transform 0.35s ease' }} /> : <Box className="product-media-fallback" sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8B9196', bgcolor: '#F7F3EC' }}><ImageNotSupportedRoundedIcon sx={{ fontSize: 36, opacity: 0.65 }} aria-hidden="true" /></Box>}
+        {imageSource && !imageFailed ? <CardMedia component="img" className="product-media" alt={product?.name || 'Product image'} {...imageProps} loading={priority ? 'eager' : 'lazy'} fetchPriority={priority ? 'high' : 'low'} decoding="async" onError={() => setImageFailed(true)} sx={{ width: '100%', height: '100%', objectFit: 'cover', objectPosition: 'center', transition: 'transform 0.35s ease' }} /> : <Box className="product-media-fallback" sx={{ width: '100%', height: '100%', display: 'flex', alignItems: 'center', justifyContent: 'center', color: '#8B9196', bgcolor: '#F7F3EC' }}><ImageNotSupportedRoundedIcon sx={{ fontSize: 36, opacity: 0.65 }} aria-hidden="true" /></Box>}
         <Tooltip title={wishlisted ? 'Remove from wishlist' : 'Add to wishlist'} arrow><span><IconButton aria-label={wishlisted ? `Remove ${product?.name || 'product'} from wishlist` : `Add ${product?.name || 'product'} to wishlist`} aria-pressed={wishlisted} disabled={!canonicalId || wishlistIsPending} onClick={handleWishlistToggle} sx={{ ...actionButtonSx, position: 'absolute', top: 10, right: 10, color: wishlisted ? '#B65C43' : '#292D32' }}>{wishlisted ? <FavoriteRoundedIcon sx={{ fontSize: 18 }} /> : <FavoriteBorderRoundedIcon sx={{ fontSize: 18 }} />}</IconButton></span></Tooltip>
       </Box>
       <CardContent sx={{ flex: 1, display: 'flex', flexDirection: 'column', p: { xs: 1, sm: 1.2 }, '&:last-child': { pb: { xs: 1, sm: 1.2 } } }}>

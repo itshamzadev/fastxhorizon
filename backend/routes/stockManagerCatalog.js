@@ -3,6 +3,7 @@ const crypto = require('crypto');
 const fs = require('fs');
 const path = require('path');
 const multer = require('multer');
+const sharp = require('sharp');
 const Product = require('../models/product');
 const StockManagerIdentity = require('../models/stockManagerIdentity');
 const { requireStockManagerDevice } = require('../middleware/stockManagerAuth');
@@ -135,8 +136,8 @@ router.post('/archive', async (req, res) => {
 
 router.post('/media', upload.array('files', 10), async (req, res) => {
   const files = req.files || []; if (!files.length) return res.status(400).json({ message: 'At least one image file is required.' });
-  const root = mediaRoot(); const targetDir = path.join(root, 'products'); await fs.promises.mkdir(targetDir, { recursive: true }); const accepted = [];
-  for (const file of files) { const b = file.buffer; const isPng = b.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10])); const isJpeg = b.subarray(0, 3).equals(Buffer.from([255,216,255])); const isWebp = b.subarray(0, 4).toString('ascii') === 'RIFF' && b.subarray(8, 12).toString('ascii') === 'WEBP'; if (!(isPng || isJpeg || isWebp)) return res.status(415).json({ message: `Unsupported image content for ${file.originalname}.` }); const hash = crypto.createHash('sha256').update(b).digest('hex'); const ext = isPng ? '.png' : isJpeg ? '.jpg' : '.webp'; const filename = `${hash}${ext}`; const target = path.join(targetDir, filename); if (!fs.existsSync(target)) await fs.promises.writeFile(target, b, { flag: 'wx' }); accepted.push({ filename, sha256: hash, url: `/media/products/${filename}` }); }
+  const root = mediaRoot(); const targetDir = path.join(root, 'products'); const originalDir = path.join(root, 'originals'); await fs.promises.mkdir(targetDir, { recursive: true }); await fs.promises.mkdir(originalDir, { recursive: true }); const accepted = [];
+  for (const file of files) { const b = file.buffer; const isPng = b.subarray(0, 8).equals(Buffer.from([137,80,78,71,13,10,26,10])); const isJpeg = b.subarray(0, 3).equals(Buffer.from([255,216,255])); const isWebp = b.subarray(0, 4).toString('ascii') === 'RIFF' && b.subarray(8, 12).toString('ascii') === 'WEBP'; if (!(isPng || isJpeg || isWebp)) return res.status(415).json({ message: `Unsupported image content for ${file.originalname}.` }); const hash = crypto.createHash('sha256').update(b).digest('hex'); const ext = isPng ? '.png' : isJpeg ? '.jpg' : '.webp'; const originalTarget = path.join(originalDir, `${hash}${ext}`); const optimizedTarget = path.join(targetDir, `${hash}.webp`); if (!fs.existsSync(originalTarget)) await fs.promises.writeFile(originalTarget, b, { flag: 'wx' }); if (!fs.existsSync(optimizedTarget)) { const optimized = await sharp(b, { failOn: 'error' }).rotate().webp({ quality: 84, effort: 4 }).toBuffer(); await fs.promises.writeFile(optimizedTarget, optimized, { flag: 'wx' }); } accepted.push({ filename: `${hash}.webp`, sha256: hash, url: `/media/products/${hash}.webp` }); }
   return res.json({ data: { files: accepted } });
 });
 
