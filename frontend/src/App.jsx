@@ -11,6 +11,7 @@ import OrderSuccess from './pages/OrderSuccess';
 import ProductDetails from './pages/ProductDetails';
 import ArrangeRequest from './pages/ArrangeRequest';
 import ArrangementStatus from './pages/ArrangementStatus';
+import MyProductRequests from './pages/MyProductRequests';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import ForgotPassword from './pages/ForgotPassword';
@@ -371,6 +372,7 @@ function App() {
               <Route path="/product/:id" element={<ProductDetails addToCart={addToCart} />} />
         <Route path="/arrange/:id" element={<ArrangeRequest />} />
         <Route path="/arrangements/:requestNumber" element={<ArrangementStatus />} />
+        <Route path="/my-product-requests" element={<MyProductRequests />} />
 
               <Route path="/login" element={<Login />} />
 

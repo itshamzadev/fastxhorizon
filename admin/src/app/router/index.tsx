@@ -72,6 +72,7 @@ const ImportHistoryPage = lazy(() => import('@/features/product-import/pages/Imp
 const PricingApprovalPage = lazy(() => import('@/features/pricing/pages/PricingApprovalPage').then((m) => ({ default: m.PricingApprovalPage })))
 const CategoriesPage = lazy(() => import('@/features/categories/pages/CategoriesPage').then((m) => ({ default: m.CategoriesPage })))
 const InventoryPage = lazy(() => import('@/features/inventory/pages/InventoryPage').then((m) => ({ default: m.InventoryPage })))
+const ProductRequestsPage = lazy(() => import('@/features/product-requests/pages/ProductRequestsPage').then((m) => ({ default: m.ProductRequestsPage })))
 const ReviewsPage = lazy(() => import('@/features/reviews/pages/ReviewsPage').then((m) => ({ default: m.ReviewsPage })))
 
 function PageFallback() {
@@ -232,6 +233,11 @@ export const router = createBrowserRouter([
             path: 'inventory',
             element: <Suspense fallback={<PageFallback />}><InventoryPage /></Suspense>,
             handle: { crumb: 'Inventory & Arrangements' },
+          },
+          {
+            path: 'product-requests',
+            element: <Suspense fallback={<PageFallback />}><ProductRequestsPage /></Suspense>,
+            handle: { crumb: 'Product Requests' },
           },
           {
             path: 'reviews',

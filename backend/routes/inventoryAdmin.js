@@ -130,8 +130,9 @@ router.patch('/arrangements/:id', requireAdminPermission('manage_inventory'), as
   }
   request.status = nextStatus;
   if (nextStatus === 'ADVANCE_VERIFIED') {
-    if (request.payment?.state !== 'PENDING_VERIFICATION') return res.status(409).json({ message: 'No pending advance evidence is available.' });
-    request.payment.state = 'VERIFIED';
+    if (!['PENDING_VERIFICATION', 'PAYMENT_SUBMITTED'].includes(request.payment?.state)) return res.status(409).json({ message: 'No pending advance evidence is available.' });
+    request.payment.state = 'ADVANCE_VERIFIED';
+    request.advancePaid = request.advanceAmount;
     request.payment.verifiedAt = new Date();
     request.payment.verifiedBy = req.admin._id;
   }

@@ -178,6 +178,7 @@ app.use('/api/admin/auth', adminAuthRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/admin/payments', paymentRoutes.adminRouter);
 app.use('/api/admin/inventory', require('./routes/inventoryAdmin'));
+app.use('/api/admin/product-requests', require('./routes/productRequestsAdmin'));
 app.use('/api/stock-manager', require('./routes/stockManagerSync'));
 app.use('/api/stock-manager/catalog', require('./routes/stockManagerCatalog'));
 app.use('/api/admin/reviews', reviewRoutes.admin);

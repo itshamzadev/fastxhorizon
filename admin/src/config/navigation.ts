@@ -53,6 +53,7 @@ export const NAV_SECTIONS: NavSection[] = [
       { label: 'Newsletter', to: '/dashboard/newsletter', icon: Mail },
       { label: 'Payments', to: '/dashboard/payments', icon: CreditCard },
       { label: 'Inventory & Arrangements', to: '/dashboard/inventory', icon: Package },
+      { label: 'Product Requests', to: '/dashboard/product-requests', icon: Package },
       { label: 'Reviews', to: '/dashboard/reviews', icon: Star },
       { label: 'Categories', to: '/dashboard/categories', icon: Package, superAdminOnly: true },
     ],

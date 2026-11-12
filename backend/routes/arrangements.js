@@ -6,6 +6,8 @@ const path = require('path');
 const multer = require('multer');
 const Product = require('../models/product');
 const ArrangementRequest = require('../models/arrangementRequest');
+const { calculateArrangementAmounts } = require('../utils/arrangementFinance');
+const auth = require('../middleware/auth');
 
 const router = express.Router();
 const clean = (value, max = 300) => String(value || '').trim().slice(0, max);
@@ -22,25 +24,36 @@ const detectFile = buffer => {
   return null;
 };
 const safeFileName = mime => ({ 'image/png': '.png', 'image/jpeg': '.jpg', 'image/webp': '.webp', 'application/pdf': '.pdf' }[mime]);
+const validEmail = value => !value || /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(String(value));
+const requestRate = new Map();
 
 router.post('/', async (req, res) => {
   try {
+    const clientKey = String(req.ip || 'unknown'); const now = Date.now(); const recent = requestRate.get(clientKey) || []; const active = recent.filter(time => now - time < 10 * 60 * 1000); if (active.length >= 5) return res.status(429).json({ message: 'Too many requests. Please try again later.' }); active.push(now); requestRate.set(clientKey, active);
     const { productId, variantId, quantity, customer, notes } = req.body || {};
     if (!mongoose.isValidObjectId(productId)) return res.status(400).json({ message: 'A valid product is required.' });
     const qty = Number(quantity);
     if (!Number.isInteger(qty) || qty < 1 || qty > 20) return res.status(400).json({ message: 'Quantity must be a whole number from 1 to 20.' });
     const product = await Product.findById(productId).lean();
     if (!product || product.status === 'archived') return res.status(404).json({ message: 'Product not found.' });
-    const supplierAvailable = product.inventoryMode === 'SUPPLIER_BASED' && product.availabilityStatus === 'AVAILABLE_TO_ORDER';
-    const numericUnavailable = product.inventoryMode === 'NUMERIC' && Number(product.stock) <= 0;
+    const variant = mongoose.isValidObjectId(variantId) ? (product.variants || []).find(item => String(item._id) === String(variantId)) : null;
+    if (variantId && !variant) return res.status(404).json({ message: 'Selected variant was not found.' });
+    const inventory = variant || product;
+    const supplierAvailable = inventory.inventoryMode === 'SUPPLIER_BASED' && inventory.availabilityStatus === 'AVAILABLE_TO_ORDER';
+    const numericUnavailable = inventory.inventoryMode === 'NUMERIC' && Number(inventory.stock) <= 0;
     if (!product.allowArrangeOnRequest || !(numericUnavailable || supplierAvailable)) return res.status(409).json({ message: 'This product is not currently available for arrangement requests.' });
     const customerData = customer || {};
     const required = ['name', 'phone', 'city', 'address'];
-    if (required.some(field => !clean(customerData[field], 180))) return res.status(400).json({ message: 'Name, mobile number, city and address are required.' });
+    if (required.some(field => !clean(customerData[field], 180)) || !validEmail(customerData.email)) return res.status(400).json({ message: 'Name, mobile number, city and address are required, with a valid optional email.' });
+    const image = variant?.images?.[0] || product.images?.[0] || product.image || '';
+    const unitPrice = Number(variant?.price ?? product.price);
+    const amounts = Number.isFinite(unitPrice) && unitPrice > 0 ? calculateArrangementAmounts(unitPrice, qty) : null;
     const request = await ArrangementRequest.create({
       requestNumber: nextNumber(), trackingToken: token(), productId, variantId: mongoose.isValidObjectId(variantId) ? variantId : null, quantity: qty,
       customerId: req.user?._id || req.user?.id || null,
-      customer: { name: clean(customerData.name, 120), phone: clean(customerData.phone, 40), city: clean(customerData.city, 100), address: clean(customerData.address, 300), notes: clean(notes || customerData.notes, 500) },
+      customer: { name: clean(customerData.name, 120), phone: clean(customerData.phone, 40), email: clean(customerData.email, 160), city: clean(customerData.city, 100), address: clean(customerData.address, 300), notes: clean(notes || customerData.notes, 500) },
+      productSnapshot: { name: product.name, image, variantLabel: variant ? [variant.color, variant.size, variant.name].filter(Boolean).join(' / ') : '' },
+      ...(amounts ? { agreedUnitPrice: unitPrice, subtotal: amounts.subtotal, advanceAmount: amounts.advanceAmount, remainingAmount: amounts.remainingAmount } : {}),
       statusHistory: [{ status: 'PENDING_REVIEW', note: 'Arrangement request received.' }],
     });
     return res.status(201).json({ data: { id: String(request._id), requestNumber: request.requestNumber, trackingToken: request.trackingToken, status: request.status } });
@@ -49,12 +62,18 @@ router.post('/', async (req, res) => {
   }
 });
 
+router.get('/mine', auth, async (req, res) => {
+  const customerId = req.user?._id || req.user?.id;
+  const items = await ArrangementRequest.find({ customerId }).sort({ createdAt: -1 }).limit(100).lean();
+  return res.json({ data: items.map(item => ({ requestNumber: item.requestNumber, product: item.productSnapshot, quantity: item.quantity, status: item.status, subtotal: item.subtotal, advanceAmount: item.advanceAmount, advancePaid: item.advancePaid, remainingAmount: item.remainingAmount, paymentState: item.payment?.state || 'NOT_REQUIRED', expectedDeliveryDate: item.expectedDeliveryDate, createdAt: item.createdAt })) });
+});
+
 router.get('/:requestNumber', async (req, res) => {
   const trackingToken = clean(req.query.token, 100);
   if (!trackingToken) return res.status(401).json({ message: 'A private tracking link is required.' });
-  const request = await ArrangementRequest.findOne({ requestNumber: clean(req.params.requestNumber, 80), trackingToken }).select('+trackingToken').populate('productId', 'name image price brand fabricMaterial').lean();
+  const request = await ArrangementRequest.findOne({ requestNumber: clean(req.params.requestNumber, 80), trackingToken }).select('+trackingToken').populate('productId', 'name image images price brand fabricMaterial').lean();
   if (!request) return res.status(404).json({ message: 'Arrangement request not found.' });
-  return res.json({ data: { requestNumber: request.requestNumber, product: request.productId, quantity: request.quantity, status: request.status, agreedUnitPrice: request.agreedUnitPrice, subtotal: request.subtotal, advanceAmount: request.advanceAmount, remainingAmount: request.remainingAmount, deliveryCharge: request.deliveryCharge, estimatedWindow: request.estimatedWindow, paymentState: request.payment?.state || 'NOT_REQUIRED', statusHistory: request.statusHistory } });
+  return res.json({ data: { requestNumber: request.requestNumber, product: request.productId || request.productSnapshot, productSnapshot: request.productSnapshot, customer: request.customer, quantity: request.quantity, status: request.status, agreedUnitPrice: request.agreedUnitPrice, subtotal: request.subtotal, advanceAmount: request.advanceAmount, advancePaid: request.advancePaid, remainingAmount: request.remainingAmount, deliveryCharge: request.deliveryCharge, estimatedWindow: request.estimatedWindow, expectedDeliveryDate: request.expectedDeliveryDate, paymentState: request.payment?.state || 'NOT_REQUIRED', paymentReference: request.payment?.reference || '', statusHistory: request.statusHistory } });
 });
 
 router.post('/:requestNumber/advance/evidence', (req, res, next) => upload.single('evidence')(req, res, error => {
@@ -64,10 +83,10 @@ router.post('/:requestNumber/advance/evidence', (req, res, next) => upload.singl
   const trackingToken = clean(req.body?.trackingToken, 100);
   const request = await ArrangementRequest.findOne({ requestNumber: clean(req.params.requestNumber, 80), trackingToken }).select('+payment.evidenceFiles');
   if (!request) return res.status(404).json({ message: 'Arrangement request not found.' });
-  if (request.status !== 'ADVANCE_PENDING' || !request.advanceAmount) return res.status(409).json({ message: 'Advance payment is not currently requested.' });
+  if (!['ADVANCE_PENDING', 'AVAILABLE_AWAITING_ADVANCE'].includes(request.status) || !request.advanceAmount) return res.status(409).json({ message: 'Advance payment is not currently requested.' });
   const reference = clean(req.body?.reference, 100);
   if (!reference || !req.file) return res.status(400).json({ message: 'Payment reference and a secure evidence file are required.' });
-  if (request.payment?.state === 'PENDING_VERIFICATION' || request.payment?.state === 'VERIFIED') return res.status(409).json({ message: 'A payment submission already exists for this request.' });
+  if (['PENDING_VERIFICATION', 'PAYMENT_SUBMITTED', 'VERIFIED', 'ADVANCE_VERIFIED'].includes(request.payment?.state)) return res.status(409).json({ message: 'A payment submission already exists for this request.' });
   const actualMime = detectFile(req.file.buffer);
   if (!actualMime || actualMime !== req.file.mimetype) return res.status(400).json({ message: 'The file content does not match its declared type.' });
   const fileId = crypto.randomUUID();
@@ -76,7 +95,7 @@ router.post('/:requestNumber/advance/evidence', (req, res, next) => upload.singl
   try {
     await fs.promises.mkdir(evidenceRoot, { recursive: true, mode: 0o700 });
     await fs.promises.writeFile(target, req.file.buffer, { flag: 'wx', mode: 0o600 });
-    request.payment = { reference, state: 'PENDING_VERIFICATION', submittedAt: new Date() };
+    request.payment = { reference, state: 'PAYMENT_SUBMITTED', submittedAt: new Date() };
     request.payment.evidenceFiles = [{ fileId, originalName: path.basename(req.file.originalname).slice(0, 160), mimeType: actualMime, size: req.file.size, storageName }];
     request.status = 'ADVANCE_SUBMITTED';
     request.statusHistory.push({ status: 'ADVANCE_SUBMITTED', note: 'Secure advance payment evidence uploaded; pending administrator verification.' });
