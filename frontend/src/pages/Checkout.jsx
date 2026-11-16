@@ -43,7 +43,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
 
   const [showCartSummary, setShowCartSummary] = useState(true);
   const [selectedItems, setSelectedItems] = useState(() => {
-    const defaults = cartItems.map(item => item._id || item.id).filter(Boolean);
+    const defaults = cartItems.map(item => item.cartKey || item._id || item.id).filter(Boolean);
     return new Set(defaults);
   });
 
@@ -54,7 +54,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
     }
 
     const itemsToPurchase = cartItems.filter(item => {
-      const id = item._id || item.id;
+      const id = item.cartKey || item._id || item.id;
       return id && selectedItems.has(id);
     });
 
@@ -77,6 +77,8 @@ function Checkout({ cartItems = [], onOrderComplete }) {
         items: itemsToPurchase
           .map(item => ({
             productId: item._id || item.id,
+            variantId: item.selectedVariantId || item.selectedVariant?._id || item.selectedVariant?.id || undefined,
+            variantId: item.selectedVariantId || item.selectedVariant?._id || item.selectedVariant?.id || undefined,
             quantity: item.quantity || 1,
           }))
           .filter(item => item.productId),
@@ -136,7 +138,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
   };
 
   const itemsToShow = cartItems.filter(item => {
-    const id = item._id || item.id;
+    const id = item.cartKey || item._id || item.id;
     return id && selectedItems.has(id);
   });
   const total = itemsToShow.reduce((sum, item) => sum + (Number(item.price) || 0) * (Number(item.quantity) || 1), 0);
@@ -147,7 +149,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
       trackMetaCart('InitiateCheckout', itemsToShow, eventId);
     }
   }, [itemsToShow]);
-  const allSelected = cartItems.every(item => selectedItems.has(item._id || item.id));
+  const allSelected = cartItems.every(item => selectedItems.has(item.cartKey || item._id || item.id));
 
   const toggleItem = id => {
     if (!id) return;
@@ -167,7 +169,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
       if (prev.size === cartItems.length) {
         return new Set();
       }
-      return new Set(cartItems.map(item => item._id || item.id).filter(Boolean));
+      return new Set(cartItems.map(item => item.cartKey || item._id || item.id).filter(Boolean));
     });
   };
 

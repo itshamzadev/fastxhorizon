@@ -40,7 +40,8 @@ export default function ProductCard({ product, addToCart, priority = false }) {
   const handleViewDetails = () => { if (canonicalId) navigate(`/product/${canonicalId}`); };
   const handleCardClick = event => { if (!canonicalId || event.target.closest('button')) return; handleViewDetails(); };
   const canArrange = product?.allowArrangeOnRequest === true && !inStock && product?.inventoryMode === 'NUMERIC';
-  const handleAddToCart = event => { event.stopPropagation(); if (inStock && typeof addToCart === 'function') addToCart(product); };
+  const hasVariants = product?.variantsEnabled === true && Array.isArray(product?.variants) && product.variants.some(variant => variant.enabled !== false);
+  const handleAddToCart = event => { event.stopPropagation(); if (hasVariants && canonicalId) { navigate(`/product/${canonicalId}`); return; } if (inStock && typeof addToCart === 'function') addToCart(product); };
   const handleArrange = event => { event.stopPropagation(); if (canonicalId && canArrange) navigate(`/arrange/${canonicalId}`); };
   const handleWishlistToggle = event => { event.stopPropagation(); event.preventDefault(); if (canonicalId && !wishlistIsPending) void toggleWishlist(product); };
   const actionButtonSx = { width: 38, height: 38, bgcolor: '#FFFFFF', color: '#292D32', border: '1px solid #C5A47E', boxShadow: '0 4px 12px rgba(41,45,50,.18)', '&:hover': { bgcolor: '#FFF9EF', color: '#2456A6', transform: 'scale(1.05)' }, '&:focus-visible': { outline: '2px solid #C5A47E', outlineOffset: 2 }, '&.Mui-disabled': { color: '#8B9196', bgcolor: '#E8E1D8' } };
@@ -61,7 +62,7 @@ export default function ProductCard({ product, addToCart, priority = false }) {
         </Stack>
         <Stack direction="row" alignItems="center" justifyContent="space-between" spacing={1} sx={{ mt: 0.8 }}>
           {canArrange ? <Typography component="button" onClick={handleArrange} sx={{ border: 0, px: 0.8, py: 0.35, bgcolor: '#FFF7E8', color: '#8A5A12', fontSize: '0.68rem', fontWeight: 800, cursor: 'pointer', borderRadius: '4px' }}>Request This Product</Typography> : <Typography component="span" sx={{ px: 0.8, py: 0.35, borderRadius: '4px', bgcolor: inStock ? '#E8F7EF' : '#FDE8E8', color: inStock ? '#167447' : '#C62828', fontSize: { xs: '0.68rem', sm: '0.72rem' }, lineHeight: 1.1, fontWeight: 800 }}>{inStock ? (supplierAvailable ? 'Available' : 'In stock') : 'Out of Stock'}</Typography>}
-          {!canArrange && <Tooltip title={inStock ? 'Add to cart' : 'Sold out'} arrow><span><IconButton aria-label={inStock ? `Add ${product?.name || 'product'} to cart` : `${product?.name || 'Product'} is sold out`} disabled={!inStock || typeof addToCart !== 'function'} onClick={event => { event.preventDefault(); handleAddToCart(event); }} sx={{ ...actionButtonSx, width: 34, height: 34, '&.Mui-disabled': { color: inStock ? '#8B9196' : '#C62828', bgcolor: inStock ? '#E8E1D8' : '#FDE8E8', borderColor: inStock ? '#C5A47E' : '#F1A3A3' } }}><ShoppingCartRoundedIcon sx={{ fontSize: 17 }} /></IconButton></span></Tooltip>}
+          {!canArrange && <Tooltip title={hasVariants ? 'Choose options' : inStock ? 'Add to cart' : 'Sold out'} arrow><span><IconButton aria-label={hasVariants ? `Choose options for ${product?.name || 'product'}` : inStock ? `Add ${product?.name || 'product'} to cart` : `${product?.name || 'Product'} is sold out`} disabled={!inStock && !hasVariants} onClick={event => { event.preventDefault(); handleAddToCart(event); }} sx={{ ...actionButtonSx, width: 34, height: 34 }}><ShoppingCartRoundedIcon sx={{ fontSize: 17 }} /></IconButton></span></Tooltip>}
         </Stack>
       </CardContent>
     </Card>

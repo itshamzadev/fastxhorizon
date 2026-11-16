@@ -61,6 +61,10 @@ const ORDER_STATUSES = [
 const OrderItemSchema = new mongoose.Schema(
   {
     productId: { type: mongoose.Schema.Types.ObjectId, ref: 'Product', required: true },
+    variantId: { type: mongoose.Schema.Types.ObjectId, default: null },
+    variantOptions: { type: mongoose.Schema.Types.Mixed, default: null },
+    variantId: { type: mongoose.Schema.Types.ObjectId, default: null },
+    variantOptions: { type: mongoose.Schema.Types.Mixed, default: null },
     name: { type: String, required: true },
     price: { type: Number, required: true },
     quantity: { type: Number, required: true, min: 1 },

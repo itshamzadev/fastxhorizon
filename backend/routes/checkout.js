@@ -194,12 +194,13 @@ router.post('/create-order', auth, async (req, res) => {
 
       normalizedItems.push({
         productId: String(productId),
+        variantId: item?.variantId && mongoose.Types.ObjectId.isValid(item.variantId) ? String(item.variantId) : null,
         quantity,
       });
     }
 
     const mergedItems = new Map();
-    normalizedItems.forEach(item => mergedItems.set(item.productId, { productId: item.productId, quantity: (mergedItems.get(item.productId)?.quantity || 0) + item.quantity }));
+    normalizedItems.forEach(item => { const key = `${item.productId}:${item.variantId || 'default'}`; const current = mergedItems.get(key); mergedItems.set(key, { productId: item.productId, variantId: item.variantId, quantity: (current?.quantity || 0) + item.quantity }); });
     const requestedItems = [...mergedItems.values()];
     const productIds = requestedItems.map(item => item.productId);
     const products = await Product.find({ _id: { $in: productIds }, status: { $ne: 'archived' } }).lean();
@@ -228,12 +229,15 @@ router.post('/create-order', auth, async (req, res) => {
 
     const orderItems = fulfillableItems.map(item => {
       const product = productMap.get(item.productId);
+      const variant = item.variantId ? product?.variants?.find(entry => String(entry._id) === String(item.variantId)) : null;
       return {
         productId: product._id,
+        variantId: variant?._id || null,
+        variantOptions: variant?.options || null,
         name: product.name,
-        price: product.price,
+        price: variant?.price ?? product.price,
         quantity: item.quantity,
-        image: product.image,
+        image: variant?.images?.[0] || product.image,
       };
     });
 

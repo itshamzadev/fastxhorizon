@@ -274,7 +274,7 @@ function ProductDetails({ addToCart }) {
   const variantAvailable = selectedVariant ? (selectedVariant.inventoryMode === 'SUPPLIER_BASED' ? selectedVariant.availabilityStatus === 'AVAILABLE_TO_ORDER' : (selectedVariant.inventoryMode === 'AVAILABILITY_BASED' ? selectedVariant.availabilityStatus === 'IN_STOCK' : Number(selectedVariant.stock) > 0)) : productAvailable;
   const canArrange = product?.allowArrangeOnRequest === true && !variantAvailable && product?.inventoryMode === 'NUMERIC';
   const isWishlisted = wishlist.some(item => String(item?._id || item?.id) === String(product?.id));
-  const handleAddToCart = useCallback(() => { if (product && ordersEnabled && variantAvailable) addToCart({ ...product, price: displayedPrice, sku: displayedSku, image: displayedImages[0] || product.image, selectedVariantId: selectedVariant?.id, selectedVariant }); }, [addToCart, displayedImages, displayedPrice, displayedSku, ordersEnabled, product, selectedVariant, variantAvailable]);
+  const handleAddToCart = useCallback(() => { if (!product || !ordersEnabled) return; if (product.variantsEnabled && variantAttributes.length > 0 && !selectedVariant) return; if (variantAvailable) addToCart({ ...product, price: displayedPrice, sku: displayedSku, image: displayedImages[0] || product.image, selectedVariantId: selectedVariant?._id || selectedVariant?.id, selectedVariant }); }, [addToCart, displayedImages, displayedPrice, displayedSku, ordersEnabled, product, selectedVariant, variantAttributes.length, variantAvailable]);
 
   if (loading) {
     return (

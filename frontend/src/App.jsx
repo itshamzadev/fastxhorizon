@@ -301,11 +301,13 @@ function App() {
     product => {
       if (!product) return;
       const canonicalId = product._id || product.id;
+      const variantId = product.selectedVariantId || product.selectedVariant?._id || product.selectedVariant?.id || '';
+      const cartKey = `${canonicalId}::${variantId || 'default'}`;
       if (!canonicalId) {
         notify({ severity: 'error', message: 'Unable to add this product right now.' });
         return;
       }
-      if (cart.some(item => item.id === canonicalId || item._id === canonicalId)) {
+      if (cart.some(item => (item.cartKey || `${item.id || item._id}::${item.selectedVariantId || item.selectedVariant?._id || 'default'}`) === cartKey)) {
         notify({ severity: 'info', message: 'Item is already in your cart.' });
         return;
       }
@@ -313,12 +315,12 @@ function App() {
       trackProductEvent('AddToCart', product, { eventId });
       trackMetaProduct('AddToCart', product, { eventId });
       setCart(prevCart => {
-        const alreadyInCart = prevCart.some(item => item.id === canonicalId || item._id === canonicalId);
+        const alreadyInCart = prevCart.some(item => (item.cartKey || `${item.id || item._id}::${item.selectedVariantId || item.selectedVariant?._id || 'default'}`) === cartKey);
         if (alreadyInCart) {
           return prevCart;
         }
         notify({ severity: 'success', message: 'Added to cart!' });
-        const normalized = { ...product, id: canonicalId, _id: canonicalId };
+        const normalized = { ...product, id: canonicalId, _id: canonicalId, cartKey };
         return [...prevCart, normalized];
       });
     },
