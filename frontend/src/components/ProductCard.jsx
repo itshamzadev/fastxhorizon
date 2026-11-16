@@ -40,7 +40,7 @@ export default function ProductCard({ product, addToCart, priority = false }) {
   const handleViewDetails = () => { if (canonicalId) navigate(`/product/${canonicalId}`); };
   const handleCardClick = event => { if (!canonicalId || event.target.closest('button')) return; handleViewDetails(); };
   const canArrange = product?.allowArrangeOnRequest === true && !inStock && product?.inventoryMode === 'NUMERIC';
-  const hasVariants = product?.variantsEnabled === true && Array.isArray(product?.variants) && product.variants.some(variant => variant.enabled !== false);
+  const hasVariants = Array.isArray(product?.variants) && product.variants.some(variant => variant.enabled !== false);
   const handleAddToCart = event => { event.stopPropagation(); if (hasVariants && canonicalId) { navigate(`/product/${canonicalId}`); return; } if (inStock && typeof addToCart === 'function') addToCart(product); };
   const handleArrange = event => { event.stopPropagation(); if (canonicalId && canArrange) navigate(`/arrange/${canonicalId}`); };
   const handleWishlistToggle = event => { event.stopPropagation(); event.preventDefault(); if (canonicalId && !wishlistIsPending) void toggleWishlist(product); };
