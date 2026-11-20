@@ -2,7 +2,7 @@ const axios = require('axios');
 const TikTokEvent = require('../models/tiktokEvent');
 
 const TIKTOK_ENDPOINT = 'https://business-api.tiktok.com/open_api/v1.3/event/track/';
-const ALLOWED_EVENTS = new Set(['ViewContent', 'AddToWishlist', 'Search', 'AddPaymentInfo', 'AddToCart', 'InitiateCheckout', 'PlaceAnOrder', 'CompleteRegistration', 'Purchase']);
+const ALLOWED_EVENTS = new Set(['ViewContent', 'AddToWishlist', 'Search', 'AddPaymentInfo', 'AddToCart', 'InitiateCheckout', 'PlaceAnOrder', 'CompleteRegistration', 'Purchase', 'CompletePayment']);
 const RETRY_AFTER_MS = 60 * 1000;
 const MAX_CONTENTS = 100;
 const inFlightEvents = new Set();
@@ -15,7 +15,7 @@ function config() {
 }
 
 function isPaymentConfirmedEvent(eventName, properties) {
-  return eventName !== 'Purchase' || properties?.payment_status === 'verified' || properties?.payment_lifecycle === 'VERIFIED';
+  return !['Purchase', 'CompletePayment'].includes(eventName) || properties?.payment_status === 'verified' || properties?.payment_lifecycle === 'VERIFIED';
 }
 
 function sanitizeProperties(input = {}) {

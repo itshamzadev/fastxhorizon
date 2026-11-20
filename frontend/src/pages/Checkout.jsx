@@ -100,6 +100,7 @@ function Checkout({ cartItems = [], onOrderComplete }) {
       trackMetaCart('OrderPlaced', orderItems, orderEventId, { order_id: data?.orderNumber || undefined });
       if (data?.paymentStatus === 'verified' || data?.paymentLifecycle === 'VERIFIED') {
         trackCartEvent('Purchase', orderItems, `${orderEventId}:purchase`, { payment_status: 'verified', payment_lifecycle: 'VERIFIED' });
+        trackCartEvent('CompletePayment', orderItems, `${orderEventId}:complete-payment`, { payment_status: 'verified', payment_lifecycle: 'VERIFIED' });
         trackMetaCart('Purchase', orderItems, `${orderEventId}:purchase`, { payment_status: 'verified', order_id: data?.orderNumber || undefined });
       }
 

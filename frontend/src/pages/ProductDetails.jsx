@@ -117,7 +117,7 @@ function ProductDetails({ addToCart }) {
   const [similarError, setSimilarError] = useState(false);
   const [galleryIndex, setGalleryIndex] = useState(0);
   const [selectedOptions, setSelectedOptions] = useState({});
-  const [ordersEnabled, setOrdersEnabled] = useState(false);
+  const ordersEnabled = true; // Ordering is always open.
   const [tab, setTab] = useState(0);
   const [zoomOpen, setZoomOpen] = useState(false);
   const [reviews, setReviews] = useState({ reviews: [], average: 0, total: 0, distribution: {} });
@@ -235,9 +235,6 @@ function ProductDetails({ addToCart }) {
     fetchProduct();
   }, [fetchProduct]);
 
-  useEffect(() => {
-    apiClient.get('payments/config').then(({ data }) => setOrdersEnabled(data?.data?.ordersEnabled === true || data?.ordersEnabled === true)).catch(() => setOrdersEnabled(false));
-  }, []);
 
   useEffect(() => { setGalleryIndex(0); setSelectedOptions({}); }, [product?.id]);
   useEffect(() => {
@@ -272,8 +269,7 @@ function ProductDetails({ addToCart }) {
   const displayedImages = selectedVariant?.images?.length ? selectedVariant.images : images;
   const supplierProduct = product?.inventoryMode === 'SUPPLIER_BASED';
   const supplierVariant = selectedVariant?.inventoryMode === 'SUPPLIER_BASED';
-  const productAvailable = supplierProduct ? product.availabilityStatus === 'AVAILABLE_TO_ORDER' : (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode) ? product.availabilityStatus === 'IN_STOCK' : Number(product?.stock) > 0);
-  const variantAvailable = selectedVariant ? (selectedVariant.inventoryMode === 'SUPPLIER_BASED' ? selectedVariant.availabilityStatus === 'AVAILABLE_TO_ORDER' : (selectedVariant.inventoryMode === 'AVAILABILITY_BASED' ? selectedVariant.availabilityStatus === 'IN_STOCK' : Number(selectedVariant.stock) > 0)) : productAvailable;
+  const variantAvailable = true; // Ordering is always open regardless of stock.
   const canArrange = product?.allowArrangeOnRequest === true && !variantAvailable && product?.inventoryMode === 'NUMERIC';
   const isWishlisted = wishlist.some(item => String(item?._id || item?.id) === String(product?.id));
   const handleAddToCart = useCallback(() => { if (!product || !ordersEnabled) return; if (variants.length > 0 && !selectedVariant) return; if (variantAvailable) addToCart({ ...product, price: displayedPrice, sku: displayedSku, image: displayedImages[0] || product.image, selectedVariantId: selectedVariant?._id || selectedVariant?.id, selectedVariant }); }, [addToCart, displayedImages, displayedPrice, displayedSku, ordersEnabled, product, selectedVariant, variants.length, variantAvailable]);
@@ -362,7 +358,7 @@ function ProductDetails({ addToCart }) {
             {variantAttributes.length > 0 && <Stack spacing={2} sx={{ mb: 2 }}><Typography variant="body2" sx={{ color: '#B54708', fontWeight: 700 }}>Please select your required options before adding to cart.</Typography>{variantAttributes.filter(attribute => attribute.values?.length).map(attribute => <Box key={attribute.name}><Typography variant="subtitle2" sx={{ color: '#202A3C', mb: .75 }}>{attribute.name}: <b style={{ color: '#2359CE' }}>{selectedOptions[attribute.name] || 'Select'}</b></Typography><Stack direction="row" spacing={1} flexWrap="wrap">{attribute.values.map(value => { const candidate = { ...selectedOptions, [attribute.name]: value }; const available = variants.some(variant => variant.enabled !== false && Object.entries(candidate).every(([key, option]) => variant.options?.[key] === option)); return <Button key={value} size="small" variant={selectedOptions[attribute.name] === value ? 'contained' : 'outlined'} disabled={!available} onClick={() => { setSelectedOptions(current => ({ ...current, [attribute.name]: value })); setGalleryIndex(0); }} sx={{ color: selectedOptions[attribute.name] === value ? '#fff' : '#344054', borderColor: '#B8C5D8', '&:hover': { borderColor: '#2359CE', bgcolor: '#F1F0FA' }, '&.Mui-disabled': { color: '#AAB4C3', borderColor: '#E0E5ED' } }}>{value}</Button> })}</Stack></Box>)}</Stack>}
 
             <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}><Typography variant="body2" sx={{ color: '#667085' }}>Availability:</Typography><Chip label={selectedVariant?.inventoryMode === 'SUPPLIER_BASED' || supplierProduct ? (variantAvailable ? 'Available to Order' : 'Out of Stock') : (variantAvailable ? 'In Stock' : 'Out of Stock')} color={variantAvailable ? 'success' : 'error'} size="small" sx={{ color: '#FFFFFF' }} /></Box>
-            <Box sx={{ mb: 2, px: 1.5, py: 1.1, borderLeft: '3px solid #F4B86A', bgcolor: '#F1F0FA', borderRadius: 1.5 }}><Typography variant="body2" sx={{ color: '#202A3C', fontWeight: 750 }}>{supplierProduct || supplierVariant ? 'Available to Order' : (variantAvailable ? 'In Stock' : 'Out of Stock')}</Typography><Typography variant="caption" sx={{ color: '#667085' }}>{supplierProduct || supplierVariant ? 'Subject to supplier confirmation. Ordering is currently paused.' : (!ordersEnabled ? 'Online ordering is temporarily unavailable.' : 'Availability confirmed by FastXHORIZON.')}</Typography></Box>
+            <Box sx={{ mb: 2, px: 1.5, py: 1.1, borderLeft: '3px solid #F4B86A', bgcolor: '#F1F0FA', borderRadius: 1.5 }}><Typography variant="body2" sx={{ color: '#202A3C', fontWeight: 750 }}>{supplierProduct || supplierVariant ? 'Available to Order' : (variantAvailable ? 'In Stock' : 'Out of Stock')}</Typography><Typography variant="caption" sx={{ color: '#667085' }}>{supplierProduct || supplierVariant ? 'Subject to supplier confirmation.' : (!ordersEnabled ? 'Online ordering is temporarily unavailable.' : 'Availability confirmed by FastXHORIZON.')}</Typography></Box>
             <Stack direction="row" spacing={1} sx={{ mb: 1 }}><Button variant="contained" startIcon={<ShoppingCartRoundedIcon />} onClick={handleAddToCart} disabled={!ordersEnabled || !variantAvailable || (variants.length > 0 && !selectedVariant)} sx={{ bgcolor: '#2359CE', '&:hover': { bgcolor: '#1745A6' } }}>Add to Cart</Button>{canArrange && <Button variant="outlined" onClick={() => navigate(`/arrange/${product.id}${selectedVariant?._id || selectedVariant?.id ? `?variantId=${selectedVariant?._id || selectedVariant?.id}` : ''}`)} sx={{ borderColor: '#C5A47E', color: '#8A6B3E' }}>Request This Product</Button>}<IconButton aria-label={isWishlisted ? 'Remove from wishlist' : 'Add to wishlist'} aria-pressed={isWishlisted} disabled={wishlistPending.has(String(product.id))} onClick={() => toggleWishlist(product)} sx={{ color: isWishlisted ? '#D98A28' : '#2359CE', border: '1px solid #B8C5D8', '&:hover': { bgcolor: '#F1F0FA' } }}>{isWishlisted ? <FavoriteRoundedIcon /> : <FavoriteBorderRoundedIcon />}</IconButton></Stack>
           </Grid>
         </Grid>

@@ -82,7 +82,7 @@ function CheckoutForm({ onSubmit, submitting = false, cartItems = [], onStepChan
   }, [cartItems, form.paymentMethod, step]);
   if (error) return <Alert severity="error">{error}</Alert>;
   if (!config) return <Box className="luxury-route-loading"><CircularProgress size={24} /><Typography variant="body2">Loading secure checkout…</Typography></Box>;
-  if (!config.ordersEnabled) return <Alert severity="info" className="luxury-checkout-lock">Online ordering is temporarily unavailable. Please return to your cart when checkout is reopened.</Alert>;
+  // Ordering is always open; the admin on/off switch no longer gates checkout.
   return <form onSubmit={submit}>
     {validationError && <Alert severity="warning" sx={{ mb: 2 }}>{validationError}</Alert>}
     {step === 1 && <>
@@ -127,7 +127,7 @@ function CheckoutForm({ onSubmit, submitting = false, cartItems = [], onStepChan
     <Divider sx={{ my: 3 }} />
     <Box sx={{ display: 'flex', gap: 1.25 }}>
       {step > 1 && <Button type="button" variant="outlined" fullWidth onClick={() => setStep(current => current - 1)} disabled={submitting}>Back</Button>}
-      <Button type="submit" fullWidth variant="contained" size="large" disabled={submitting || !config || !config.ordersEnabled} sx={{ py: 1.5, borderRadius: 2 }}>{submitting ? <CircularProgress size={20} /> : step === 4 ? 'Place Order' : 'Continue'}</Button>
+      <Button type="submit" fullWidth variant="contained" size="large" disabled={submitting || !config} sx={{ py: 1.5, borderRadius: 2 }}>{submitting ? <CircularProgress size={20} /> : step === 4 ? 'Place Order' : 'Continue'}</Button>
     </Box>
   </form>;
 }

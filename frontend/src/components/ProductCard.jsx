@@ -24,11 +24,11 @@ export default function ProductCard({ product, addToCart, priority = false }) {
   const defaultVariant = Array.isArray(product?.variants) ? product.variants.find(variant => variant.enabled !== false) : null;
   const price = Number(product?.price ?? defaultVariant?.price);
   const { sellingPrice: safePrice, originalPrice, discountPercent } = getValidDiscount(Number.isFinite(price) ? price : 0, product?.compareAtPrice ?? defaultVariant?.compareAtPrice);
-  const stock = Number.isFinite(Number(product?.stock)) ? Number(product.stock) : 0;
   const reviewCount = Number.isFinite(Number(product?.numReviews)) ? Math.max(0, Number(product.numReviews)) : 0;
   const ratingValue = reviewCount > 0 && Number.isFinite(Number(product?.rating)) ? Math.min(5, Math.max(0, Number(product.rating))) : 0;
   const supplierAvailable = product?.inventoryMode === 'SUPPLIER_BASED' && product?.availabilityStatus === 'AVAILABLE_TO_ORDER';
-  const inStock = supplierAvailable || (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode) ? product?.availabilityStatus === 'IN_STOCK' : stock > 0);
+  // Ordering is always open: every product can be added to cart regardless of stock.
+  const inStock = true;
   const imageValue = product?.image || product?.images?.[0] || product?.imageUrl || product?.thumbnail;
   const imageSource = resolveMediaUrl(imageValue);
   const imageProps = responsiveMediaProps(imageValue, priority ? 480 : 320);

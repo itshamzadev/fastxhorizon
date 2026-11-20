@@ -51,6 +51,10 @@ export function initializeTikTokPixel(routeKey = '') {
   if (!PIXEL_ID || typeof window === 'undefined' || !hasTikTokConsent()) return false;
   if (window[GLOBAL_MARKER] === PIXEL_ID) return false;
 
+  document.querySelectorAll('script[data-fastxhorizon-tiktok-pixel]').forEach(script => {
+    if (script.dataset.fastxhorizonTikTokPixel !== PIXEL_ID) script.remove();
+  });
+
   const objectName = 'ttq';
   window.TiktokAnalyticsObject = objectName;
   const ttq = window[objectName] = window[objectName] || [];
@@ -81,7 +85,7 @@ export function initializeTikTokPixel(routeKey = '') {
     firstScript?.parentNode?.insertBefore(script, firstScript);
   };
 
-  ttq.load(PIXEL_ID);
+  if (!ttq._i?.[PIXEL_ID]) ttq.load(PIXEL_ID);
   ttq.page();
   lastTrackedPage = routeKey;
   window[GLOBAL_MARKER] = PIXEL_ID;
