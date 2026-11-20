@@ -170,7 +170,7 @@ router.post('/create-order', auth, async (req, res) => {
     const enabled = paymentMethod === 'automatic' ? config?.automaticEnabled : paymentMethod === 'cod' ? config?.codEnabled : config?.manualEnabled;
     const method = paymentMethod === 'manual' ? (config?.manualMethods || []).find(item => item.key === req.body?.methodKey && item.enabled) : null;
     if (!enabled || (paymentMethod === 'manual' && !method)) return res.status(400).json({ error: 'Selected payment type is currently unavailable.' });
-    // Ordering is always open: the admin on/off switch no longer blocks checkout.
+    // The admin on/off ordering switch no longer blocks checkout.
     if (paymentMethod === 'automatic') return res.status(400).json({ error: 'Automatic payment is not operational yet.' });
     if (paymentMethod === 'manual' && (!req.body?.paymentValues || !req.body?.paymentEvidence)) return res.status(400).json({ error: 'Manual payment details are required.' });
     if (paymentMethod === 'manual') {
@@ -216,9 +216,14 @@ router.post('/create-order', auth, async (req, res) => {
       const supplierBased = product?.inventoryMode === 'SUPPLIER_BASED' || availableToOrder;
       if (availabilityMode || supplierBased) return item;
 
-      // Ordering is always open: out-of-stock items are still accepted in full.
-      return item;
+      const available = Math.max(0, Number(product?.stock) || 0);
+      const quantity = Math.min(item.quantity, available);
+      if (quantity !== item.quantity) quantityAdjustments.push({ productId: item.productId, requested: item.quantity, fulfilled: quantity });
+      return { ...item, quantity };
     });
+    if (fulfillableItems.some(item => item.quantity < 1)) {
+      return res.status(409).json({ error: 'One or more products are out of stock.' });
+    }
 
     const orderItems = fulfillableItems.map(item => {
       const product = productMap.get(item.productId);
@@ -247,33 +252,17 @@ router.post('/create-order', auth, async (req, res) => {
         // numeric stock reservation. Numeric inventory modes still require an
         // atomic stock check and decrement below.
         const supplierBased = candidate?.inventoryMode === 'SUPPLIER_BASED' || candidate?.availabilityStatus === 'AVAILABLE_TO_ORDER';
-        // Ordering is always open: stock/availability no longer blocks an order.
-        let updated = null;
-        let reservedQuantity = 0;
-        if (candidate && candidate.status !== 'archived') {
-          if (availabilityMode || supplierBased) {
-            updated = candidate;
-          } else {
-            updated = await Product.findOneAndUpdate({ _id: item.productId, stock: { $gte: item.quantity }, status: { $ne: 'archived' } }, { $inc: { stock: -item.quantity }, $set: { updatedAt: new Date() } }, { new: true });
-            if (updated) {
-              reservedQuantity = item.quantity;
-            } else {
-              // Not enough stock: take whatever is left (down to zero) and still accept the order.
-              const previous = await Product.findOneAndUpdate({ _id: item.productId, status: { $ne: 'archived' } }, { $set: { stock: 0, updatedAt: new Date() } }, { new: false });
-              if (previous) {
-                reservedQuantity = Math.max(0, Number(previous.stock) || 0);
-                updated = { _id: previous._id, stock: 0 };
-              }
-            }
-          }
-        }
+        const availabilityConfirmed = ['IN_STOCK', 'AVAILABLE_TO_ORDER'].includes(candidate?.availabilityStatus);
+        const updated = candidate && candidate.status !== 'archived' && (supplierBased || (availabilityMode && availabilityConfirmed) || (!availabilityMode && candidate.stock >= item.quantity))
+          ? (availabilityMode ? candidate : await Product.findOneAndUpdate({ _id: item.productId, stock: { $gte: item.quantity }, status: { $ne: 'archived' } }, { $inc: { stock: -item.quantity }, $set: { updatedAt: new Date() } }, { new: true }))
+          : null;
         if (!updated) throw new Error('INSUFFICIENT_STOCK');
         if (!availabilityMode && !supplierBased && Number(updated.stock) === 0) {
           await Product.updateOne({ _id: updated._id, stock: 0 }, { $set: { availabilityStatus: 'OUT_OF_STOCK', updatedAt: new Date() } });
         } else if (!availabilityMode && !supplierBased && Number(updated.stock) > 0) {
           await Product.updateOne({ _id: updated._id, stock: { $gt: 0 } }, { $set: { availabilityStatus: 'IN_STOCK', updatedAt: new Date() } });
         }
-        reserved.push({ ...item, quantity: reservedQuantity, availabilityMode: availabilityMode || supplierBased });
+        reserved.push({ ...item, availabilityMode });
       }
     } catch (reservationError) {
       await Promise.all(reserved.filter(item => !item.availabilityMode).map(item => Product.updateOne({ _id: item.productId }, { $inc: { stock: item.quantity } })));

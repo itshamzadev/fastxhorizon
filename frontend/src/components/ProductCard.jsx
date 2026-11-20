@@ -24,11 +24,11 @@ export default function ProductCard({ product, addToCart, priority = false }) {
   const defaultVariant = Array.isArray(product?.variants) ? product.variants.find(variant => variant.enabled !== false) : null;
   const price = Number(product?.price ?? defaultVariant?.price);
   const { sellingPrice: safePrice, originalPrice, discountPercent } = getValidDiscount(Number.isFinite(price) ? price : 0, product?.compareAtPrice ?? defaultVariant?.compareAtPrice);
+  const stock = Number.isFinite(Number(product?.stock)) ? Number(product.stock) : 0;
   const reviewCount = Number.isFinite(Number(product?.numReviews)) ? Math.max(0, Number(product.numReviews)) : 0;
   const ratingValue = reviewCount > 0 && Number.isFinite(Number(product?.rating)) ? Math.min(5, Math.max(0, Number(product.rating))) : 0;
   const supplierAvailable = product?.inventoryMode === 'SUPPLIER_BASED' && product?.availabilityStatus === 'AVAILABLE_TO_ORDER';
-  // Ordering is always open: every product can be added to cart regardless of stock.
-  const inStock = true;
+  const inStock = supplierAvailable || (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode) ? product?.availabilityStatus === 'IN_STOCK' : stock > 0);
   const imageValue = product?.image || product?.images?.[0] || product?.imageUrl || product?.thumbnail;
   const imageSource = resolveMediaUrl(imageValue);
   const imageProps = responsiveMediaProps(imageValue, priority ? 480 : 320);
@@ -39,8 +39,9 @@ export default function ProductCard({ product, addToCart, priority = false }) {
 
   const handleViewDetails = () => { if (canonicalId) navigate(`/product/${canonicalId}`); };
   const handleCardClick = event => { if (!canonicalId || event.target.closest('button')) return; handleViewDetails(); };
-  const canArrange = product?.allowArrangeOnRequest === true && !inStock && product?.inventoryMode === 'NUMERIC';
   const hasVariants = Array.isArray(product?.variants) && product.variants.some(variant => variant.enabled !== false);
+  // Out-of-stock products show a "Request This Product" button instead of Add to Cart.
+  const canArrange = !inStock && !hasVariants;
   const handleAddToCart = event => { event.stopPropagation(); if (hasVariants && canonicalId) { navigate(`/product/${canonicalId}`); return; } if (inStock && typeof addToCart === 'function') addToCart(product); };
   const handleArrange = event => { event.stopPropagation(); if (canonicalId && canArrange) navigate(`/arrange/${canonicalId}`); };
   const handleWishlistToggle = event => { event.stopPropagation(); event.preventDefault(); if (canonicalId && !wishlistIsPending) void toggleWishlist(product); };

@@ -275,8 +275,10 @@ function ProductDetails({ addToCart }) {
   const displayedImages = selectedVariant?.images?.length ? selectedVariant.images : images;
   const supplierProduct = product?.inventoryMode === 'SUPPLIER_BASED';
   const supplierVariant = selectedVariant?.inventoryMode === 'SUPPLIER_BASED';
-  const variantAvailable = true; // Ordering is always open regardless of stock.
-  const canArrange = product?.allowArrangeOnRequest === true && !variantAvailable && product?.inventoryMode === 'NUMERIC';
+  const productAvailable = supplierProduct ? product.availabilityStatus === 'AVAILABLE_TO_ORDER' : (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(product?.inventoryMode) ? product.availabilityStatus === 'IN_STOCK' : Number(product?.stock) > 0);
+  const variantAvailable = selectedVariant ? (selectedVariant.inventoryMode === 'SUPPLIER_BASED' ? selectedVariant.availabilityStatus === 'AVAILABLE_TO_ORDER' : (['AVAILABILITY_BASED', 'AVAILABILITY'].includes(selectedVariant.inventoryMode) ? selectedVariant.availabilityStatus === 'IN_STOCK' : Number(selectedVariant.stock) > 0)) : productAvailable;
+  // Out-of-stock products show a "Request This Product" button instead of Add to Cart.
+  const canArrange = !variantAvailable && canAddToCart;
   const isWishlisted = wishlist.some(item => String(item?._id || item?.id) === String(product?.id));
   const handleAddToCart = useCallback(() => { if (!product || !ordersEnabled) return; if (!canAddToCart) return; if (variantAvailable) addToCart({ ...product, price: displayedPrice, sku: displayedSku, image: displayedImages[0] || product.image, selectedVariantId: selectedVariant?._id || selectedVariant?.id, selectedVariant }); }, [addToCart, displayedImages, displayedPrice, displayedSku, canAddToCart, ordersEnabled, product, selectedVariant, variantAvailable]);
 

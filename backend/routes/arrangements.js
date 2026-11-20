@@ -41,7 +41,9 @@ router.post('/', async (req, res) => {
     const inventory = variant || product;
     const supplierAvailable = inventory.inventoryMode === 'SUPPLIER_BASED' && inventory.availabilityStatus === 'AVAILABLE_TO_ORDER';
     const numericUnavailable = inventory.inventoryMode === 'NUMERIC' && Number(inventory.stock) <= 0;
-    if (!product.allowArrangeOnRequest || !(numericUnavailable || supplierAvailable)) return res.status(409).json({ message: 'This product is not currently available for arrangement requests.' });
+    const availabilityUnavailable = inventory.availabilityStatus === 'OUT_OF_STOCK' && inventory.inventoryMode !== 'NUMERIC';
+    // Every out-of-stock product can be requested; no per-product opt-in needed.
+    if (!(numericUnavailable || availabilityUnavailable || supplierAvailable)) return res.status(409).json({ message: 'This product is not currently available for arrangement requests.' });
     const customerData = customer || {};
     const required = ['name', 'phone', 'city', 'address'];
     if (required.some(field => !clean(customerData[field], 180)) || !validEmail(customerData.email)) return res.status(400).json({ message: 'Name, mobile number, city and address are required, with a valid optional email.' });
